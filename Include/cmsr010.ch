@@ -1,0 +1,36 @@
+#ifdef SPANISH
+	#define STR0001 "Selecione o tipo de rescisão."
+	#define STR0002 "Tipo de Rescisão"
+	#define STR0003 "Selecione a origem da demissão."
+	#define STR0004 "Origem da Demissão"
+	#define STR0005 "Informe a data inicial."
+	#define STR0006 "Data Inicial"
+	#define STR0007 "Informe a data final."
+	#define STR0008 "Data Final"
+	#define STR0009 "Relatório das rescisões de executivos"
+	#define STR0010 "Este relatório imprime uma lista das rescisões de executivos"
+#else
+	#ifdef ENGLISH
+		#define STR0001 "Selecione o tipo de rescisão."
+		#define STR0002 "Tipo de Rescisão"
+		#define STR0003 "Selecione a origem da demissão."
+		#define STR0004 "Origem da Demissão"
+		#define STR0005 "Informe a data inicial."
+		#define STR0006 "Data Inicial"
+		#define STR0007 "Informe a data final."
+		#define STR0008 "Data Final"
+		#define STR0009 "Relatório das rescisões de executivos"
+		#define STR0010 "Este relatório imprime uma lista das rescisões de executivos"
+	#else
+		#define STR0001 "Selecione o tipo de rescisão."
+		#define STR0002 "Tipo de Rescisão"
+		#define STR0003 "Selecione a origem da demissão."
+		#define STR0004 "Origem da Demissão"
+		#define STR0005 "Informe a data inicial."
+		#define STR0006 "Data Inicial"
+		#define STR0007 "Informe a data final."
+		#define STR0008 "Data Final"
+		#define STR0009 "Relatório das rescisões de executivos"
+		#define STR0010 "Este relatório imprime uma lista das rescisões de executivos"
+	#endif
+#endif

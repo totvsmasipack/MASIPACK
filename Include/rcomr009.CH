@@ -1,0 +1,41 @@
+#IFDEF SPANISH
+    #define STR0001  "Análise dos Fornecedores - Periodo: "
+	#define STR0002  "Este relatorio ira imprimir a Análise dos Fornecedores"
+	#define STR0003  "referentes ao Material entregue."
+	#define STR0004  ""
+	#define STR0005  ""
+	#define STR0006  ""
+	#define STR0007  ""
+	#define STR0008  "Zebrado"
+	#define STR0009  "Administracao"
+	#define STR0010  "Selecionando Registros..."
+	#define STR0011  "CANCELADO PELO OPERADOR"
+#ELSE
+	#IFDEF ENGLISH
+	    #define STR0001  "Análise dos Fornecedores - Periodo: "
+		#define STR0002  "Este relatorio ira imprimir a Análise dos Fornecedores"
+		#define STR0003  "referentes ao Material entregue."
+		#define STR0004  ""
+		#define STR0005  ""
+		#define STR0006  ""
+		#define STR0007  ""
+		#define STR0008  "Zebrado"
+		#define STR0009  "Administracao"
+		#define STR0010  "Selecionando Registros..."
+		#define STR0011  "CANCELADO PELO OPERADOR"
+    #ELSE
+		#define STR0001  "Análise dos Fornecedores - Periodo: "
+		#define STR0002  "Este relatorio ira imprimir a Análise dos Fornecedores"
+		#define STR0003  "referentes ao Material entregue."
+		#define STR0004  ""
+		#define STR0005  ""
+		#define STR0006  ""
+		#define STR0007  ""
+		#define STR0008  "Zebrado"
+		#define STR0009  "Administracao"
+		#define STR0010  "Selecionando Registros..."
+		#define STR0011  "CANCELADO PELO OPERADOR"
+		#define STR0012  "Tipo Documento    Pedido/Item  Produto         Descrição                            Q t d e.      Dt.Entregue  Prev.Entrega  Atraso"
+		#define STR0013  "                                                                              Entregue  Devolvida
+	#ENDIF
+#ENDIF

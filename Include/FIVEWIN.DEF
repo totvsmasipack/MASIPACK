@@ -1,0 +1,8 @@
+name        FiveWin
+description 'Clipper for Windows library'
+exetype     Windows
+code        moveable nondiscardable
+data        preload moveable
+
+stacksize   8500
+heapsize    1024

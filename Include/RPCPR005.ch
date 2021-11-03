@@ -1,0 +1,36 @@
+     #IFDEF SPANISH
+        #define STR0001 "Relacao Das Ordens de Producao Abertas"
+		#define STR0002 "Este programa ira imprimir a Relaçäo das Ordens de Produçäo."
+		#define STR0003 " - Ordem:   "
+		#define STR0006 "Zebrado"
+		#define STR0007 "Administracao"
+		#define STR0008 " - Ordem:  " 
+		#define STR0011 "  Codigo             Descricao                  UM     Estoque    OP         Fim        Saldo OP  Cliente              Custo OP  LF"
+        #define STR0013 "CANCELADO PELO OPERADOR"
+		#define STR0014 "Total em processo:"
+		#define STR0015 "P R O D U T O"  
+         #ELSE
+     #IFDEF ENGLISH 
+        #define STR0001 "Relacao Das Ordens de Producao Abertas"
+		#define STR0002 "Este programa ira imprimir a Relaçäo das Ordens de Produçäo."
+		#define STR0003 " - Ordem:   "
+		#define STR0006 "Zebrado"
+		#define STR0007 "Administracao"
+		#define STR0008 " - Ordem:  " 
+		#define STR0011 "  Codigo             Descricao                  UM     Estoque    OP         Fim        Saldo OP  Cliente              Custo OP  LF"
+        #define STR0013 "CANCELADO PELO OPERADOR"
+		#define STR0014 "Total em processo:"
+		#define STR0015 "P R O D U T O"  
+         #ELSE 
+		#define STR0001 "Relacao Das Ordens de Producao Abertas"
+		#define STR0002 "Este programa ira imprimir a Relaçäo das Ordens de Produçäo."
+		#define STR0003 " - Ordem:   "
+		#define STR0006 "Zebrado"
+		#define STR0007 "Administracao"
+		#define STR0008 " - Ordem:  " 
+		#define STR0011 "  Codigo             Descricao                  UM     OP         Fim        Saldo OP      Custo OP  LF  Local    Posição"
+        #define STR0013 "CANCELADO PELO OPERADOR"
+		#define STR0014 "Total em processo:"
+		#define STR0015 "P R O D U T O"  
+	#ENDIF
+#ENDIF

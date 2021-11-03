@@ -1,0 +1,5 @@
+Library     FiveWin
+description 'Clipper for Windows library'
+exetype     Windows
+code        preload moveable discardable
+data        preload moveable single

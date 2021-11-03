@@ -1,0 +1,36 @@
+#IFDEF SPANISH
+		#DEFINE STR0001 "Manutenção de Regras de Comissões"
+		#DEFINE STR0002 "Pesquisar"
+		#DEFINE STR0003 "Visualizar"
+		#DEFINE STR0004 "Incluir"
+		#DEFINE STR0005 "Alterar"
+		#DEFINE STR0006 "Excluir"
+		#DEFINE STR0007 "Regras de Comissão"
+		#DEFINE STR0008 "Perc. de Comissão"
+		#DEFINE STR0009 "Índice Red. Atraso"
+		#DEFINE STR0010 "Fim da validade inferior ao inicio. Favor corrigir!"
+#ELSE
+	#IFDEF ENGLISH
+		#DEFINE STR0001 "Manutenção de Regras de Comissões"
+		#DEFINE STR0002 "Pesquisar"
+		#DEFINE STR0003 "Visualizar"
+		#DEFINE STR0004 "Incluir"
+		#DEFINE STR0005 "Alterar"
+		#DEFINE STR0006 "Excluir"
+		#DEFINE STR0007 "Regras de Comissão"
+		#DEFINE STR0008 "Perc. de Comissão"
+		#DEFINE STR0009 "Índice Red. Atraso"
+		#DEFINE STR0010 "Fim da validade inferior ao inicio. Favor corrigir!"
+	#ELSE
+		#DEFINE STR0001 "Manutenção de Regras de Comissões"
+		#DEFINE STR0002 "Pesquisar"
+		#DEFINE STR0003 "Visualizar"
+		#DEFINE STR0004 "Incluir"
+		#DEFINE STR0005 "Alterar"
+		#DEFINE STR0006 "Excluir"
+		#DEFINE STR0007 "Regras de Comissão"
+		#DEFINE STR0008 "Perc. de Comissão"
+		#DEFINE STR0009 "Índice Red. Atraso"
+		#DEFINE STR0010 "Fim da validade inferior ao inicio. Favor corrigir!"
+	#ENDIF
+#ENDIF

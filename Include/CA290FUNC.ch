@@ -1,0 +1,36 @@
+#IFDEF SPANISH
+   #define STR0001 "Painel de Proposta"
+   #define STR0002 "Consulta Proposta"
+   #define STR0003 "Bloqueia Acessos"
+   #define STR0004 "Valores Nao Devidos"
+   #define STR0005 "Valores a Receber"
+   #define STR0006 "Valores Recebidos"
+   #define STR0007 "Sintetico"
+   #define STR0008 "Variacoes de Comissoes"
+   #define STR0009 "Faturamento por Territorio"
+   #define STR0010 "Metas TDI"
+#ELSE
+   #IFDEF ENGLISH
+      #define STR0001 "Painel de Proposta"
+      #define STR0002 "Consulta Proposta"
+      #define STR0003 "Bloqueia Acessos"
+      #define STR0004 "Valores Nao Devidos"
+      #define STR0005 "Valores a Receber"
+      #define STR0006 "Valores Recebidos"
+      #define STR0007 "Sintetico"
+      #define STR0008 "Variacoes de Comissoes"
+      #define STR0009 "Faturamento por Territorio"
+      #define STR0010 "Metas TDI"
+   #ELSE
+      #define STR0001 "Painel de Proposta"
+      #define STR0002 "Consulta Proposta"
+      #define STR0003 "Bloqueia Acessos"
+      #define STR0004 "Valores Nao Devidos"
+      #define STR0005 "Valores a Receber"
+      #define STR0006 "Valores Recebidos"
+      #define STR0007 "Sintetico"
+      #define STR0008 "Variacoes de Comissoes"
+      #define STR0009 "Faturamento por Territorio"
+      #define STR0010 "Metas TDI"
+   #ENDIF
+#ENDIF

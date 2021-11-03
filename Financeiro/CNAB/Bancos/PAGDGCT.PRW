@@ -1,0 +1,50 @@
+////  PROGRAMA PARA CALCULO DO DIGITO DE CONTROLE DA AGENCIA BRADESCO
+////  PAGFOR POSICAO ( 104 - 104 )
+
+user function pagdgct(_RETDIG)
+
+_RETDIG := "00"
+
+IF SUBSTR(SE2->E2_CODBAR,1,3) == "237"
+
+    _RETDIG := " "
+    _DIG1   := SUBSTR(SE2->E2_CODBAR,37,1)
+    _DIG2   := SUBSTR(SE2->E2_CODBAR,38,1)
+    _DIG3   := SUBSTR(SE2->E2_CODBAR,39,1)
+    _DIG4   := SUBSTR(SE2->E2_CODBAR,40,1)
+    _DIG5   := SUBSTR(SE2->E2_CODBAR,41,1)
+    _DIG6   := SUBSTR(SE2->E2_CODBAR,42,1)
+    _DIG7   := SUBSTR(SE2->E2_CODBAR,43,1)
+    
+    _MULT   := (VAL(_DIG1)*2) +  (VAL(_DIG2)*7) +  (VAL(_DIG3)*6) +   (VAL(_DIG4)*5) +  (VAL(_DIG5)*4) +  (VAL(_DIG6)*3)  + (VAL(_DIG7)*2)
+    _RESUL  := INT(_MULT /11 )
+    _RESTO  := INT(_MULT % 11)
+    _DIGITO := STRZERO((11 - _RESTO),1,0)
+
+    _RETDIG := IF( _resto == 0,"0",IF(_resto == 1,"P",_DIGITO))
+
+ELSEIF SUBSTR(SE2->E2_LINDIG,1,3) == "237"
+
+    _RETDIG := " "
+    _DIG1   := SUBSTR(SE2->E2_LINDIG,24,1)
+    _DIG2   := SUBSTR(SE2->E2_LINDIG,25,1)
+    _DIG3   := SUBSTR(SE2->E2_LINDIG,26,1)
+    _DIG4   := SUBSTR(SE2->E2_LINDIG,27,1)
+    _DIG5   := SUBSTR(SE2->E2_LINDIG,28,1)
+    _DIG6   := SUBSTR(SE2->E2_LINDIG,29,1)
+    _DIG7   := SUBSTR(SE2->E2_LINDIG,30,1)
+    
+    _MULT   := (VAL(_DIG1)*2) +  (VAL(_DIG2)*7) +  (VAL(_DIG3)*6) +   (VAL(_DIG4)*5) +  (VAL(_DIG5)*4) +  (VAL(_DIG6)*3)  + (VAL(_DIG7)*2)
+    _RESUL  := INT(_MULT /11 )
+    _RESTO  := INT(_MULT % 11)
+    _DIGITO := STRZERO((11 - _RESTO),1,0)
+
+    _RETDIG := IF( _resto == 0,"0",IF(_resto == 1,"P",_DIGITO))
+
+//ELSEIF !EMPTY(SE2->E2_DIGCTA)
+
+//    _RETDIG := ALLTRIM(SE2->E2_DIGCTA)
+
+ENDIF
+
+RETURN(_RETDIG)

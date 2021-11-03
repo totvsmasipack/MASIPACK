@@ -1,0 +1,36 @@
+#ifdef SPANISH
+	#Define STR0001 "Agrupamentos"
+	#Define STR0002 "Análise de mercado"
+	#Define STR0003 "Grid da análise"
+	#Define STR0004 "Agrupamento"
+	#Define STR0005 "Item"
+	#Define STR0006 "Resumo"
+	#Define STR0007 "Nivel"
+	#Define STR0008 "Dsc Nivel"
+   #define STR0009 "Nivel Referencia"
+   #define STR0010 "Descrição Referencia"
+#else
+     	#ifdef ENGLISH
+        	#Define STR0001 "Agrupamentos"
+           	#Define STR0002 "Análise de mercado"
+              	#Define STR0003 "Grid da análise"
+               	#Define STR0004 "Agrupamento"
+                #Define STR0005 "Item"
+  	        #Define STR0006 "Resumo"
+  	        #Define STR0007 "Nivel"
+  	        #Define STR0008 "Dsc Nivel"
+      #define STR0009 "Nivel Referencia"
+      #define STR0010 "Descrição Referencia"
+	#else
+        	#Define STR0001 "Agrupamentos"
+           	#Define STR0002 "Análise de mercado"
+              	#Define STR0003 "Grid da análise"
+               	#Define STR0004 "Agrupamento"
+                #Define STR0005 "Item"
+  	        #Define STR0006 "Resumo"
+  	        #Define STR0007 "Nivel"
+  	        #Define STR0008 "Dsc Nivel"
+      #define STR0009 "Nivel Referencia"
+      #define STR0010 "Descrição Referencia"
+	#endif
+#endif

@@ -1,0 +1,51 @@
+#Include "rwmake.ch"   
+#Include "Topconn.ch"
+
+/*
+ÜÜÜÜÜÜÜÜÜÜÜÜÜÜÜÜÜÜÜÜÜÜÜÜÜÜÜÜÜÜÜÜÜÜÜÜÜÜÜÜÜÜÜÜÜÜÜÜÜÜÜÜÜÜÜÜÜÜÜÜÜÜÜÜÜÜÜÜÜÜÜÜÜÜÜÜÜ
+±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±
+±±ÉÍÍÍÍÍÍÍÍÍÍÑÍÍÍÍÍÍÍÍÍÍËÍÍÍÍÍÍÍÑÍÍÍÍÍÍÍÍÍÍÍÍÍÍÍÍÍÍÍÍËÍÍÍÍÍÍÑÍÍÍÍÍÍÍÍÍÍÍÍÍ»±±
+±±ºPrograma  ³LP520VL   ºAutor  ³Cecilia             º Data ³  18/06/08   º±±
+±±ÌÍÍÍÍÍÍÍÍÍÍØÍÍÍÍÍÍÍÍÍÍÊÍÍÍÍÍÍÍÏÍÍÍÍÍÍÍÍÍÍÍÍÍÍÍÍÍÍÍÍÊÍÍÍÍÍÍÏÍÍÍÍÍÍÍÍÍÍÍÍÍ¹±±
+±±ºDesc.     ³Programa para retorno de conta contabil em lancamento padro-º±±
+±±º          ³nizado 520 - Sequencia 05 - Valor                           º±±
+±±ÌÍÍÍÍÍÍÍÍÍÍØÍÍÍÍÍÍÍÍÍÍÍÍÍÍÍÍÍÍÍÍÍÍÍÍÍÍÍÍÍÍÍÍÍÍÍÍÍÍÍÍÍÍÍÍÍÍÍÍÍÍÍÍÍÍÍÍÍÍÍÍ¹±±
+±±ºUso       ³Masipack                                                    º±±
+±±ÈÍÍÍÍÍÍÍÍÍÍÏÍÍÍÍÍÍÍÍÍÍÍÍÍÍÍÍÍÍÍÍÍÍÍÍÍÍÍÍÍÍÍÍÍÍÍÍÍÍÍÍÍÍÍÍÍÍÍÍÍÍÍÍÍÍÍÍÍÍÍÍ¼±±
+±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±
+ßßßßßßßßßßßßßßßßßßßßßßßßßßßßßßßßßßßßßßßßßßßßßßßßßßßßßßßßßßßßßßßßßßßßßßßßßßßßß
+*/
+                                     
+User Function LP520VL()
+                                            
+Private  _cCli,_cContaCr,_cContaDb,_cHist,_nValor,_cTpDoc
+
+_cAliasold:= alias()
+_cConta   := " "
+_cHist    := " " 
+_cTpDoc   := SE1->E1_TIPO
+_cSeq     := Alltrim(CT5->CT5_SEQUEN)
+_cCli     := SE1->E1_CLIENTE
+_cLoja    := SE1->E1_LOJA 
+_cTpCli   := " " 
+_cRet     := ""
+
+// Contabiliza se for Cliente de exportacao com variacao cambial
+
+If _cSeq == "05"
+   
+	SA1->(DbSetOrder(1))
+	If SA1->(DbSeek(xFilial("SA1")+_cCli+_cLoja))
+	 _cTpCli := SA1->A1_EST
+	EndIf  
+	   
+	If _cTpDoc = "RA" .and. _cTpCli = "EX"
+		If SE1->E1_ACRESC > 0
+			_cRet := SE1->E1_ACRESC 
+		ElseIf SE1->E1_DECRESC > 0
+			_cRet := SE1->E1_DECRESC 
+		Endif
+	Endif   
+ Endif 
+   
+Return(_cRet)

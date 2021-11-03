@@ -1,0 +1,43 @@
+#IFDEF SPANISH
+		#define STR0001  "Relaçao dos PC's na Portaria"
+		#define STR0002  "Este informe imprimira el detalle de los itemes"
+		#define STR0003  "referentes a las compras efectuadas."
+		#define STR0004  " Proveedor          "
+		#define STR0005  " Fecha de registro"
+		#define STR0006  " Tipo+Grupo+Codigo  "
+		#define STR0007  " Grupo+Codigo   "
+		#define STR0008  "A Rayas"
+		#define STR0009  "Administracion"
+		#define STR0010  "Seleccionando registros..."
+		#define STR0011  "ANULADO POR EL OPERADOR"
+		#define STR0012  "I.T.   CODIGO           DESCRICAO                                QTDE. UN       UNITARIO        TOTAL %IPI ENTRADA  LOCAL"
+#ELSE
+	#IFDEF ENGLISH
+         #define STR0001  "Relaçao dos PC's na Portaria"
+         #define STR0002  "This report will show a list of items"
+         #define STR0003  "referring to the purchases carried out."
+         #define STR0004  " Supplier           "
+         #define STR0005  " Date of Typing     "
+         #define STR0006  " Type+Group+Code    "
+         #define STR0007  " Group+Code     "
+         #define STR0008  "Z.Form  "
+         #define STR0009  "Management   "
+         #define STR0010  "Selecting Records...      "
+         #define STR0011  "CANCELLED BY THE OPERATOR   "
+         #define STR0012  "I.T.   CODIGO           DESCRICAO                                QTDE. UN       UNITARIO        TOTAL %IPI ENTRADA  LOCAL"
+
+	#ELSE
+		#define STR0001  "Relaçao dos PC's na Portaria"
+		#define STR0002  "Conferencia de Pedidos de Compra no Ato da Entrega"
+		#define STR0003  "referentes a compras efetuadas."
+		#define STR0004  " Por Ordem de Pedido"
+		#define STR0005  " Data De Digitacao  "
+		#define STR0006  " Tipo+Grupo+Codigo  "
+		#define STR0007  " Grupo+Codigo   "
+		#define STR0008  "Zebrado"
+		#define STR0009  "Administracao"
+		#define STR0010  "Selecionando Registros..."
+		#define STR0011  "CANCELADO PELO OPERADOR"
+		#define STR0012  "I.T.   CODIGO           DESCRICAO                                QTDE. UN       UNITARIO (R$)   TOTAL %IPI ENTRADA  LOCAL"
+	#ENDIF
+#ENDIF

@@ -1,0 +1,36 @@
+#IFDEF SPANISH
+   #define STR0001 "Não é permitido realizar manutenções no contrato por essa rotina. Utilize o Cockpit de contratos."
+   #define STR0002 "Consulta Cadastro de Cliente"
+   #define STR0003 "Consulta Pos. Titulos"
+   #define STR0004 "Cliente"
+   #define STR0005 "Loja"
+   #define STR0006 "Informe o cliente principal do Contrato"
+   #define STR0007 "Já existe contrato para este cliente."
+   #define STR0008 "Codigo do cliente e loja invalido."
+   #define STR0009 "Ok"
+   #define STR0010 "É necessário informar o Cliente principal do contrato, para realizar a inclusão."
+#ELSE
+   #IFDEF ENGLISH
+      #define STR0001 "Não é permitido realizar manutenções no contrato por essa rotina. Utilize o Cockpit de contratos."
+      #define STR0002 "Consulta Cadastro de Cliente"
+      #define STR0003 "Consulta Pos. Titulos"
+      #define STR0004 "Cliente"
+      #define STR0005 "Loja"
+      #define STR0006 "Informe o cliente principal do Contrato"
+      #define STR0007 "Já existe contrato para este cliente."
+      #define STR0008 "Codigo do cliente e loja invalido."
+      #define STR0009 "Ok"
+      #define STR0010 "É necessário informar o Cliente principal do contrato, para realizar a inclusão."
+   #ELSE
+      #define STR0001 "Não é permitido realizar manutenções no contrato por essa rotina. Utilize o Cockpit de contratos."
+      #define STR0002 "Consulta Cadastro de Cliente"
+      #define STR0003 "Consulta Pos. Titulos"
+      #define STR0004 "Cliente"
+      #define STR0005 "Loja"
+      #define STR0006 "Informe o cliente principal do Contrato"
+      #define STR0007 "Já existe contrato para este cliente."
+      #define STR0008 "Codigo do cliente e loja invalido."
+      #define STR0009 "Ok"
+      #define STR0010 "É necessário informar o Cliente principal do contrato, para realizar a inclusão."
+   #ENDIF
+#ENDIF

@@ -1,0 +1,36 @@
+#IFDEF SPANISH
+	#define STR0001  "Confirmar"
+	#define STR0002  "Salir"
+	#define STR0003  ""
+	#define STR0004  ""
+	#define STR0005  ""
+	#define STR0006  "Seleccionando Registros..."
+	#define STR0007  "Borrando Comisiones no pagadas "
+	#define STR0008  "Calculando Comisiones por la Emision"
+	#define STR0009  "Calculando Comisiones por la Cancel."
+	#define STR0010  "Titulo"	
+#ELSE
+	#IFDEF ENGLISH
+		#define STR0001  "OK      "
+		#define STR0002  "Cancel  "
+		#define STR0003  ""
+		#define STR0004  ""
+		#define STR0005  ""
+		#define STR0006  "Selecting Records..."
+		#define STR0007  "Removing unpaid Commissions"
+		#define STR0008  "Calculating Commissions by Issue "
+		#define STR0009  "Calculating Commissions by Posting"
+		#define STR0010  "Bill"		
+	#ELSE
+		#define STR0001  "Confirma"
+		#define STR0002  "Abandona"
+		#define STR0003  "Geracao do arquivo de comissoes"
+		#define STR0004  "Este programa tem como objetivo alimentar a tabela de comiss”es  "
+		#define STR0005  "com base nos movimentos de pre-comissoes previamente criados."
+		#define STR0006  "Selecionando Registros..."
+		#define STR0007  "Excluindo Comiss”es n„o pagas"
+		#define STR0008  "Calculando Comiss”es pela Emiss„o"
+		#define STR0009  "Calculando Comiss”es pela Baixa"
+		#define STR0010  "Titulo"
+	#ENDIF
+#ENDIF

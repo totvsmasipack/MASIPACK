@@ -1,0 +1,36 @@
+#IFDEF SPANISH
+   #define STR0001 "] Preparando ambiente para gerar as Medições do Contrato - GCT"
+   #define STR0002 ") - ERRO - Nao foi possivel iniciar a Empresa e Filial !"
+   #define STR0003 "] Processamento Finalizado."
+   #define STR0004 " - Erro de execução: "
+   #define STR0005 "[TGCVJ007] - Início do Processamento de Geração de Medição: "
+   #define STR0006 "[TGCVJ007] - Medições em aberto da competência atual deletadas com sucesso: "
+   #define STR0007 "[TGCVJ007] - Medições geradas com sucesso para o contrato/revisão ("
+   #define STR0008 " - Medições geradas com sucesso para o contrato/revisão ("
+   #define STR0009 " Não foi possível gerar Medições para o Contrato. "
+   #define STR0010 " Não foi possível excluir as Medições em aberto para o Contrato. "
+#ELSE
+   #IFDEF ENGLISH
+      #define STR0001 "] Preparando ambiente para gerar as Medições do Contrato - GCT"
+      #define STR0002 ") - ERRO - Nao foi possivel iniciar a Empresa e Filial !"
+      #define STR0003 "] Processamento Finalizado."
+      #define STR0004 " - Erro de execução: "
+      #define STR0005 "[TGCVJ007] - Início do Processamento de Geração de Medição: "
+      #define STR0006 "[TGCVJ007] - Medições em aberto da competência atual deletadas com sucesso: "
+      #define STR0007 "[TGCVJ007] - Medições geradas com sucesso para o contrato/revisão ("
+      #define STR0008 " - Medições geradas com sucesso para o contrato/revisão ("
+      #define STR0009 " Não foi possível gerar Medições para o Contrato. "
+      #define STR0010 " Não foi possível excluir as Medições em aberto para o Contrato. "
+   #ELSE
+      #define STR0001 "] Preparando ambiente para gerar as Medições do Contrato - GCT"
+      #define STR0002 ") - ERRO - Nao foi possivel iniciar a Empresa e Filial !"
+      #define STR0003 "] Processamento Finalizado."
+      #define STR0004 " - Erro de execução: "
+      #define STR0005 "[TGCVJ007] - Início do Processamento de Geração de Medição: "
+      #define STR0006 "[TGCVJ007] - Medições em aberto da competência atual deletadas com sucesso: "
+      #define STR0007 "[TGCVJ007] - Medições geradas com sucesso para o contrato/revisão ("
+      #define STR0008 " - Medições geradas com sucesso para o contrato/revisão ("
+      #define STR0009 " Não foi possível gerar Medições para o Contrato. "
+      #define STR0010 " Não foi possível excluir as Medições em aberto para o Contrato. "
+   #ENDIF
+#ENDIF

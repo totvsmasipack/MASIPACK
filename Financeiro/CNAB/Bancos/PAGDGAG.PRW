@@ -1,0 +1,47 @@
+////  PROGRAMA PARA CALCULO DO DIGITO DE CONTROLE DA AGENCIA BRADESCO
+////  PAGFOR POSICAO ( 104 - 104 )
+
+
+
+USER FUNCTION PAGDGAG(_RETDIG)
+
+_RETDIG  := "0"      
+
+IF SUBSTR(SE2->E2_CODBAR,1,3) == "237"
+
+    _RETDIG := " "
+    _DIG1   := SUBSTR(SE2->E2_CODBAR,20,1)
+    _DIG2   := SUBSTR(SE2->E2_CODBAR,21,1)
+    _DIG3   := SUBSTR(SE2->E2_CODBAR,22,1)
+    _DIG4   := SUBSTR(SE2->E2_CODBAR,23,1)
+
+    _MULT   := (VAL(_DIG1)*5) +  (VAL(_DIG2)*4) +  (VAL(_DIG3)*3) +   (VAL(_DIG4)*2)
+    _RESUL  := INT(_MULT /11 )
+    _RESTO  := INT(_MULT % 11)
+    _DIGITO := 11 - _RESTO
+
+    _RETDIG := IF( _RESTO == 0,"0",IF(_RESTO == 1,0,_DIGITO))
+
+ElseIf SUBSTR(SE2->E2_LINDIG,1,3) == "237"
+
+    _RETDIG := " "
+    _DIG1   := SUBSTR(SE2->E2_LINDIG,05,1)
+    _DIG2   := SUBSTR(SE2->E2_LINDIG,06,1)
+    _DIG3   := SUBSTR(SE2->E2_LINDIG,07,1)
+    _DIG4   := SUBSTR(SE2->E2_LINDIG,08,1)
+
+    _MULT   := (VAL(_DIG1)*5) +  (VAL(_DIG2)*4) +  (VAL(_DIG3)*3) +   (VAL(_DIG4)*2)
+    _RESUL  := INT(_MULT /11 )
+    _RESTO  := INT(_MULT % 11)
+    _DIGITO := 11 - _RESTO
+
+    _RETDIG := IF( _RESTO == 0,"0",IF(_RESTO == 1,0,_DIGITO))
+
+
+//ELSEIF !EMPTY(SE2->E2_DIGAG)
+
+//    _RETDIG := AllTrim(SE2->E2_DIGAG)
+
+ENDIF
+
+RETURN(_RETDIG)

@@ -1,0 +1,36 @@
+#IFDEF SPANISH
+   #define STR0001 "Log Transações Contratos/Medições"
+   #define STR0002 "Log Encerramento Medição"
+   #define STR0003 "Iniciado"
+   #define STR0004 "Concluido Sucesso"
+   #define STR0005 "Com Falhas"
+   #define STR0006 "Dados Inválidos"
+   #define STR0007 "Visualizar"
+   #define STR0008 "Log Processamento em Lote"
+   #define STR0009 "Não Processado"
+   #define STR0010 "Monitor Threads"
+#ELSE
+   #IFDEF ENGLISH
+      #define STR0001 "Log Transações Contratos/Medições"
+      #define STR0002 "Log Encerramento Medição"
+      #define STR0003 "Iniciado"
+      #define STR0004 "Concluido Sucesso"
+      #define STR0005 "Com Falhas"
+      #define STR0006 "Dados Inválidos"
+      #define STR0007 "Visualizar"
+      #define STR0008 "Log Processamento em Lote"
+      #define STR0009 "Não Processado"
+      #define STR0010 "Monitor Threads"
+   #ELSE
+      #define STR0001 "Log Transações Contratos/Medições"
+      #define STR0002 "Log Encerramento Medição"
+      #define STR0003 "Iniciado"
+      #define STR0004 "Concluido Sucesso"
+      #define STR0005 "Com Falhas"
+      #define STR0006 "Dados Inválidos"
+      #define STR0007 "Visualizar"
+      #define STR0008 "Log Processamento em Lote"
+      #define STR0009 "Não Processado"
+      #define STR0010 "Monitor Threads"
+   #ENDIF
+#ENDIF

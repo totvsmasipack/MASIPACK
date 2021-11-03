@@ -1,0 +1,36 @@
+#IFDEF SPANISH
+   #define STR0001 "Conta(s) de Email Destino - NAO INFORMADA."
+   #define STR0002 "Assunto do E-mail - NAO INFORMADO"
+   #define STR0003 "Texto do E-mail - NAO INFORMADO"
+   #define STR0004 "Conectando ao servidor de Email !!!"
+   #define STR0005 "Nao foi possivel estabelecer a CONEXAO com o servidor - "
+   #define STR0006 "AUTENTICACAO falhou no servidor SMTP.TOTVS.COM.BR"
+   #define STR0007 "Enviando Email"
+   #define STR0008 "Nao foi possivel ENVIAR a mensagem - "
+   #define STR0009 "Desconectando do servidor de Email !!!"
+   #define STR0010 "Nao foi possivel DESCONECTAR do servidor - "
+#ELSE
+   #IFDEF ENGLISH
+      #define STR0001 "Conta(s) de Email Destino - NAO INFORMADA."
+      #define STR0002 "Assunto do E-mail - NAO INFORMADO"
+      #define STR0003 "Texto do E-mail - NAO INFORMADO"
+      #define STR0004 "Conectando ao servidor de Email !!!"
+      #define STR0005 "Nao foi possivel estabelecer a CONEXAO com o servidor - "
+      #define STR0006 "AUTENTICACAO falhou no servidor SMTP.TOTVS.COM.BR"
+      #define STR0007 "Enviando Email"
+      #define STR0008 "Nao foi possivel ENVIAR a mensagem - "
+      #define STR0009 "Desconectando do servidor de Email !!!"
+      #define STR0010 "Nao foi possivel DESCONECTAR do servidor - "
+   #ELSE
+      #define STR0001 "Conta(s) de Email Destino - NAO INFORMADA."
+      #define STR0002 "Assunto do E-mail - NAO INFORMADO"
+      #define STR0003 "Texto do E-mail - NAO INFORMADO"
+      #define STR0004 "Conectando ao servidor de Email !!!"
+      #define STR0005 "Nao foi possivel estabelecer a CONEXAO com o servidor - "
+      #define STR0006 "AUTENTICACAO falhou no servidor SMTP.TOTVS.COM.BR"
+      #define STR0007 "Enviando Email"
+      #define STR0008 "Nao foi possivel ENVIAR a mensagem - "
+      #define STR0009 "Desconectando do servidor de Email !!!"
+      #define STR0010 "Nao foi possivel DESCONECTAR do servidor - "
+   #ENDIF
+#ENDIF
