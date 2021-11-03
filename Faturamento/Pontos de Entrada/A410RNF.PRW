@@ -21,9 +21,7 @@ Local dDataAte	:= PARAMIXB[2]	//Data Final - Tipo: Data - Formato: dd/mm/aaaa
 Local lForn		:= PARAMIXB[3]	//Fornecedor (.T.) ou Cliente (.F.) - Tipo: Lógico
 Local lFornece	:= PARAMIXB[4]	//Fornecedor (.T.) ou Documento (.F.) - Tipo: Lógico
 
-	If !( lForn )
-		lMantemQry := .F.
-	Endif
+	lMantemQry := lForn
 
 	If !( lFornece )
 
