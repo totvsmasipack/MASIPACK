@@ -142,7 +142,7 @@ IF !EMPTY(MV_PAR04)
 	_cQuery += "       ON C7_PRODUTO = B1_COD "
 	_cQuery += " LEFT JOIN " + RetSqlName("SB5") + " B5 "
 	_cQuery += "       ON C7_PRODUTO = B5_COD "	
-	_cQuery += "       AND B5.B5_FILIAL = "+xFilial("SB5")+" "
+	_cQuery += "       AND B5.B5_FILIAL = '"+xFilial("SB5")+"' "
 	_cQuery += "       AND B5.D_E_L_E_T_ = '' "
 	//Ticket#2017031037000107 — Fim da alteração
 	_cQuery += " LEFT OUTER JOIN " + RetSqlName("SC1") + " C1 "
@@ -158,14 +158,14 @@ IF !EMPTY(MV_PAR04)
 		_cQuery += " AND D4_MSLF <> ' ' "
 		_cQuery += " LEFT OUTER JOIN " + RetSqlName("SC2") + " C2 "
 		_cQuery += "      ON SUBSTRING(D4_OP,1,11) = C2_NUM+C2_ITEM+C2_SEQUEN  AND C2.D_E_L_E_T_ = ' ' "
-		_cQuery += "      AND C2_FILIAL = '" + xFilial("SC2") + "' AND C2_MSPED <> '      ' "
+		_cQuery += "      AND C2_FILIAL = '" + FWxFilial("SC2") + "' AND C2_MSPED <> '      ' "
 	Endif
 
 	_cQuery += " WHERE C7_NUM = '" + MV_PAR01 + "' AND C7_RESIDUO = ' ' "
 	_cQuery += "       AND C7_QUJE < C7_QUANT "
-	_cQuery += "       AND C7_FILIAL = '" + xFilial("SC7") + "' AND C7.D_E_L_E_T_ = ' ' "
-	_cQuery += "       AND A2_FILIAL = '" + xFilial("SA2") + "' AND A2.D_E_L_E_T_ = ' ' "
-	_cQuery += "       AND B1_FILIAL = '" + xFilial("SB1") + "' AND B1.D_E_L_E_T_ = ' ' "
+	_cQuery += "       AND C7_FILIAL = '" + FWxFilial("SC7") + "' AND C7.D_E_L_E_T_ = ' ' "
+	_cQuery += "       AND A2_FILIAL = '" + FWxFilial("SA2") + "' AND A2.D_E_L_E_T_ = ' ' "
+	_cQuery += "       AND B1_FILIAL = '" + FWxFilial("SB1") + "' AND B1.D_E_L_E_T_ = ' ' "
 	_cQuery += " ORDER BY C7_PRODUTO, C7_DATPRF "
 	
 	TcQuery _cQuery New Alias "QR1"
