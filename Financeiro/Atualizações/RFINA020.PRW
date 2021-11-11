@@ -26,8 +26,9 @@ Local cLojD               :=""   as character
 Local cCliAt              :="ZZ" as character
 Local cLojAt              :="ZZ" as character
 Local cLay                :=""   as character
-Private lMsErroAuto     := .F. as logical
-Private lAutoErrNoFile  := .T. as logical
+Private aRetorno          :={}
+Private lMsErroAuto       := .F. as logical
+Private lAutoErrNoFile    := .T. as logical
 //Preparação do Ambiente
 
 If IsBlind()
