@@ -12,6 +12,14 @@
 
 User Function RFINA020()
 
+    If !IsBlind()
+        FwMsgRun(,{|oSay| ProcCob(oSay)}, 'Aguarde', 'Processando')
+    Endif
+
+Return
+
+Static Function ProcCob(oSay)
+
 Local a811Param           :={}   as array
 Local cCliD               :=""   as character
 Local cLojD               :=""   as character
@@ -21,15 +29,19 @@ Local cLay                :=""   as character
 Private lMsErroAuto     := .F. as logical
 Private lAutoErrNoFile  := .T. as logical
 //Preparação do Ambiente
-RpcSetType(3)
-RpcSetEnv("01","01")
-dbSelectArea("FWP")
 
+If IsBlind()
+    RpcSetType(3)
+    RpcSetEnv("01","01")
+Endif
+
+dbSelectArea("FWP")
 FWP->(DbSetOrder(1))//FWP_FILIAL, FWP_CODCRT, R_E_C_N_O_, D_E_L_E_T_
 
 /*============= LAYOUT 000001 - AVISO 15 DIAS ANTES DO VENCIMENTO ================*/
 
 cLay := "000001"
+oSay:SetText('Processando layout ' + cLay)
 If !FWP->(DbSeek(FWxFilial("FWP") + PadR(cLay,TamSX3("FWP_CODCRT")[1])))
     conOut("Layout nao encontrado")
     RETURN
@@ -60,9 +72,12 @@ else
     FwAlertSucess("Sucesso!")
 endif
 
+a811Param := {}
+
 /*============= LAYOUT 000002 - AVISO 1 DIA ANTES DO VENCIMENTO ================*/
 
 cLay := "000002"
+oSay:SetText('Processando layout ' + cLay)
 If !FWP->(DbSeek(FWxFilial("FWP") + PadR(cLay,TamSX3("FWP_CODCRT")[1])))
     conOut("Layout nao encontrado")
     RETURN
@@ -93,9 +108,12 @@ else
     FwAlertSucess("Sucesso!")
 endif
 
+a811Param := {}
+
 /*============= LAYOUT 000003 - AVISO TITULOS VENCIDOS ================*/
 
 cLay := "000003"
+oSay:SetText('Processando layout ' + cLay)
 If !FWP->(DbSeek(FWxFilial("FWP") + PadR(cLay,TamSX3("FWP_CODCRT")[1])))
     conOut("Layout nao encontrado")
     RETURN
@@ -125,24 +143,9 @@ if lMsErroAuto
 else
     FwAlertSucess("Sucesso!")
 endif
-//RpcClearEnv()
+
+If IsBlind()
+    RpcClearEnv()
+Endif
+
 Return
-/*
-a811Param[01] := Código do cliente De (tipo caracter)
-a811Param[02] := Loja do cliente De (tipo caracter)
-a811Param[03] := Código do cliente Até (tipo caracter)
-a811Param[04] := Loja do cliente Até (tipo caracter)
-a811Param[05] := Data de emissão De (tipo data)        
-a811Param[06] := Data de emissão Até (tipo data)  
-a811Param[07] := Data de referência (tipo data)     
-a811Param[08] := Valor de (tipo numérico)     
-a811Param[09] := Valor Até (tipo numérico)        
-a811Param[10] := "2" (tipo caracter) - IMPORTANTE:  SEMPRE 2 PARA NÃO APRESENTAR TELA DE SELEÇÃO DE FILIAIS
-a811Param[11] := Títulos a vencer (tipo caracter  sendo "1" = Sim ou "2" = Não)
-a811Param[12] := Considera valor (tipo caracter sendo "1" = Total ou  "2" = Saldo)
-a811Param[13] :="2" (tipo caracter) - IMPORTANTE: SEMPRE 2 PARA NÃO APRESENTAR TELA DE SELEÇÃO DE SITUAÇÃO DE COBRANÇA
-a811Param[14] := {} (tipo array) - IMPORTANTE: ENVIAR ARRAY VAZIO
-a811Param[15] := "" (tipo caracter) - IMPORTANTE: SEMPRE VAZIO
-a811Param[16] := Código do layout da carta a ser utilizado (tipo caracter) 
-a811Param[17] := A1_MSBLQL 
-*/
