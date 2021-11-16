@@ -131,7 +131,7 @@ aAdd( a811Param,  dDataBase                                 )   //Data de referê
 aAdd( a811Param,  0                                         )   //Valor de (tipo numérico)
 aAdd( a811Param,  99.99999                                  )   //Valor Até (tipo numérico)
 aAdd( a811Param,  '1'                                       )   //"2" (tipo caracter) - IMPORTANTE:  SEMPRE 2 PARA NÃO APRESENTAR TELA DE SELEÇÃO DE FILIAIS
-aAdd( a811Param,  '1'                                       )   //Títulos a vencer (tipo caracter  sendo "1" = Sim ou "2" = Não)
+aAdd( a811Param,  '2'                                       )   //Títulos a vencer (tipo caracter  sendo "1" = Sim ou "2" = Não)
 aAdd( a811Param,  '1'                                       )   //Considera valor (tipo caracter sendo "1" = Total ou  "2" = Saldo)
 aAdd( a811Param,  '2'                                       )   //2" (tipo caracter) - IMPORTANTE: SEMPRE 2 PARA NÃO APRESENTAR TELA DE SELEÇÃO DE SITUAÇÃO DE COBRANÇA
 aAdd( a811Param,  {}                                        )   //{} (tipo array) - IMPORTANTE: ENVIAR ARRAY VAZIO
