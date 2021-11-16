@@ -10,15 +10,17 @@
  | @type    function                                  													|
  *------------------------------------------------------------------------------------------------------*/
 
-User Function RFINA020()
+User Function RFINA020(aParam)
 
     If !IsBlind()
         FwMsgRun(,{|oSay| ProcCob(oSay)}, 'Aguarde', 'Processando')
-    Endif
+    Else
+        ProcCob(Nil,aParam)
+    EndIf
 
 Return
 
-Static Function ProcCob(oSay)
+Static Function ProcCob(oSay,aParam)
 
 Local a811Param           :={}   as array
 Local cCliD               :=""   as character
@@ -33,7 +35,7 @@ Private lAutoErrNoFile    := .T. as logical
 
 If IsBlind()
     RpcSetType(3)
-    RpcSetEnv("01","01")
+    RpcSetEnv(aParam[1],aParam[2])
 Endif
 
 dbSelectArea("FWP")
