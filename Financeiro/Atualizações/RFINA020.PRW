@@ -44,7 +44,11 @@ FWP->(DbSetOrder(1))//FWP_FILIAL, FWP_CODCRT, R_E_C_N_O_, D_E_L_E_T_
 /*============= LAYOUT 000001 - AVISO 15 DIAS ANTES DO VENCIMENTO ================*/
 
 cLay := "000001"
-oSay:SetText('Processando layout ' + cLay)
+
+If !IsBlind()
+    oSay:SetText('Processando layout ' + cLay)
+Endif
+
 If !FWP->(DbSeek(FWxFilial("FWP") + PadR(cLay,TamSX3("FWP_CODCRT")[1])))
     conOut("Layout nao encontrado")
     RETURN
@@ -69,10 +73,14 @@ aAdd( a811Param,  '2'                                       )   //A1_MSBLQL
 MSExecAuto({|x,y| Fina811(x,y)},0,a811Param)
 if lMsErroAuto
     ConOut("Erro !")
-    MostraErro()
+    If !IsBlind()
+        MostraErro()
+    Endif
     aLog := GetAutoGRLog()
 else
-    FwAlertSucess("Sucesso!")
+    If !IsBlind()
+        FwAlertSucess("Sucesso!")
+    Endif
 endif
 
 a811Param := {}
@@ -80,7 +88,10 @@ a811Param := {}
 /*============= LAYOUT 000002 - AVISO 1 DIA ANTES DO VENCIMENTO ================*/
 
 cLay := "000002"
-oSay:SetText('Processando layout ' + cLay)
+If !IsBlind()
+    oSay:SetText('Processando layout ' + cLay)
+Endif
+
 If !FWP->(DbSeek(FWxFilial("FWP") + PadR(cLay,TamSX3("FWP_CODCRT")[1])))
     conOut("Layout nao encontrado")
     RETURN
@@ -105,10 +116,14 @@ aAdd( a811Param,  '2'                                       )   //A1_MSBLQL
 MSExecAuto({|x,y| Fina811(x,y)},0,a811Param)
 if lMsErroAuto
     ConOut("Erro !")
-    MostraErro()
+    If !IsBlind()
+        MostraErro()
+    Endif
     aLog := GetAutoGRLog()
 else
-    FwAlertSucess("Sucesso!")
+    If !IsBlind()
+        FwAlertSucess("Sucesso!")
+    Endif
 endif
 
 a811Param := {}
@@ -116,7 +131,10 @@ a811Param := {}
 /*============= LAYOUT 000003 - AVISO TITULOS VENCIDOS ================*/
 
 cLay := "000003"
-oSay:SetText('Processando layout ' + cLay)
+If !IsBlind()
+    oSay:SetText('Processando layout ' + cLay)
+Endif
+
 If !FWP->(DbSeek(FWxFilial("FWP") + PadR(cLay,TamSX3("FWP_CODCRT")[1])))
     conOut("Layout nao encontrado")
     RETURN
@@ -141,10 +159,14 @@ aAdd( a811Param,  '2'                                       )   //A1_MSBLQL
 MSExecAuto({|x,y| Fina811(x,y)},0,a811Param)
 if lMsErroAuto
     ConOut("Erro !")
-    MostraErro()
+    If !IsBlind()
+        MostraErro()
+    Endif
     aLog := GetAutoGRLog()
 else
-    FwAlertSucess("Sucesso!")
+    If !IsBlind()
+        FwAlertSucess("Sucesso!")
+    Endif
 endif
 
 If IsBlind()
