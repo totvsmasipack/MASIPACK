@@ -79,7 +79,7 @@ If SubStr(cNumEmp,1,2) <> "15"
 	EndIf
 	
 	If Alltrim(SC5->C5_MSUSER) <> _cUsuario
-		Alert("Só é permitido liberação pelo usuário que incluiu o Pedido de Vendas.")
+		Help(NIL, NIL, "MT440AT_A", NIL, "Só é permitido liberação pelo usuário que incluiu o Pedido de Vendas.", 1, 0, NIL, NIL, NIL, NIL, NIL, {"Contate o responsável pelo pedido: " + Alltrim( UsrRetName(SC5->C5_MSUSER) ) })
 		_lRet= .F.
 	Else
 		_lRet= .T.

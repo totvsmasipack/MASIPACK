@@ -10,18 +10,11 @@
 
 User Function MA410DEL()
 
-Local _cUsuario := RetCodUsr()
-Local _cNomusu  := UsrRetName(_cUsuario)
-Local _lRet
+Local _lRet	:= .T.
 
-IF SUBSTR(cNumEmp,1,2) <> "15"  /// ALTERADO LIZANDRA - 27/03/14 - TRATA HELSIMPLAST
-	
-	If Alltrim(SC5->C5_MSUSER)  <> _cUsuario
-		Alert("Só é permitido liberação pelo usuário que incluiu o Pedido de Vendas.")
+	If FWCodEmp() $ '01|10' .And. RetCodUsr(Alltrim(SC5->C5_MSUSER))
+		Help(NIL, NIL, "MA410DEL_A", NIL, "Só é permitido liberação pelo usuário que incluiu o Pedido de Vendas.", 1, 0, NIL, NIL, NIL, NIL, NIL, {"Contate o responsável pelo pedido: " + Alltrim( UsrRetName(SC5->C5_MSUSER) ) })
 		_lRet= .F.
-	Else
-		_lRet= .T.
 	EndIf
-	
-ENDIF
-Return(_lRet)
+
+Return _lRet

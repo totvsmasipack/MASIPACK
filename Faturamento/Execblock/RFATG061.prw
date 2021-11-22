@@ -62,17 +62,10 @@ Local cDeptoUsu     := ""
             Endif
 
             If SC5->C5_MSCATEG $ "4_6" .AND. ( !RetCodUsr() $ Alltrim(SC5->C5_MSUSER) .And. !Left(cDeptoUsu,3) == '207')
-                Alert("Só é permitido alteração pelo usuário que incluiu o Pedido de Vendas.")
+                Help(NIL, NIL, "RFATG061_A", NIL, "Só é permitido alteração pelo usuário que incluiu o Pedido de Vendas.", 1, 0, NIL, NIL, NIL, NIL, NIL, {"Contate o responsável pelo pedido: " + Alltrim( UsrRetName(SC5->C5_MSUSER) ) })
                 Return .F.
             EndIf
-/*
-            If RetCodUsr() $ Alltrim(SC5->C5_MSUSER)
-                Return .T.
-            Else
-                Help(NIL, NIL, "A410NEG", NIL, "Usuário não autorizado", 1, 0, NIL, NIL, NIL, NIL, NIL, {"Solicite o acesso ao administrador do sistema. (Parâmetro: MS_USRAPV)"})
-                Return .F.
-            EndIf
-*/                      
+                  
     ENDCASE
 
 Return .T.
