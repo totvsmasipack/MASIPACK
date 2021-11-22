@@ -94,7 +94,7 @@ Static function PREDANFE(cMod)
 	private aFaturas 	:= {}
 	private aTabImposto := {}
 	private cMensagem 	:= {}
-	private cResFisco 	:= {}
+	private cResFisco 	:= ""
 	private aTot 		:= {}
 	private nModImp 	:= IIf(Empty(SF2->F2_DOC),1,0)
 	
@@ -495,20 +495,41 @@ static function DPreDanfeNF(cModNF,cNota,cSerie,cCliFor)
 	
 	cProjetos := "Projeto(s): "+Projetos(aNotaF[2],aNotaF[3],Left(aNotaF[4],6),Right(aNotaF[4],2),cAliasNF)
 
-	dbSelectArea('SZO')
-	SZO->(DbSetOrder(1))
-	SZO->(DbSeek(xFilial("SZO")+SF2->F2_SERIE+SF2->F2_DOC))
-	If SZO->(FOUND()) .And. !Empty(Alltrim(MEMOLINE(SZO->ZO_MENS,130,1))) 
-		cMensagem := AllTrim(SZO->ZO_MENS)+" "+Chr(13)+Chr(10)+cProjetos
-	Else
-		DbSelectArea("SC5")
-		SC5->(DbSetOrder(1))
-		SC5->(DbSeek(xFilial("SC5")+SC6->C6_NUM))
-		If SC5->(FOUND())
-			cMensagem := AllTrim(SC5->C5_MENNOTA)+" "+Chr(13)+Chr(10)+cProjetos
+	If !(cEmpAnt $ "15") 
+		dbSelectArea('SZO')
+		SZO->(DbSetOrder(1))
+		SZO->(DbSeek(xFilial("SZO")+SF2->F2_SERIE+SF2->F2_DOC))
+		If SZO->(FOUND()) .And. !Empty(Alltrim(MEMOLINE(SZO->ZO_MENS,130,1))) 
+			cMensagem := AllTrim(SZO->ZO_MENS)+" "+Chr(13)+Chr(10)+cProjetos
+		Else
+			DbSelectArea("SC5")
+			SC5->(DbSetOrder(1))
+			SC5->(DbSeek(xFilial("SC5")+SC6->C6_NUM))
+			If SC5->(FOUND())
+				cMensagem := AllTrim(SC5->C5_MENNOTA)+" "+Chr(13)+Chr(10)+cProjetos
+			EndIf
 		EndIf
+		cResFisco := " "
+	Else
+		cMensagem := IIF( SF2->(FieldPos("F2_MENNOTA")) > 0, AllTrim(SF2->F2_MENNOTA),AllTrim(SC5->C5_MENNOTA))
 	EndIf
-	cResFisco := ""
+
+	cRetForm := FORMULA(SC5->C5_MENPAD)
+	if !(ValType(cRetForm) == nil) .and. !(AllTrim(cRetForm) $ cMensagem)
+		If Len(cMensagem) > 0 .And. SubStr(cMensagem, Len(cMensagem), 1) <> " "
+			cMensagem += " "
+		EndIf
+		cMensagem += AllTrim(cRetForm)
+	endif
+
+	If !EMPTY(SC5->C5_PC)
+		cMensagem += " | Nº Ped. Cliente: " + ALLTRIM(SC5->C5_PC)
+	If !(Alltrim(cRetForm) $ cMensagem)
+		cMensagem += cRetForm
+	Endif
+	cMensagem += " | *** N/NF REF PV: " + SC5->C5_NUM + " ***"
+
+	Endif
 	
 	//--------------------------------------------------------------------------
 	// Dados folha da tabela de impostos
@@ -865,7 +886,7 @@ EndIf
 	
 	cProjetos := "Projeto(s): "+Projetos(aNotaF[2],"",Left(aNotaF[4],6),Right(aNotaF[4],2),"SC6")
 	cMensagem := " "+aNotaF[19]+" "+Chr(13)+Chr(10)+cProjetos
-	cResFisco := ""
+	cResFisco := " "
 return
 
 /*===================================================
