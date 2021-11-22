@@ -513,8 +513,14 @@ static function DPreDanfeNF(cModNF,cNota,cSerie,cCliFor)
 	Else
 		cMensagem := IIF( SF2->(FieldPos("F2_MENNOTA")) > 0, AllTrim(SF2->F2_MENNOTA),AllTrim(SC5->C5_MENNOTA))
 	EndIf
-
-	cRetForm := FORMULA(SC5->C5_MENPAD)
+	DbSelectArea("SC5")
+	SC5->(DbSetOrder(1))
+	SC5->(DbSeek(xFilial("SC5")+SC6->C6_NUM))
+	If SC5->(FOUND())
+		cRetForm := FORMULA(SC5->C5_MENPAD)
+	Else
+		cRetForm :=""
+	EndIf
 	if !(ValType(cRetForm) == nil) .and. !(AllTrim(cRetForm) $ cMensagem)
 		If Len(cMensagem) > 0 .And. SubStr(cMensagem, Len(cMensagem), 1) <> " "
 			cMensagem += " "
