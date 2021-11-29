@@ -400,12 +400,12 @@ Do While !TMP->(Eof())
 			oPrint:Say(nLin,0750,DtoC(DtEntrega),oFont09)                                //Entrega //oPrint:Say(nLin,0900,DtoC(DtEntrega),oFont09)
 			oPrint:Say(nLin,0970,TMP->B1_POSIPI,oFont09)       							 //Classif.Fiscal //oPrint:Say(nLin,1070,TMP->B1_POSIPI,oFont09)
 			oPrint:Say(nLin,1160,TMP->CK_UM,oFont09)                                     //U.M. //oPrint:Say(nLin,1250,TMP->CK_UM,oFont09)
-			oPrint:Say(nLin,1180,Transform(TMP->CK_QTDVEN,"@E 9,999.99"),oFont09)        //Qtde //oPrint:Say(nLin,1280,Transform(TMP->CK_QTDVEN,"@E 9,999.99"),oFont09)
+			oPrint:Say(nLin,1180,Transform(TMP->CK_QTDVEN,"@E 9,999.999"),oFont09)        //Qtde //oPrint:Say(nLin,1280,Transform(TMP->CK_QTDVEN,"@E 9,999.99"),oFont09)
 			If TMP->CK_PRCVEN <> TMP->DA1_PRCVEN
 				oPrint:Say(nLin,1310,"*",oFont09)                                         //Qtde //oPrint:Say(nLin,1460,"*",oFont09)
 			EndIf	
-			oPrint:Say(nLin,1340,Transform(TMP->CK_PRCVEN,"@E 999,999.99"),oFont09)      //V.Unitario	//oPrint:Say(nLin,1470,Transform(TMP->CK_PRCVEN,"@E 999,999.99"),oFont09)
-			oPrint:Say(nLin,1530,Transform(TMP->CK_VALOR,"@E 9,999,999.99"),oFont09)     //Vlr.Parcial	//oPrint:Say(nLin,1680,Transform(TMP->CK_VALOR,"@E 9,999,999.99"),oFont09)
+			oPrint:Say(nLin,1340,Transform(TMP->CK_PRCVEN,"@E 999,999.999"),oFont09)      //V.Unitario	//oPrint:Say(nLin,1470,Transform(TMP->CK_PRCVEN,"@E 999,999.99"),oFont09)
+			oPrint:Say(nLin,1530,Transform(TMP->CK_VALOR,"@E 9,999,999.999"),oFont09)     //Vlr.Parcial	//oPrint:Say(nLin,1680,Transform(TMP->CK_VALOR,"@E 9,999,999.99"),oFont09)
 			nTotal  := nTotal + TMP->CK_VALOR
 			nTotDesc:= nTotDesc + (TMP->CK_PRUNIT-TMP->CK_PRCVEN)
 
