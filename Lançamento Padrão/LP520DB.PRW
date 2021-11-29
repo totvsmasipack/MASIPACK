@@ -62,7 +62,7 @@ ElseIf _nSeq == 4
 				_cConta := "220900001"
 			EndIf
 		Else
-			_cConta := SA1->A1_CONTA
+			_cConta := SA6->A6_CONTA
 		EndIf
  	//FIM - TICKET: 2016091937000074
 	Else
