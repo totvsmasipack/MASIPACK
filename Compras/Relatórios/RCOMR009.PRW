@@ -1,4 +1,4 @@
-
+#Include 'Totvs.ch'
 #Include "Topconn.ch"
 #Include "Rwmake.ch"
 
@@ -497,6 +497,7 @@ Static Function ImpFornec()
 Return
 
 Static Function GravaSZR()
+   
    If !SZR->(DbSeek(xFilial("SZR")+cPeriodo+cFornAnt+cLojaAnt)) 
       RecLock("SZR",.T.)
       SZR->ZR_FILIAL  := "01"
@@ -506,10 +507,10 @@ Static Function GravaSZR()
    Else
       RecLock("SZR",.F.)
    EndIf   
-   SZR->ZR_IQFENT  := nIQFEnt
-   SZR->ZR_IQFCONF := nIQFQual
-   SZR->ZR_IQFPONT := nIQFPont
-   SZR->ZR_IQFTOT  := nIQFEnt+nIQFQual+nIQFPont
+   SZR->ZR_IQFENT  := Round(nIQFEnt,TamSX3('ZR_IQFENT')[2])
+   SZR->ZR_IQFCONF := Round(nIQFQual,TamSX3('ZR_IQFCONF')[2])
+   SZR->ZR_IQFPONT := Round(nIQFPont,TamSX3('ZR_IQFPONT')[2])
+   SZR->ZR_IQFTOT  := Round(nIQFEnt+nIQFQual+nIQFPont,TamSX3('ZR_IQFTOT')[2])
    SZR->(MsUnlock())
 
 Return

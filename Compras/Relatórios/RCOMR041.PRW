@@ -139,6 +139,7 @@ TRCell():New(oSection1,"C1_UM"     ,"SC1",/*Titulo*/,PesqPict("SC1","C1_UM"),/*T
 TRCell():New(oSection1,"C1_LOCAL"  ,"SC1",/*Titulo*/,PesqPict("SC1","C1_LOCAL"),/*Tamanho*/,/*lPixel*/,/*{|| code-block de impressao }*/)
 TRCell():New(oSection1,"B1_QE"     ,"SB1",/*Titulo*/,PesqPict("SB1","B1_QE",09),/*Tamanho*/,/*lPixel*/,/*{|| code-block de impressao }*/)
 TRCell():New(oSection1,"B1_UPRC"   ,"SB1",/*Titulo*/,PesqPict("SB1","B1_UPRC",12),/*Tamanho*/,/*lPixel*/,/*{|| code-block de impressao }*/)
+TRCell():New(oSection1,"B1_FABRIC" ,"SB1",/*Titulo*/,PesqPict("SB1","B1_FABRIC",12),/*Tamanho*/,/*lPixel*/,/*{|| code-block de impressao }*/)
 TRCell():New(oSection1,"VLTOTAL"   ,"   ",'Vlr. Total',PesqPict("SB1","B1_UPRC",12),/*Tamanho*/,/*lPixel*/,/*{|| (cAliasSC1)->C1_QUANT * (cAliasSC1)->B1_UPRC }*/)
 TRCell():New(oSection1,"LEADTIME"  ,"   ",'Lead Time',/*Picture*/,/*Tamanho*/,/*lPixel*/,{|| CalcPrazo((cAliasSC1)->C1_PRODUTO,(cAliasSC1)->C1_QUANT)})
 TRCell():New(oSection1,"DTNECESS"  ,"   ",'Necessidade',/*Picture*/,/*Tamanho*/,/*lPixel*/,{|| If(Empty((cAliasSC1)->C1_DATPRF),(cAliasSC1)->C1_EMISSAO,(cAliasSC1)->C1_DATPRF) })
@@ -418,6 +419,10 @@ While !oReport:Cancel() .And. !(cAliasSC1)->(Eof()) .And. (cAliasSC1)->C1_FILIAL
 	oSection1:Init()
 
 	oSection1:Cell("VLTOTAL"):SetValue((cAliasSC1)->C1_QUANT * SB1->B1_UPRC)
+
+	If EMPTY(SB1->B1_FABRIC)
+		oSection1:Cell("B1_FABRIC"):Disable()
+	eNDIF
 
 /*
 	//旼컴컴컴컴컴컴컴컴컴컴컴컴컴컴컴컴컴컴컴컴컴컴컴컴컴컴컴컴컴컴커
