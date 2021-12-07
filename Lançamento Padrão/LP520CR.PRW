@@ -20,9 +20,6 @@ User Function LP520CR(_nSeq)
 
 Private  _cCli,_cHist,_nValor,_cTpDoc
 
-//_cContaCr,_cContaDb,
-//_cHist     := "" 
-
 _cAliasold:= alias()
 _cConta    := ""
 _cTpDoc    := SE1->E1_TIPO
@@ -47,27 +44,32 @@ If _nSeq == 5
    Endif
 
 ElseIf _nSeq == 1
+		// Quando for JUROS FINAME
 		If (SE5->E5_NATUREZ) = "V14" 
-			//If (SE5->E5_HISTOR) $ "Bx.Emis.Fat."
 			If (Substr(SE5->E5_FATURA,7,1) == "B"  )
 				_cConta := "110400001"
 			Else				
 				_cConta := SED->ED_CONTA
 			EndIf
-      ElseIf (SE5->E5_NATUREZ) = "V15"
+
+		// Quando for FINAME PRINCIPAL
+      	ElseIf (SE5->E5_NATUREZ) = "V15"
 				If (Substr(SE5->E5_FATURA,7,1) == "A"  )
 			      _cConta := "110400001"
 			   Else
 					_cConta := SED->ED_CONTA
 				EndIf
+
+		// Quando não for FINAME
 		ElseIf (SE5->E5_NATUREZ) <> "V14" .AND. (SE5->E5_NATUREZ) <> "V15"
-			//VICTOR DESSUNTE - 07/10/2016
-			//INICIO - TICKET: 2016091937000074
-			If SE5->E5_MOTBX == 'DEB' //.AND. ALLTRIM(SE5->E5_NATUREZ) == 'L01'
+
+			If SE5->E5_MOTBX == 'DEB' .OR. SE5->E5_MOTBX == 'LIQ'
 				_cConta := SA1->A1_CONTA
+
+			// Quando for baixa de título criado por liquidação (renegociação)	
+			ElseIf !EMPTY(SE1->E1_NUMLIQ) .AND. (SE5->E5_MOTBX == 'DEB' .OR. SE5->E5_MOTBX == 'NOR')
+				_cConta := "220900001"
 			Else
-				//VICTOR DESSUNTE - 24/04/2017
-				//INICIO - TICKET: 2017040437000046 
 				If SE5->E5_PREFIXO == 'JRS' //JUROS
 					_cConta := '440210001'
 				Else
@@ -76,19 +78,18 @@ ElseIf _nSeq == 1
 						_cConta := SA1->A1_CONTA
 					EndIf
 				EndIf
-				//FIM - TICKET: 2017040437000046
+				
 		 	EndIf
-		 	//FIM - TICKET: 2016091937000074
+		 	
 		EndIf
 ElseIf _nSeq == 4
-	//VICTOR DESSUNTE - 17/10/2016
-	//INICIO - TICKET: 2016091937000074
+
 	If SE5->E5_MOTBX == 'DEB' .OR. SE5->E5_PREFIXO == 'JRS' //.AND. ALLTRIM(SE5->E5_NATUREZ) == 'L01'
 		_cConta := ''
 	Else
 		_cConta := 'C'+_cCli
  	EndIf
- 	//FIM - TICKET: 2016091937000074
+ 	
 Endif 
 
 Return(_cConta)

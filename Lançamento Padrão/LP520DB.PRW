@@ -46,12 +46,10 @@ If _nSeq == 5
 	Endif
 	   
 ElseIf _nSeq == 4
-//		If (SE5->E5_NATUREZ) == "V14"   - ALTERADO 08/01/16 - LIZANDRA
+
 	If (SE5->E5_MOTBX) == "FAT"
 		_cConta := "110400008"
 
-	//VICTOR DESSUNTE - 07/10/2016
-	//INICIO - TICKET: 2016091937000074
 	ElseIf SE5->E5_MOTBX == 'DEB'
 		SA1->(DbSetOrder(1))
 		SA1->(DbSeek(xFilial("SA1")+SE5->E5_CLIENTE+SE5->E5_LOJA))
@@ -64,17 +62,19 @@ ElseIf _nSeq == 4
 		Else
 			_cConta := SA6->A6_CONTA
 		EndIf
- 	//FIM - TICKET: 2016091937000074
+
+	ElseIf SE5->E5_MOTBX == 'LIQ'
+		_cConta := "220900001"
 	Else
 		_cConta := SA6->A6_CONTA	
  	EndIf
+	 
 ElseIf _nSeq == 3
-	//VICTOR DESSUNTE - 17/10/2016
-	//INICIO - TICKET: 2016091937000074
+
 	If SE5->E5_MOTBX == 'DEB' .AND. ALLTRIM(SE5->E5_NATUREZ) == 'L01'
 		_cConta := 'C'+_cCli
  	EndIf
- 	//FIM - TICKET: 2016091937000074
+
 Endif 
  
 Return(_cConta)
