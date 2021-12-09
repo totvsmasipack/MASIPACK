@@ -37,7 +37,6 @@ Private _lRet
 _lRet := Pergunte(cPerg,.T.)
 
 If nLastKey == 27 .Or. !_lRet
-	ApMsgAlert("Cancelado pelo usuário")
 	Return
 Else
 	aNomEmp[1] := Alltrim(SM0->M0_NOME)
@@ -75,7 +74,7 @@ EndIf
 dbUseArea( .T., "TOPCONN", TcGenQry(,,cQry), "QRPV", .T., .F. )
 dbSelectArea("QRPV")      
 
-If Substr(cNumEmp,1,2) == "15"
+If FWCodEmp() == "15"
 	If Empty(Alltrim(QRPV->C1_NUM))
 		MsgRun("Aguarde...Gravando Solicitações de Compra",, { || MSFT68SC() })
 	Else
@@ -109,7 +108,6 @@ Return
 */
 
 User Function MSFT68PV() 
-Local aSM0		 	:= {}
 Local aProd		 	:= Array(12)
 Local aItensProd	:= {}
 Local _aItensDiv	:= {}
@@ -149,16 +147,13 @@ ELSEIF 	SUBSTR(cNumEmp,1,2) $ "10"
 ENDIF
 
 //Verifica as informação do pedido de compra
-cQuery += " SELECT C7_PRODUTO,B1_DESC, B1_UM, B1_MSGRPMA, B1_MSGRVEN, B1_MSMAQUI, B1_POSIPI,C7_DATPRF, C7_QUANT, C7_NUM, "
-cQuery += " ISNULL(DA1_PRCVEN,0.01) DA1_PRCVEN,C7_ITEM "
+cQuery += " SELECT C7_ITEM, C7_PRODUTO, B1_DESC, B1_UM, B1_MSGRPMA, B1_MSGRVEN, B1_MSMAQUI, B1_POSIPI, C7_DATPRF, C7_QUANT, C7_NUM, ISNULL(DA1_PRCVEN,0.01) DA1_PRCVEN "
 cQuery += " FROM SC7"+aDadosEmp[MS_GRUPO]+"0 C7 "
-cQuery += " INNER JOIN SB1"+aDadosEmp[MS_GRUPO]+"0 B1 ON B1_COD = C7_PRODUTO AND B1.D_E_L_E_T_ = '' AND B1_FILIAL = '"+aDadosEmp[MS_FILIAL]+"' "
-cQuery += " LEFT JOIN " + RetSqlName("DA1") + " DA1 ON (DA1_CODPRO = B1_COD OR (DA1_CODPRO = B1_MSGRPMA AND RTRIM(LTRIM(B1_MSGRPMA)) <> '')) "
-cQuery += "    AND DA1.D_E_L_E_T_ = '' AND DA1_FILIAL = '" + xFilial("DA1") + "' AND DA1_CODTAB = '"+_cTabIn+"' "
-cQuery += " WHERE C7_NUM = '"+MV_PAR01+"' AND C7_QUANT-C7_QUJE>0 AND C7.D_E_L_E_T_ = '' AND C7_FILIAL = '"+aDadosEmp[MS_FILIAL]+"' "
-//Ivandro Santos - Início da alteração: Ticket#2017082537000035 — Eliminado por resíduo
+cQuery += " INNER JOIN SB1"+aDadosEmp[MS_GRUPO]+"0 B1 ON B1_FILIAL = '"+aDadosEmp[MS_FILIAL]+"' AND B1_COD = C7_PRODUTO AND B1.D_E_L_E_T_ = '' "
+cQuery += " LEFT JOIN " + RetSqlName("DA1") + " DA1 ON DA1_FILIAL = '" + FWxFilial("DA1") + "' AND DA1_CODTAB = '"+_cTabIn+"' AND (DA1_CODPRO = B1_COD OR (DA1_CODPRO = B1_MSGRPMA AND RTRIM(LTRIM(B1_MSGRPMA)) <> '')) AND DA1.D_E_L_E_T_ = '' "
+cQuery += " WHERE C7_FILIAL = '"+aDadosEmp[MS_FILIAL]+"' AND C7_NUM = '"+MV_PAR01+"' AND ((C7_QUANT - C7_QUJE) > 0) AND C7.D_E_L_E_T_ = '' "
+cQuery += " GROUP BY C7_ITEM, C7_PRODUTO, B1_DESC, B1_UM, B1_MSGRPMA, B1_MSGRVEN, B1_MSMAQUI, B1_POSIPI, C7_DATPRF, C7_QUANT, C7_NUM, DA1_PRCVEN "
 cQuery += " ORDER BY C7_ITEM"
-//Ticket#2017082537000035 — Fim da alteração
 
 If Select("QRPC") > 0
 	dbSelectArea("QRPC")
@@ -248,7 +243,6 @@ Return
 /*/
 Static Function FAT68GPV(_CNPJ,aItensProd)
 Local _nCli, nT, nX, nI
-Local nDifData  := 0
 Local _cTESINT  := IIF(_cDepImp=="C",Alltrim(GetMv("MS_TESIMAQ")),Alltrim(GetMv("MS_TESINT")))
 Local cProd 	:= ""
 Local _aInfoTes := {}
@@ -359,21 +353,21 @@ For nI := 1 to len (aItensProd)
 		//Ticket#2017031737000032 — Fim da alteração
 		Endif
 	Next
+	
 	// Atualização da Matriz dos Itens de Pedidos de vendas..
-	//aItemPV:={{"C6_NUM"   	,_cNumPVPro														,Nil},;	//Número Pedido
-	aItemPV:={	{"C6_ITEM"   	,Strzero(nI,2,0)												,Nil},;	//Item do pedido
-				{"C6_FILIAL"   ,XFILIAL("SC6")												,Nil},;	//Filial da empresa
-				{"C6_PRODUTO"	,Alltrim(aItensProd[nI][1])								,Nil},;	//Produto
-				{"C6_UM" 		,aItensProd[nI][2]											,Nil},;	//Unidade de medida
-				{"C6_QTDVEN" 	,aItensProd[nI][6]											,Nil},;	//Quantidade Vendida
-				{"C6_PRUNIT" 	,aItensProd[nI][8]											,Nil},;	//Preço Unitário
-				{"C6_PRCVEN" 	,aItensProd[nI][8]											,Nil},;	//Preço de Venda
-				{"C6_VALOR"  	,(aItensProd[nI][6]) * aItensProd[nI][8]				,Nil},;	//Valor total dos produtos
-				{"C6_TES"   	,_cTes															,Nil},;	//TES
-				{"C6_LOCAL"   	,"01"																,Nil},;	//Local
-				{"C6_PEDCLI"   ,_cPedcom														,Nil},;	//Pedido do Cliente
-				{"C6_MSITPEC"  ,_aItPed[nI]													,Nil},;	//Item do Pedido do Cliente
-				{"C6_DTSUGER"  ,IIf(_dData-dDatabase>30,DataValida(_dData-30),DataValida(dDatabase+15))	,Nil},;	//Entrega Prevista
+	aItemPV :={	{"C6_ITEM"   	,Strzero(nI,2,0)															,Nil},;	//Item do pedido
+				{"C6_FILIAL"	,FWxFilial("SC6")															,Nil},;	//Filial da empresa
+				{"C6_PRODUTO"	,Alltrim(aItensProd[nI][1])													,Nil},;	//Produto
+				{"C6_UM" 		,aItensProd[nI][2]															,Nil},;	//Unidade de medida
+				{"C6_QTDVEN" 	,aItensProd[nI][6]															,Nil},;	//Quantidade Vendida
+				{"C6_PRUNIT" 	,aItensProd[nI][8]															,Nil},;	//Preço Unitário
+				{"C6_PRCVEN" 	,aItensProd[nI][8]															,Nil},;	//Preço de Venda
+				{"C6_VALOR"  	,(aItensProd[nI][6]) * aItensProd[nI][8]									,Nil},;	//Valor total dos produtos
+				{"C6_TES"   	,_cTes																		,Nil},;	//TES
+				{"C6_LOCAL"   	,"01"																		,Nil},;	//Local
+				{"C6_PEDCLI"	,_cPedcom																	,Nil},;	//Pedido do Cliente
+				{"C6_MSITPEC"	,_aItPed[nI]																,Nil},;	//Item do Pedido do Cliente
+				{"C6_DTSUGER"	,IIf(_dData-dDatabase>30,DataValida(_dData-30),DataValida(dDatabase+15))	,Nil},;	//Entrega Prevista
 				{"C6_ENTREG" 	,IIf(_dData-dDatabase>30,DataValida(_dData-30),DataValida(dDatabase+15))	,Nil}}	//Entrega Prevista
 
 	aadd(aItem,aitempv)
@@ -518,12 +512,9 @@ Return
 
 Static Function MSFT68SC()
 
-Local Produto := {}
-Local aCab    		:= {}
 Local _aDadoAdic	:= {}
 Local _aMsg	  		:= {"Solicitacao de Compra Gerada. Numero SC :"}
 Local _cMsgSC 		:= ""
-Local _nValor 		:= 0
 Local _nSC 	  		:= 0
 Local _lOK	  		:= .F.
 Local aProd	  		:= {"","","","","","","","","","","",""}
