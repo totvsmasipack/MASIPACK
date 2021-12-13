@@ -28,7 +28,7 @@ Private oBrw3		:= Nil
 	AADD(aPerg,{1, "Tipo até",		SPACE( FWSX3Util():GetFieldStruct( 'B1_TIPO' )[3] ),	"@!",	".T.",	"02",	".T.",	30,	.F.})
 	AADD(aPerg,{1, "Grupo de",		SPACE( FWSX3Util():GetFieldStruct( 'B1_GRUPO' )[3] ),	"@!",	".T.",	"SBM",	".T.",	40,	.F.})
 	AADD(aPerg,{1, "Grupo até",		SPACE( FWSX3Util():GetFieldStruct( 'B1_GRUPO' )[3] ),	"@!",	".T.",	"SBM",	".T.",	40,	.F.})
-	AADD(aPerg,{2, "Pedidos c/ Res. Eliminado?",	1, {"1=Sim", "2=Não"},	090, ".T.", .F.})
+	AADD(aPerg,{2, "Pedidos c/ Res. Eliminado?",	'2', {"1=Sim", "2=Não"},	090, ".T.", .F.})
 
 	If ParamBox(aPerg, "Compras x Necessidades",,,,,,,,.F.,.F.)
 		
@@ -111,7 +111,7 @@ Static Function DefineQuery(cField, cProduto)
 Local cRet	:= ''
 	
 	cRet	:= "SELECT " + cField
-	cRet	+= "FROM " + RetSQLName('SD4') + " D4 "
+	cRet	+= " FROM " + RetSQLName('SD4') + " D4 "
 	cRet	+= "	INNER JOIN " + RetSQLName('SC7') + " C7 ON "
 	cRet	+= "	C7_FILIAL		= D4_FILIAL AND "
 	cRet	+= "	C7_PRODUTO		= D4_COD	AND "
@@ -140,7 +140,7 @@ Local cRet	:= ''
 	Endif
 	cRet	+= "	D4_QUANT	> 0	AND "
 	cRet	+= "	D4.D_E_L_E_T_	= ' ' "
-	cRet	+= "GROUP BY " + cField
+	cRet	+= "GROUP BY " + cField + " "
 	cRet	+= "ORDER BY " + cField
 
 	cRet := ChangeQuery(cRet)
@@ -324,10 +324,17 @@ Local lUpdate	:= .F.
 	Endif
 
 	TCQUERY cQuery NEW ALIAS (cAlias)
-	(cAlias)->(DbEval( {|| Aadd(aPedido, { C7_NUM, C7_ITEM, C7_PRODUTO, C7_QUANT, C7_QUJE, C7_EMISSAO, C7_DATPRF, C7_RESIDUO }) } ))
+
+	While (cAlias)->(!EOF())
+		Aadd(aPedido, { C7_NUM, C7_ITEM, C7_PRODUTO, C7_QUANT, C7_QUJE, C7_EMISSAO, C7_DATPRF, C7_RESIDUO })
+		(cAlias)->(dbSkip())
+	Enddo
+
 	(cAlias)->(DbCloseArea())
 
 	If lUpdate
+		oBrw2:SetArray(aPedido)
+		oBrw2:GoTop(.T.)
 		oBrw2:Refresh()
 	Endif
 	
@@ -342,7 +349,7 @@ Função para atualizar o browse dos empenhos
 /*/
 Static Function GetEmpOP(cQuery)
 
-Local cAlias := GetNextAlias()
+Local cAlias 	:= GetNextAlias()
 Local lUpdate	:= .F.
 	
 	If Len(aEmpeOP) > 0
@@ -351,10 +358,15 @@ Local lUpdate	:= .F.
 	Endif
 	
 	TCQUERY cQuery NEW ALIAS (cAlias)
-	(cAlias)->(DbEval( {|| Aadd(aEmpeOP,{ D4_OP,D4_COD,D4_QUANT,D4_QTDEORI }) } ))
-	(cAlias)->(DbCloseArea())
+
+	While (cAlias)->(!EOF())
+		Aadd(aEmpeOP,{ D4_OP,D4_COD,D4_QUANT,D4_QTDEORI })
+		(cAlias)->(dbSkip())
+	Enddo
 
 	If lUpdate
+		oBrw3:SetArray(aEmpeOP)
+		oBrw3:GoTop(.T.)
 		oBrw3:Refresh()
 	Endif
 	
