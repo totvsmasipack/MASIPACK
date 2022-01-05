@@ -408,7 +408,8 @@ While !oReport:Cancel() .And. !(cAliasSC1)->(Eof()) .And. (cAliasSC1)->C1_FILIAL
 	ElseIf AllTrim(mv_par08) == "B5_CEME"  // Descricao cientifica do Produto.
 		SB5->(dbSetOrder(1))
 		If SB5->(dbSeek( xFilial("SB5") + (cAliasSC1)->C1_PRODUTO ))
-			cDescPro := SB5->B5_CEME
+//			cDescPro := SB5->B5_CEME
+			IIF( FWCodEmp() $ '15', cDescPro := ALLTRIM(SB5->B5_CEME) + CRLF + 'OBS.: ' + ALLTRIM(SB5->B5_MSOBS), cDescPro := SB5->B5_CEME )
 		EndIf
 	EndIf        
 	
