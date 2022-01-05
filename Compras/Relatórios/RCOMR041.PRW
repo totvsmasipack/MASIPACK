@@ -409,7 +409,7 @@ While !oReport:Cancel() .And. !(cAliasSC1)->(Eof()) .And. (cAliasSC1)->C1_FILIAL
 		SB5->(dbSetOrder(1))
 		If SB5->(dbSeek( xFilial("SB5") + (cAliasSC1)->C1_PRODUTO ))
 //			cDescPro := SB5->B5_CEME
-			IIF( FWCodEmp() $ '15', cDescPro := ALLTRIM(SB5->B5_CEME) + CRLF + 'OBS.: ' + ALLTRIM(SB5->B5_MSOBS), cDescPro := SB5->B5_CEME )
+			cDescPro := IIF( FWCodEmp() $ '15' , ALLTRIM(SB5->B5_CEME) + CRLF + 'OBS.: ' + ALLTRIM(SB5->B5_MSOBS) , SB5->B5_CEME )
 		EndIf
 	EndIf        
 	
