@@ -358,7 +358,7 @@ cNumSC7 := SC7->C7_NUM
 
 While !oReport:Cancel() .And. !SC7->(Eof()) .And. SC7->C7_FILIAL == xFilial("SC7") .And. SC7->C7_NUM >= mv_par01 .And. SC7->C7_NUM <= mv_par02
 	
-	If (SC7->C7_CONAPRO <> "B" .And. mv_par10 == 2) .Or.;
+	If	(SC7->C7_CONAPRO <> "B" .And. mv_par10 == 2) .Or.;
 		(SC7->C7_CONAPRO <> "L" .And. mv_par10 == 1) .Or.;
 		(SC7->C7_EMITIDO == "S" .And. mv_par05 == 1) .Or.;
 		((SC7->C7_EMISSAO < mv_par03) .Or. (SC7->C7_EMISSAO > mv_par04)) .Or.;
@@ -881,7 +881,7 @@ While !oReport:Cancel() .And. !SC7->(Eof()) .And. SC7->C7_FILIAL == xFilial("SC7
 			If lLiber
 				oReport:PrintText( STR0078 + Transform(xMoeda(nTotalNF,SC7->C7_MOEDA,MV_PAR12,SC7->C7_DATPRF,MsDecimais(SC7->C7_MOEDA),nTxMoeda) , tm(nTotalNF,14,MsDecimais(MV_PAR12))) ,nLinPC,1774 )
 			Else
-				oReport:PrintText( STR0078 + If((SC7->C7_TIPO == 1 .OR. SC7->C7_TIPO == 3),IF(lRejeit,"P E D I D O  B L O QU E A D O ! ! !",STR0051),STR0086) ,nLinPC,1390 )
+				oReport:PrintText( STR0078 + If((SC7->C7_TIPO == 1 .OR. SC7->C7_TIPO == 3),IF(lRejeit,"P E D I D O  B L O Q U E A D O ! ! !",STR0051),STR0086) ,nLinPC,1390 )
 			EndIf
 		EndIf
 		oReport:SkipLine()
@@ -940,17 +940,18 @@ While !oReport:Cancel() .And. !SC7->(Eof()) .And. SC7->C7_FILIAL == xFilial("SC7
 			oReport:SkipLine(4)
 
 			If SC7->C7_TIPO == 1 .OR. SC7->C7_TIPO == 3
-				oReport:PrintText("1) Favor retornar ACEITE ou DIVERGENCIA deste pedido através do e-mail: compras@helsimplast.com.br",,050 )
-				oReport:SkipLine()
-				oReport:PrintText("2) Por favor, entregue os itens nas DATAS PROGRAMADAS e MENCIONE o numero de nosso pedido [ ] em sua NF.",,050 )
-				oReport:SkipLine()
-				oReport:PrintText("3) Nosso HORARIO DE RECEBIMENTO: de SEGUNDA à SEXTA das 08:00H as 11:45H e das 13:15H as 16:30H.",,050 )
-				oReport:SkipLine()
-				oReport:PrintText("Envio de NF. Eletrônica para o e-mail: nfehelsimplast@masipack.com.br",,050 )
-				oReport:SkipLine()
-				oReport:PrintText("Recebimento de NF. de Serviço até o dia 25 de cada mês.",,050 )
-				oReport:SkipLine()
-				oReport:PrintText("* = MATERIAL DESTINADO A INDUSTRIALIZAÇÃO OU COMERCIALIZAÇÃO    /    # = MATERIAL DESTINADO A USO OU CONSUMO",,050 )
+				nLinPC := oReport:Row()
+				oReport:PrintText("1) Favor retornar ACEITE ou DIVERGENCIA deste pedido através do e-mail: compras@helsimplast.com.br", nLinPC, 050 )
+				nLinPC += 40
+				oReport:PrintText("2) Por favor, entregue os itens nas DATAS PROGRAMADAS e MENCIONE o numero de nosso pedido [ ] em sua NF.", nLinPC, 050 )
+				nLinPC += 40
+				oReport:PrintText("3) Nosso HORARIO DE RECEBIMENTO: de SEGUNDA à SEXTA das 08:00H as 11:45H e das 13:15H as 16:30H.", nLinPC, 050 )
+				nLinPC += 40
+				oReport:PrintText("Envio de NF. Eletrônica para o e-mail: nfehelsimplast@masipack.com.br", nLinPC, 050 )
+				nLinPC += 40
+				oReport:PrintText("Recebimento de NF. de Serviço até o dia 25 de cada mês.", nLinPC, 050 )
+				nLinPC += 40
+				oReport:PrintText("* = MATERIAL DESTINADO A INDUSTRIALIZAÇÃO OU COMERCIALIZAÇÃO    /    # = MATERIAL DESTINADO A USO OU CONSUMO", nLinPC, 050 )
 			Else
 				oReport:PrintText(STR0083,,050 ) //"NOTA: So aceitaremos a mercadoria se na sua Nota Fiscal constar o numero da Autorizacao de Entrega."
 			EndIf
