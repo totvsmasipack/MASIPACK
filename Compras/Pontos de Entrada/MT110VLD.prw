@@ -14,7 +14,7 @@ Local _cMsg     := 'Usuario nao permitido para alterar esta Solicitacao de Compr
 Local _lRet     := .T.
 Local _nOpcx    := PARAMIXB[1]
 
-    IF !(FwIsAdmin()) .And. ( _nOpcx == 4 .OR. _nOpcx == 6 )
+    IF !(FwIsAdmin()) .And. ( _nOpcx == 4 .OR. _nOpcx == 6 ) .And. FWCodEmp() $ '01|10'
 
         dbSelectArea("SY1")
         SY1->(dbSetOrder(3))
