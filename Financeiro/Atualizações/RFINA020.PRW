@@ -31,14 +31,17 @@ Local cLay                :=""   as character
 Private aRetorno          :={}
 Private lMsErroAuto       := .F. as logical
 Private lAutoErrNoFile    := .T. as logical
+Private cCodEmp           := FWCodEmp()
+Private cFil              := FWCodFil()
 //Preparação do Ambiente
 
 If IsBlind()
     RpcSetType(3)
-    RpcSetEnv(aParam[1],aParam[2])
+    RpcSetEnv(cCodEmp,cFil,"Admin","","FIN","FINA811",{"SA1"})
 Endif
 
 dbSelectArea("FWP")
+FWP->(DbGoTop())
 FWP->(DbSetOrder(1))//FWP_FILIAL, FWP_CODCRT, R_E_C_N_O_, D_E_L_E_T_
 
 /*============= LAYOUT 000001 - AVISO 15 DIAS ANTES DO VENCIMENTO ================*/
@@ -49,7 +52,10 @@ If !IsBlind()
     oSay:SetText('Processando layout ' + cLay)
 Endif
 
-If !FWP->(DbSeek(FWxFilial("FWP") + PadR(cLay,TamSX3("FWP_CODCRT")[1])))
+RpcSetEnv(cCodEmp,cFil,"Admin","","FIN","FINA811",{"SA1"})
+
+//If !FWP->(DbSeek(FWxFilial("FWP") + PadR(cLay,TamSX3("FWP_CODCRT")[1])))
+If !FWP->(DbSeek("01" + PadR(cLay,TamSX3("FWP_CODCRT")[1])))
     conOut("Layout nao encontrado")
     RETURN
 EndIf
@@ -92,7 +98,10 @@ If !IsBlind()
     oSay:SetText('Processando layout ' + cLay)
 Endif
 
-If !FWP->(DbSeek(FWxFilial("FWP") + PadR(cLay,TamSX3("FWP_CODCRT")[1])))
+RpcSetEnv(cCodEmp,cFil,"Admin","","FIN","FINA811",{"SA1"})
+
+//If !FWP->(DbSeek(FWxFilial("FWP") + PadR(cLay,TamSX3("FWP_CODCRT")[1])))
+If !FWP->(DbSeek("01" + PadR(cLay,TamSX3("FWP_CODCRT")[1])))
     conOut("Layout nao encontrado")
     RETURN
 EndIf
@@ -135,7 +144,10 @@ If !IsBlind()
     oSay:SetText('Processando layout ' + cLay)
 Endif
 
-If !FWP->(DbSeek(FWxFilial("FWP") + PadR(cLay,TamSX3("FWP_CODCRT")[1])))
+RpcSetEnv(cCodEmp,cFil,"Admin","","FIN","FINA811",{"SA1"})
+
+//If !FWP->(DbSeek(FWxFilial("FWP") + PadR(cLay,TamSX3("FWP_CODCRT")[1])))
+If !FWP->(DbSeek("01" + PadR(cLay,TamSX3("FWP_CODCRT")[1])))
     conOut("Layout nao encontrado")
     RETURN
 EndIf
