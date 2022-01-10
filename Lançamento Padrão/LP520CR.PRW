@@ -68,7 +68,7 @@ ElseIf _nSeq == 1
 
 			// Quando for baixa de título criado por liquidação (renegociação)	
 			ElseIf !EMPTY(SE1->E1_NUMLIQ) .AND. (SE5->E5_MOTBX == 'DEB' .OR. SE5->E5_MOTBX == 'NOR')
-				_cConta := "220900001"
+				_cConta := "110400001"
 			Else
 				If SE5->E5_PREFIXO == 'JRS' //JUROS
 					_cConta := '440210001'
