@@ -12,11 +12,11 @@
 
 User Function RFINA020(aParam)
 
-    If !IsBlind()
-        FwMsgRun(,{|oSay| ProcCob(oSay)}, 'Aguarde', 'Processando')
-    Else
-        ProcCob(Nil,aParam)
-    EndIf
+//Preparação do Ambiente
+RpcSetType(3)
+RPCSetEnv(aParam[1],aParam[2])
+CONOUT('= EMPRESA: ' + aParam[1] + ' | FILIAL: ' + aParam[2])
+ProcCob(Nil,aParam)
 
 Return
 
@@ -31,25 +31,16 @@ Local cLay                :=""   as character
 Private aRetorno          :={}
 Private lMsErroAuto       := .F. as logical
 Private lAutoErrNoFile    := .T. as logical
-//Preparação do Ambiente
 
-If IsBlind()
-    RpcSetType(3)
-    RpcSetEnv(aParam[1],aParam[2])
-Endif
-
-dbSelectArea("FWP")
-FWP->(DbSetOrder(1))//FWP_FILIAL, FWP_CODCRT, R_E_C_N_O_, D_E_L_E_T_
 
 /*============= LAYOUT 000001 - AVISO 15 DIAS ANTES DO VENCIMENTO ================*/
-
 cLay := "000001"
 
-If !IsBlind()
-    oSay:SetText('Processando layout ' + cLay)
-Endif
+dbSelectArea("FWP")
+FWP->(DbGoTop())
+FWP->(DbSetOrder(1))//FWP_FILIAL, FWP_CODCRT, R_E_C_N_O_, D_E_L_E_T_
 
-If !FWP->(DbSeek(FWxFilial("FWP") + PadR(cLay,TamSX3("FWP_CODCRT")[1])))
+If !FWP->(DbSeek(xFilial("FWP") + cLay))  // Valido se encontrou o layout da carta de cobrança
     conOut("Layout nao encontrado")
     RETURN
 EndIf
@@ -61,8 +52,8 @@ aAdd( a811Param,  dDataBase + 15                            )   //Data de emissã
 aAdd( a811Param,  dDataBase + 15                            )   //Data de emissão Até (tipo data)
 aAdd( a811Param,  dDataBase                                 )   //Data de referência (tipo data)
 aAdd( a811Param,  0                                         )   //Valor de (tipo numérico)
-aAdd( a811Param,  99.99999                                  )   //Valor Até (tipo numérico)
-aAdd( a811Param,  '1'                                       )   //"2" (tipo caracter) - IMPORTANTE:  SEMPRE 2 PARA NÃO APRESENTAR TELA DE SELEÇÃO DE FILIAIS
+aAdd( a811Param,  999999999.99                              )   //Valor Até (tipo numérico)
+aAdd( a811Param,  '2'                                       )   //"2" (tipo caracter) - IMPORTANTE:  SEMPRE 2 PARA NÃO APRESENTAR TELA DE SELEÇÃO DE FILIAIS
 aAdd( a811Param,  '1'                                       )   //Títulos a vencer (tipo caracter  sendo "1" = Sim ou "2" = Não)
 aAdd( a811Param,  '1'                                       )   //Considera valor (tipo caracter sendo "1" = Total ou  "2" = Saldo)
 aAdd( a811Param,  '2'                                       )   //2" (tipo caracter) - IMPORTANTE: SEMPRE 2 PARA NÃO APRESENTAR TELA DE SELEÇÃO DE SITUAÇÃO DE COBRANÇA
@@ -70,17 +61,15 @@ aAdd( a811Param,  {}                                        )   //{} (tipo array
 aAdd( a811Param,  ''                                        )   //"" (tipo caracter) - IMPORTANTE: SEMPRE VAZIO
 aAdd( a811Param,  cLay                                      )   //Código do layout da carta a ser utilizado (tipo caracter)
 aAdd( a811Param,  '2'                                       )   //A1_MSBLQL
+
 MSExecAuto({|x,y| Fina811(x,y)},0,a811Param)
+
 if lMsErroAuto
     ConOut("Erro !")
-    If !IsBlind()
-        MostraErro()
-    Endif
+    MostraErro()
     aLog := GetAutoGRLog()
 else
-    If !IsBlind()
-        FwAlertSucess("Sucesso!")
-    Endif
+    CONOUT(" --> Layout 000001 processado com sucesso | EMPRESA: " + aParam[1] + " | FILIAL: " + aParam[2])
 endif
 
 a811Param := {}
@@ -88,14 +77,15 @@ a811Param := {}
 /*============= LAYOUT 000002 - AVISO 1 DIA ANTES DO VENCIMENTO ================*/
 
 cLay := "000002"
-If !IsBlind()
-    oSay:SetText('Processando layout ' + cLay)
-Endif
+dbSelectArea("FWP")
+FWP->(DbGoTop())
+FWP->(DbSetOrder(1))//FWP_FILIAL, FWP_CODCRT, R_E_C_N_O_, D_E_L_E_T_
 
-If !FWP->(DbSeek(FWxFilial("FWP") + PadR(cLay,TamSX3("FWP_CODCRT")[1])))
+If !FWP->(DbSeek(xFilial("FWP") + cLay))  // Valido se encontrou o layout da carta de cobrança
     conOut("Layout nao encontrado")
     RETURN
 EndIf
+
 aAdd( a811Param,  PadR(cCliD,TamSX3('A1_COD')[1])           )   //Código do cliente De (tipo caracter)
 aAdd( a811Param,  PadR(cLojD,TamSX3('A1_LOJA')[1])          )   //Loja do cliente De (tipo caracter)
 aAdd( a811Param,  Repl(cCliAt,TamSX3('A1_COD')[1])          )   //Código do cliente Até (tipo caracter)
@@ -104,8 +94,8 @@ aAdd( a811Param,  dDataBase + 1                             )   //Data de emissã
 aAdd( a811Param,  dDataBase + 1                             )   //Data de emissão Até (tipo data)
 aAdd( a811Param,  dDataBase                                 )   //Data de referência (tipo data)
 aAdd( a811Param,  0                                         )   //Valor de (tipo numérico)
-aAdd( a811Param,  99.99999                                  )   //Valor Até (tipo numérico)
-aAdd( a811Param,  '1'                                       )   //"2" (tipo caracter) - IMPORTANTE:  SEMPRE 2 PARA NÃO APRESENTAR TELA DE SELEÇÃO DE FILIAIS
+aAdd( a811Param,  999999999.99                              )   //Valor Até (tipo numérico)
+aAdd( a811Param,  '2'                                       )   //"2" (tipo caracter) - IMPORTANTE:  SEMPRE 2 PARA NÃO APRESENTAR TELA DE SELEÇÃO DE FILIAIS
 aAdd( a811Param,  '1'                                       )   //Títulos a vencer (tipo caracter  sendo "1" = Sim ou "2" = Não)
 aAdd( a811Param,  '1'                                       )   //Considera valor (tipo caracter sendo "1" = Total ou  "2" = Saldo)
 aAdd( a811Param,  '2'                                       )   //2" (tipo caracter) - IMPORTANTE: SEMPRE 2 PARA NÃO APRESENTAR TELA DE SELEÇÃO DE SITUAÇÃO DE COBRANÇA
@@ -113,17 +103,15 @@ aAdd( a811Param,  {}                                        )   //{} (tipo array
 aAdd( a811Param,  ''                                        )   //"" (tipo caracter) - IMPORTANTE: SEMPRE VAZIO
 aAdd( a811Param,  cLay                                      )   //Código do layout da carta a ser utilizado (tipo caracter)
 aAdd( a811Param,  '2'                                       )   //A1_MSBLQL
+
 MSExecAuto({|x,y| Fina811(x,y)},0,a811Param)
+
 if lMsErroAuto
     ConOut("Erro !")
-    If !IsBlind()
-        MostraErro()
-    Endif
+    MostraErro()
     aLog := GetAutoGRLog()
 else
-    If !IsBlind()
-        FwAlertSucess("Sucesso!")
-    Endif
+    CONOUT(" --> Layout 000002 processado com sucesso | EMPRESA: " + aParam[1] + " | FILIAL: " + aParam[2])
 endif
 
 a811Param := {}
@@ -131,14 +119,15 @@ a811Param := {}
 /*============= LAYOUT 000003 - AVISO TITULOS VENCIDOS ================*/
 
 cLay := "000003"
-If !IsBlind()
-    oSay:SetText('Processando layout ' + cLay)
-Endif
+dbSelectArea("FWP")
+FWP->(DbGoTop())
+FWP->(DbSetOrder(1))//FWP_FILIAL, FWP_CODCRT, R_E_C_N_O_, D_E_L_E_T_
 
-If !FWP->(DbSeek(FWxFilial("FWP") + PadR(cLay,TamSX3("FWP_CODCRT")[1])))
+If !FWP->(DbSeek(xFilial("FWP") + cLay))  // Valido se encontrou o layout da carta de cobrança
     conOut("Layout nao encontrado")
     RETURN
 EndIf
+
 aAdd( a811Param,  PadR(cCliD,TamSX3('A1_COD')[1])           )   //Código do cliente De (tipo caracter)
 aAdd( a811Param,  PadR(cLojD,TamSX3('A1_LOJA')[1])          )   //Loja do cliente De (tipo caracter)
 aAdd( a811Param,  Repl(cCliAt,TamSX3('A1_COD')[1])          )   //Código do cliente Até (tipo caracter)
@@ -147,8 +136,8 @@ aAdd( a811Param,  dDataBase - 9999                          )   //Data de emissã
 aAdd( a811Param,  dDataBase - 1                             )   //Data de emissão Até (tipo data)
 aAdd( a811Param,  dDataBase                                 )   //Data de referência (tipo data)
 aAdd( a811Param,  0                                         )   //Valor de (tipo numérico)
-aAdd( a811Param,  99.99999                                  )   //Valor Até (tipo numérico)
-aAdd( a811Param,  '1'                                       )   //"2" (tipo caracter) - IMPORTANTE:  SEMPRE 2 PARA NÃO APRESENTAR TELA DE SELEÇÃO DE FILIAIS
+aAdd( a811Param,  999999999.99                              )   //Valor Até (tipo numérico)
+aAdd( a811Param,  '2'                                       )   //"2" (tipo caracter) - IMPORTANTE:  SEMPRE 2 PARA NÃO APRESENTAR TELA DE SELEÇÃO DE FILIAIS
 aAdd( a811Param,  '2'                                       )   //Títulos a vencer (tipo caracter  sendo "1" = Sim ou "2" = Não)
 aAdd( a811Param,  '1'                                       )   //Considera valor (tipo caracter sendo "1" = Total ou  "2" = Saldo)
 aAdd( a811Param,  '2'                                       )   //2" (tipo caracter) - IMPORTANTE: SEMPRE 2 PARA NÃO APRESENTAR TELA DE SELEÇÃO DE SITUAÇÃO DE COBRANÇA
@@ -156,21 +145,17 @@ aAdd( a811Param,  {}                                        )   //{} (tipo array
 aAdd( a811Param,  ''                                        )   //"" (tipo caracter) - IMPORTANTE: SEMPRE VAZIO
 aAdd( a811Param,  cLay                                      )   //Código do layout da carta a ser utilizado (tipo caracter)
 aAdd( a811Param,  '2'                                       )   //A1_MSBLQL
+
 MSExecAuto({|x,y| Fina811(x,y)},0,a811Param)
+
 if lMsErroAuto
     ConOut("Erro !")
-    If !IsBlind()
-        MostraErro()
-    Endif
+    MostraErro()
     aLog := GetAutoGRLog()
 else
-    If !IsBlind()
-        FwAlertSucess("Sucesso!")
-    Endif
+    CONOUT(" --> Layout 000003 processado com sucesso | EMPRESA: " + aParam[1] + " | FILIAL: " + aParam[2])
 endif
 
-If IsBlind()
-    RpcClearEnv()
-Endif
+RpcClearEnv()
 
 Return
