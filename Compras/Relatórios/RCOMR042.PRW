@@ -70,7 +70,6 @@ Local cTitle   := STR0003 // "Emissao dos Pedidos de Compras ou Autorizacoes de 
 Local oReport
 Local oSection1
 Local oSection2
-Local nTamCdProd:= TamSX3("C7_PRODUTO")[1]
 
 If Type("lAuto") == "U"
 	lAuto := (nReg!=Nil)
@@ -173,6 +172,7 @@ TRCell():New(oSection2,"C7_DATPRF"  	,"SC7",/*Titulo*/	,/*Picture*/,15,/*lPixel*
 TRCell():New(oSection2,"C7_CC"      	,"SC7",STR0066		,/*Picture*/,10,/*lPixel*/,/* */,"CENTER",,"CENTER")
 TRCell():New(oSection2,"C7_NUMSC"   	,"SC7",STR0123		,/*Picture*/,16,/*lPixel*/,/* */,"CENTER",,"CENTER")
 TRCell():New(oSection2,"OPCC"       	,"   ",STR0100  	,/*Picture*/,TamSX3("C7_OP")[1],/*lPixel*/,{|| cOPCC },,,,,,.F.)          
+TRCell():New(oSection2,"CERTIFIC"		,"   ","Certificado?",/*Picture*/,20,/*lPixel*/,{|| cCertific },"RIGHT",,"RIGHT")
 
 oSection2:Cell("C7_PRODUTO"):SetLineBreak()
 oSection2:Cell("DESCPROD"):SetLineBreak()
@@ -228,10 +228,8 @@ Local cPictVTot		:= PesqPict("SC7","C7_TOTAL",, mv_par12)
 Local lNewAlc		:= .F.
 Local lLiber		:= .F.
 Local lRejeit		:= .F.
-Local lRet			:= .T.
 
 Local nRecnoSC7   	:= 0
-Local nTotalsX3   	:= 0
 Local nRecnoSM0   	:= 0
 Local nX          	:= 0
 Local nY          	:= 0
@@ -268,6 +266,7 @@ Local lC7OBSChar  	:= Type( "SC7->C7_OBS" ) == "C"
 
 Private cDescPro  	:= ""
 Private cOPCC     	:= ""
+Private cCertific	:= ""
 Private nVlUnitSC7	:= 0
 Private nValTotSC7	:= 0
 
@@ -454,6 +453,16 @@ While !oReport:Cancel() .And. !SC7->(Eof()) .And. SC7->C7_FILIAL == xFilial("SC7
 			//ÚÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄ¿
 			//³ Inicializa o descricao do Produto conf. parametro digitado.³
 			//ÀÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÙ
+
+			If SB1->(FieldPos("B1_MSCERT")) > 0
+				SB1->(dbSetOrder(1))
+				If SB1->(dbSeek( xFilial("SB1") + SC7->C7_PRODUTO ))
+					cCertific := IIF(SB1->B1_MSCERT=='S','Sim','Nao')
+				Endif
+			Else
+				oSection2:Cell("CERTIFIC"):Disable()
+			Endif
+
 			cDescPro :=  ""
 			If Empty(mv_par06)
 				mv_par06 := "B1_DESC"
@@ -937,9 +946,9 @@ While !oReport:Cancel() .And. !SC7->(Eof()) .And. SC7->C7_FILIAL == xFilial("SC7
 			oReport:PrintText( Replic("_",23) ,nLinPC,  430 )
 			oReport:PrintText( Replic("_",23) ,nLinPC,  850 )
 			oReport:PrintText( Replic("_",31) ,nLinPC, 1310 )
-			oReport:SkipLine(4)
+			oReport:SkipLine(2)
 
-			If SC7->C7_TIPO == 1 .OR. SC7->C7_TIPO == 3
+			If ( SC7->C7_TIPO == 1 .OR. SC7->C7_TIPO == 3 ) .And. FWCodEmp() == '15'
 				nLinPC := oReport:Row()
 				oReport:PrintText("1) Favor retornar ACEITE ou DIVERGENCIA deste pedido através do e-mail: compras@helsimplast.com.br", nLinPC, 050 )
 				nLinPC += 40
@@ -950,8 +959,6 @@ While !oReport:Cancel() .And. !SC7->(Eof()) .And. SC7->C7_FILIAL == xFilial("SC7
 				oReport:PrintText("Envio de NF. Eletrônica para o e-mail: nfehelsimplast@masipack.com.br", nLinPC, 050 )
 				nLinPC += 40
 				oReport:PrintText("Recebimento de NF. de Serviço até o dia 25 de cada mês.", nLinPC, 050 )
-				nLinPC += 40
-				oReport:PrintText("* = MATERIAL DESTINADO A INDUSTRIALIZAÇÃO OU COMERCIALIZAÇÃO    /    # = MATERIAL DESTINADO A USO OU CONSUMO", nLinPC, 050 )
 			Else
 				oReport:PrintText(STR0083,,050 ) //"NOTA: So aceitaremos a mercadoria se na sua Nota Fiscal constar o numero da Autorizacao de Entrega."
 			EndIf
@@ -1117,87 +1124,76 @@ Local cMoeda		:= IIf( mv_par12 < 10 , Str(mv_par12,1) , Str(mv_par12,2) )
 Local nLinPC		:= 0
 Local nTpImp	  	:= IIF(ValType(oReport:nDevice)!=Nil,oReport:nDevice,0) // Tipo de Impressao
 Local nPageWidth	:= IIF(nTpImp==1.Or.nTpImp==6,2435,2435)
-Local cCident		:= IIF(len(SM0->M0_CIDENT)>20,Substr(SM0->M0_CIDENT,1,15),SM0->M0_CIDENT)
 Local cCGC			:= ""
 Public nRet		:= 0
 
-If Val(cMoeda) == 0
-	cMoeda := "1"
-Endif
+	SA2->(dbSetOrder(1))
+	SA2->(dbSeek(xFilial("SA2") + SC7->C7_FORNECE + SC7->C7_LOJA))
 
-TRPosition():New(oSection1,"SA2",1,{ || xFilial("SA2") + SC7->C7_FORNECE + SC7->C7_LOJA })
-cBitmap := R110Logo()
-
-SA2->(dbSetOrder(1))
-SA2->(dbSeek(xFilial("SA2") + SC7->C7_FORNECE + SC7->C7_LOJA))
-
-oSection1:Init()
-
-oReport:Box( 010 , 010 ,  260 , 1000 )
-oReport:Box( 010 , 1010,  260 , nPageWidth-2 ) 
-
-oReport:PrintText( If(nPagina > 1,(STR0033)," "),,oSection1:Cell("M0_NOMECOM"):ColPos())
-
-nLinPC := oReport:Row()
-oReport:PrintText( If( mv_par08 == 1 , (STR0068), (STR0069) ) + " - " + GetMV("MV_MOEDA"+cMoeda) ,nLinPC,1030 )
-oReport:PrintText( If( mv_par08 == 1 , SC7->C7_NUM, SC7->C7_NUMSC + "/" + SC7->C7_NUM ) + " /" + Ltrim(Str(nPagina,2)) ,nLinPC,1910 )
-oReport:SkipLine()
-
-
-nLinPC := oReport:Row()
-If(SC7->C7_QTDREEM >= 99)	
-	nRet := Aviso("TOTVS", STR0125 +chr(13)+chr(10)+ "1- " + STR0126 +chr(13)+chr(10)+ "2- " + STR0127 +chr(13)+chr(10)+ "3- " + STR0128,{"1", "2", "3"},2)
-	If(nRet == 1)
-		oReport:PrintText( Str(SC7->C7_QTDREEM,2) + STR0034 + Str(nVias,2) + STR0035 ,nLinPC,1910 )
-	Elseif(nRet == 2)
-		oReport:PrintText( "1" + STR0034 + Str(nVias,2) + STR0035 ,nLinPC,1910 )
-	Elseif(nRet == 3)
-		oReport:CancelPrint()
+	If Val(cMoeda) == 0
+		cMoeda := "1"
 	Endif
-Else		
-	oReport:PrintText( If( SC7->C7_QTDREEM > 0, Str(SC7->C7_QTDREEM+1,2) , "1" ) + STR0034 + Str(nVias,2) + STR0035 ,nLinPC,1910 )
-Endif                                             
 
-oReport:SkipLine()
+	If cPaisLoc == "BRA"
+		cCGC := Transform(SA2->A2_CGC, Iif(SA2->A2_TIPO == 'F', Substr(PICPES(SA2->A2_TIPO),1,17), Substr(PICPES(SA2->A2_TIPO),1,21))) 
+	Else  
+		cCGC := SA2->A2_CGC
+	EndIf  
 
-_cFileLogo	:= GetSrvProfString('Startpath','') + cBitmap
-oReport:SayBitmap(25,25,_cFileLogo,150,60) // insere o logo no relatorio
+	TRPosition():New(oSection1,"SA2",1,{ || xFilial("SA2") + SC7->C7_FORNECE + SC7->C7_LOJA })
+	cBitmap := R110Logo()
 
-nLinPC := oReport:Row()
-oReport:PrintText(STR0087 + SM0->M0_NOMECOM,nLinPC,15)  // "Empresa:"
-oReport:PrintText(STR0106 + Substr(SA2->A2_NOME,1,50) + " " + STR0107 + SA2->A2_COD + " " + STR0108 + SA2->A2_LOJA ,nLinPC,1025)
-oReport:SkipLine()
+	oSection1:Init()
 
-nLinPC := oReport:Row()
-oReport:PrintText(STR0088 + SM0->M0_ENDENT,nLinPC,15)
-oReport:PrintText(STR0088 + Substr(SA2->A2_END,1,49) + " " + STR0109 + Substr(SA2->A2_BAIRRO,1,25),nLinPC,1025)
-oReport:SkipLine()
+	oReport:Box( 010 , 010 ,  260 , 1000 )
+	oReport:Box( 010 , 1010,  260 , nPageWidth-2 ) 
 
-If cPaisLoc == "BRA"
-	cCGC	:= Transform(SA2->A2_CGC,Iif(SA2->A2_TIPO == 'F',Substr(PICPES(SA2->A2_TIPO),1,17),Substr(PICPES(SA2->A2_TIPO),1,21))) 
-Else  
-	cCGC	:= SA2->A2_CGC
-EndIf   
-        
-nLinPC := oReport:Row()
-oReport:PrintText(STR0089 + Trans(SM0->M0_CEPENT,PesqPict("SA2","A2_CEP"))+Space(2)+STR0090 + "  " + RTRIM(SM0->M0_CIDENT) + " " + STR0091 + SM0->M0_ESTENT ,nLinPC,15)
-oReport:PrintText(STR0110+Left(SA2->A2_MUN, 30)+" "+STR0111+SA2->A2_EST+" "+STR0112+SA2->A2_CEP+" "+STR0124+":"+cCGC,nLinPC,1025)
-oReport:SkipLine()
+	oReport:PrintText( If(nPagina > 1,(STR0033)," "),,oSection1:Cell("M0_NOMECOM"):ColPos())
 
-nLinPC := oReport:Row()
-oReport:PrintText(STR0092 + SM0->M0_TEL + Space(2) + STR0093 + SM0->M0_FAX ,nLinPC,15)
-oReport:PrintText(STR0094 + "("+Substr(SA2->A2_DDD,1,3)+") "+Substr(SA2->A2_TEL,1,15) + " "+STR0114+"("+Substr(SA2->A2_DDD,1,3)+") "+SubStr(SA2->A2_FAX,1,15)+" "+If( cPaisLoc$"ARG|POR|EUA",space(11) , STR0095 )+If( cPaisLoc$"ARG|POR|EUA",space(18), SA2->A2_INSCR ),nLinPC,1025)
-oReport:SkipLine()
+	oReport:PrintText( If( mv_par08 == 1 , (STR0068), (STR0069) ) + " - " + GetMV("MV_MOEDA"+cMoeda) , oReport:Row(), 1030 )
+	oReport:PrintText( If( mv_par08 == 1 , SC7->C7_NUM, SC7->C7_NUMSC + "/" + SC7->C7_NUM ) + " - Página: " + Ltrim(Str(nPagina,2)) , oReport:Row(), 1920 )
+	oReport:SkipLine()
 
-nLinPC := oReport:Row()
-oReport:PrintText(STR0124 + Transform(SM0->M0_CGC,PesqPict("SA2","A2_CGC")) ,nLinPC,15)
-If cPaisLoc == "BRA"
-	oReport:PrintText(Space(2) + STR0041 + InscrEst() ,nLinPC,415)
-Endif
-oReport:SkipLine()
-oReport:SkipLine()
+	nLinPC := oReport:Row()
+	If(SC7->C7_QTDREEM >= 99)	
+		nRet := Aviso("TOTVS", STR0125 +chr(13)+chr(10)+ "1- " + STR0126 +chr(13)+chr(10)+ "2- " + STR0127 +chr(13)+chr(10)+ "3- " + STR0128,{"1", "2", "3"},2)
+		If(nRet == 1)
+			oReport:PrintText( Str(SC7->C7_QTDREEM,2) + STR0034 + Str(nVias,2) + STR0035 ,oReport:Row(), 1920 )
+		Elseif(nRet == 2)
+			oReport:PrintText( "1" + STR0034 + Str(nVias,2) + STR0035 ,oReport:Row(), 1920 )
+		Elseif(nRet == 3)
+			oReport:CancelPrint()
+		Endif
+	Else		
+		oReport:PrintText( If( SC7->C7_QTDREEM > 0, Str(SC7->C7_QTDREEM+1,2) , "1" ) + STR0034 + Str(nVias,2) + STR0035 ,oReport:Row(), 1920 )
+	Endif                                             
 
-oSection1:Finish()
+	oReport:SkipLine()
+
+	_cFileLogo	:= GetSrvProfString('Startpath','') + cBitmap
+	oReport:SayBitmap(25,25,_cFileLogo,080,080)
+
+	oReport:PrintText(STR0087 + " " + SM0->M0_NOMECOM, oReport:Row(), 15)
+	oReport:PrintText(PadR(STR0106 + " " + ALLTRIM(SA2->A2_NOME),64) + STR0107 + "  "  + SA2->(A2_COD + "/" + A2_LOJA), oReport:Row(), 1025)
+	oReport:SkipLine()
+
+	oReport:PrintText(STR0088 + " " + SM0->M0_ENDENT,oReport:Row(), 15)
+	oReport:PrintText(PadR(STR0088 + " " + ALLTRIM(SA2->A2_END),64) + STR0109 + " " + Substr(SA2->A2_BAIRRO,1,25), oReport:Row(), 1025)
+	oReport:SkipLine()
+
+	oReport:PrintText(STR0110 + RTRIM(SM0->M0_CIDENT) + " - " + SM0->M0_ESTENT + " - " + STR0089 + " " + Trans(SM0->M0_CEPENT,PesqPict("SA2","A2_CEP")), oReport:Row(), 15)
+	oReport:PrintText(PadR(STR0110 + " " + Alltrim(SA2->A2_MUN) + " - " + SA2->A2_EST + "  " + STR0112 + SA2->A2_CEP, 64) + STR0124 + ": " + cCGC, oReport:Row(), 1025)
+	oReport:SkipLine()
+
+	oReport:PrintText(STR0092 + SM0->M0_TEL + Space(2) + STR0093 + SM0->M0_FAX ,oReport:Row(), 15)
+	oReport:PrintText(PadR(STR0094 + "("+Substr(SA2->A2_DDD,1,3)+") "+Substr(SA2->A2_TEL,1,15) + " "+STR0114+"("+Substr(SA2->A2_DDD,1,3)+") "+SubStr(SA2->A2_FAX,1,15),64) + If( cPaisLoc$"ARG|POR|EUA",space(11) , STR0095 ) + " " + If( cPaisLoc$"ARG|POR|EUA",space(18), SA2->A2_INSCR ), oReport:Row(), 1025)
+	oReport:SkipLine()
+
+	oReport:PrintText("E-Mail: " + ALLTRIM(SA2->A2_EMAIL2), oReport:Row(), 1025)
+
+	oReport:SkipLine(2)
+
+	oSection1:Finish()
 
 Return
 
@@ -2167,7 +2163,6 @@ Static Function FinalPed(nDescProd)
 
 Local nk		:= 1,nG
 Local nX		:= 0
-Local nQuebra	:= 0
 Local nTotDesc	:= nDescProd
 Local lNewAlc	:= .F.
 Local lLiber 	:= .F.
@@ -2627,7 +2622,6 @@ Return .T.
 Static Function FinalAE(nDescProd)
 Local nk := 1
 Local nX := 0
-Local nTotDesc:= nDescProd
 Local nTotNF	:= MaFisRet(,'NF_TOTAL')
 Local nTxMoeda := IIF(SC7->C7_TXMOEDA > 0,SC7->C7_TXMOEDA,Nil)
 Local cComprador:=""
