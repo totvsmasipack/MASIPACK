@@ -74,8 +74,6 @@ mv_par29: Categoria Desenho
 //****************************
 
 Local nQtdN			:= 0
-Local lOPLote		:= .F.
-
 Private _cUsuario   := RetCodUsr()
 Private _cNomeUsu   := UsrRetName(_cUsuario)
 Private _aUsuario   := {}
@@ -169,17 +167,16 @@ Do While _lOutro == .T.       // Permite executar o relatorio de necessidades di
 	
 	_lGera := .F.              // Utilizado para geração da tabela SZU -> Geracao automatica das OPs
 	
-	Do While !_lParam    // Para verificar consistencia dos parametros
+	Do While _lParam == .F.    // Para verificar consistencia dos parametros
 		
 		If !(Pergunte(cPerg,.T.))
 			Return
 		EndIf
 		
-		If FWCodEmp() $ "01|10" .And. MV_PAR08 $ "1|2|3" .And. MV_PAR09 == "7" .And. ( FwIsAdmin() .Or. "PCP" $ _cDeptoUsu )
-			If FwAlertYesNo('Gerar o arquivo p/ geraçao automatica das OPs?','ATENÇÃO')
+		If SubStr(cNumEmp,1,2) $ "01_10" .And. ("INFORMATICA"$ _cDeptoUsu .Or. "PCP"$ _cDeptoUsu) .And. mv_par08$ "1_2_3" .And. mv_par09 == "7"
+			If MsgBox("*** ATENÇÃO, Deseja gerar Arquivo p/ geraçao Automatica das OPs? ***","AVISO","YESNO")
 				SZU->(DbSetOrder(1))
 				_lGera := .T.
-				lOPLote := DefGeraOP()
 			EndIf
 		EndIf
 		
@@ -394,8 +391,8 @@ Do While _lOutro == .T.       // Permite executar o relatorio de necessidades di
 				EndIf
 				
 			EndIf
-
-			RptStatus({|lEnd| ImpRel(@lEnd,wnRel,cString,lOPLote)},titulo)
+			
+			RptStatus({|lEnd| ImpRel(@lEnd,wnRel,cString)},titulo)
 			If nQtdN == len(_aPrd)
 			    lOutro := .F.
 			Else
@@ -456,7 +453,7 @@ Do While _lOutro == .T.       // Permite executar o relatorio de necessidades di
 			
 		EndIf
 		
-		RptStatus({|lEnd| ImpRel(@lEnd,wnRel,cString,lOPLote)},titulo)
+		RptStatus({|lEnd| ImpRel(@lEnd,wnRel,cString)},titulo)
 		
 	Endif
 	//Ticket#2016111637000146 — Fim da alteração
@@ -698,7 +695,7 @@ Return
 // Funcao ImpRel - Impressao do Relatorio
 
 //**********************************************
-	Static Function ImpRel(lEnd,WnRel,cString,lOPLote)
+	Static Function ImpRel(lEnd,WnRel,cString)
 //**********************************************
 
 Local nFornecedor	:= 0
@@ -1487,15 +1484,12 @@ Do While TRB->(!Eof())
 	If SB1->B1_MSBLQL == "1"
 		cBloq := "S"
 	EndIf
-	
 	IF MV_PAR28 == 1  // ALTERADO 24/05/13 A PEDIDO DO FRANCISCO - CONSIDERAR OU NAO ESTOQUE DE SEGURANÇA - LIZANDRA
 		nTenho := _nQuant - SB1->B1_ESTSEG + nSaldoOP + nSaldoOPP + nSaldoSC + nSaldoPC + nSaldoDV
 	ELSE
 		nTenho := _nQuant + nSaldoOP + nSaldoOPP + nSaldoSC + nSaldoPC + nSaldoDV
 	ENDIF	
-	
 	nPreciso := nEmpenho - nTenho
-	
 	If nPreciso < 0
 		nPreciso := 0
 	EndIf
@@ -1531,7 +1525,6 @@ Do While TRB->(!Eof())
 				cRegCSV := "_"+TRB->CODIG+";"+Alltrim(SB1->B1_REVATU)+";"+SB1->B1_MSGRVEN+";"+cLF+";"+cBloq+";"+SB1->B1_DESC+";"+SB1->B1_UM+";"+Transform(0,"@E 999,999.999")+";"+DTOC(SB2->B2_DINVENT)+";"
 			EndIf
 		EndIf
-		
 		If SB2->(DbSeek(xFilial("SB2")+SB1->B1_COD+"01"))
 			If _cNomeUsu == "RWada"
 				cRegCSV += DTOC(SB1->B1_UCOM)	 + ";"			
@@ -1541,28 +1534,22 @@ Do While TRB->(!Eof())
 		Else
 			cRegCSV += Space(10)
 		EndIf
-		
 		cRegCSV += ";"+TRANSFORM(_nCons,"@E 999999")+";_"+SB1->B1_LOCAL+";"+SB1->B1_FANTASM+";"+SB1->B1_CC+";"+SB1->B1_PROCED+";"+SB1->B1_GRUPO+";"+Transform(SB1->B1_PE,"@E 999")
 		cRegCSV += ";"+Transform(SB1->B1_ESTSEG,"@E 999999.999")+";"+Transform(_nQuant,"@E 999999.999")+";"+Transform(nEmpenho, "@E 999999.999")
 		cRegCSV += ";"+Transform(nSaldoOP, "@E 999999.999")+";"+Transform(nSaldoOPP,"@E 999999.999")+";"+Transform(nSaldoSC,"@E 999999.999")+";"+ Transform(nSaldoPC,"@E 999999.999")+";"+ Transform(nSaldoDV,"@E 999999.999")
-		
 		//Ivandro Santos - 06/04/17 - Início da alteração
 		//Ticket#2017031037000107 — Equalização dos campos de descrição do produto (Masipack e Fabrima)
 		cDescr := Alltrim(GetAdvFval("SB5","B5_CEME",xFilial("SB5")+SB1->B1_COD,1," "))
 		cRegCSV += ";"+Transform(nTenho,"@E 999999.999")+";"+Transform(nPreciso, "@E 999999.999")+";"+Transform(SB1->B1_LM,"@E 999999")+";"+Transform(SB1->B1_LE,"@E 999999")+";"+DTOC(dDataNec)+";"+DTOC(dDataRem)+";"+SB1->B1_MSAMBIE+";"+Transform(SB1->B1_PESO,"@E 999999.9999")+";"+cDescr
-		
 		//cRegCSV += ";"+Transform(nTenho,"@E 999999.999")+";"+Transform(nPreciso, "@E 999999.999")+";"+Transform(SB1->B1_LM,"@E 999999")+";"+Transform(SB1->B1_LE,"@E 999999")+";"+DTOC(dDataNec)+";"+DTOC(dDataRem)+";"+SB1->B1_MSAMBIE+";"+Transform(SB1->B1_PESO,"@E 999999.9999")+";"+SB1->B1_DESCP
 		//Ticket#2017031037000107 — Fim da alteração
 		cRegCSV += ";"+DTOC(SB1->B1_MSDTLOT)
-		
 		If mv_par08 == "3"
 			cRegCSV += ";"+Transform(TRB->NECES, "@E 999,999.999")
 		else
 			cRegCSV += ";"+"//"
 		EndIf
-		
 		cRegCSV += ";"+SB1->B1_FABRIC
-		
 		If SubStr(cNumEmp,1,2) == "01"
 			cRegCSV += ";"+DTOC(dMSDTCHK)
 			cRegCSV += ";"+Transform(nMSQTCHK,"@E 999")
@@ -1574,11 +1561,55 @@ Do While TRB->(!Eof())
 		EndIf
 
 		If _lGera .And. nPreciso > 0
-			While nPreciso > 0
-				GrvSZU(TRB->CODIG, @nPreciso, dDataNec, dDataRem, dDataNec, lOPLote)
-			Enddo
+			RecLock("SZU",.T.)
+			SZU->ZU_FILIAL  := "01"
+			SZU->ZU_DATA    := Date()
+			SZU->ZU_HORA    := cHora
+			SZU->ZU_USUARIO := _cNomeUsu
+			SZU->ZU_PRODUTO := TRB->CODIG
+			If SG2->(DbSeek(xFilial("SG2")+TRB->CODIG))
+				SZU->ZU_ROTEIRO := "X"
+			EndIf
+			SZU->ZU_PROCED  := SB1->B1_PROCED
+			SZU->ZU_UM      := SB1->B1_UM
+			SZU->ZU_GRUPO   := SB1->B1_GRUPO
+			SZU->ZU_LOTEECO := SB1->B1_LE
+			SZU->ZU_LOTEMIN := SB1->B1_LM
+			SZU->ZU_QTDNEC  := nPreciso
+			SZU->ZU_DTNECES := dDataNec
+			SZU->ZU_DTREMAN := dDataRem
+			SZU->ZU_DATAOP  := dDataNec
+			SZU->ZU_OBS     := ""
+			SZU->ZU_STATUS  := "A"
+			If SB1->B1_LE > 0
+				If SB1->B1_LM > 0 .And. Mod(SB1->B1_LE,SB1->B1_LM) == 0
+					SZU->ZU_QTDPOP := SB1->B1_LM
+					If nPreciso < SB1->B1_LE
+						If (SB1->B1_LE / SB1->B1_LM) < 100
+							SZU->ZU_QTDEOP := SB1->B1_LE / SB1->B1_LM
+						Else
+							SZU->ZU_QTDEOP := 0   // Quantidades LE e LM incoerentes
+						EndIf
+					Else
+						SZU->ZU_QTDEOP := Int(nPreciso / SB1->B1_LM)
+						If nPreciso < (SZU->ZU_QTDPOP * SZU->ZU_QTDEOP)
+							SZU->ZU_QTDEOP++
+						EndIf
+					EndIf
+				Else
+					SZU->ZU_QTDEOP := 1
+					If nPreciso < SB1->B1_LE
+						SZU->ZU_QTDPOP  := SB1->B1_LE
+					Else
+						SZU->ZU_QTDPOP  := nPreciso
+					EndIf
+				EndIf
+			Else
+				SZU->ZU_QTDPOP := nPreciso
+				SZU->ZU_QTDEOP := 1
+			EndIf
+			SZU->(MsUnlock())
 		EndIf
-	
 	EndIf
 	TRB->(DbSkip())
 	Loop
@@ -2840,67 +2871,3 @@ Local aInfNo := {}
 	cNome := aInfNo[1][4]
 
 Return cNome
- 
-
-Static Function DefGeraOP()
-
-Local aPerg		:= {}
-Local aMvPar	:= {}
-Local lRet		:= .F.
-Local nX		:= 0
-
-	For nX := 1 To 60
-		AADD(aMvPar,&( 'MV_PAR' + StrZero(nX,2)))
-    Next nX
-
-	AADD(aPerg, {2, "Gerar Lote de OP por",	'2',	{"1=Lote Econômico/Lote Mínimo",	"2=Descons. Lote de Produção"},	100,	".T.",	.T.	})
-	
-	If ParamBox(aPerg, "Geração de OP Por Lote")
-		lRet := MV_PAR01 == '1'
-	Endif
-
-	For nX := 1 To Len(aMvPar)
-		&("MV_PAR" + StrZero(nX,2,0)) := aMvPar[nX]
-	Next nX
-
-Return lRet
-
-
-Static Function GrvSZU(cProduto, nPreciso, dDataNec, dDataRem, dDataNec, lOPLote)
-
-	RecLock("SZU",.T.)
-	SZU->ZU_FILIAL  := "01"
-	SZU->ZU_DATA    := dDataBase
-	SZU->ZU_HORA    := TIME()
-	SZU->ZU_USUARIO := UsrRetName(RetCodUsr())
-	SZU->ZU_PRODUTO := TRB->CODIG
-	
-	If SG2->(DbSeek(xFilial("SG2")+TRB->CODIG))
-		SZU->ZU_ROTEIRO := "X"
-	EndIf
-	
-	SZU->ZU_PROCED  := SB1->B1_PROCED
-	SZU->ZU_UM      := SB1->B1_UM
-	SZU->ZU_GRUPO   := SB1->B1_GRUPO
-	SZU->ZU_LOTEECO := SB1->B1_LE
-	SZU->ZU_LOTEMIN := SB1->B1_LM
-	SZU->ZU_QTDNEC  := nPreciso
-	SZU->ZU_DTNECES := dDataNec
-	SZU->ZU_DTREMAN := dDataRem
-	SZU->ZU_DATAOP  := dDataNec
-	SZU->ZU_OBS     := ""
-	SZU->ZU_STATUS  := "A"
-	
-	If lOPLote
-		SZU->ZU_QTDPOP  := SB1->B1_LM
-		SZU->ZU_QTDEOP := 1
-	Else
-		SZU->ZU_QTDPOP := nPreciso
-		SZU->ZU_QTDEOP := 1
-	EndIf
-
-	SZU->(MsUnlock())
-
-	nPreciso -= SZU->ZU_QTDPOP
-
-Return
