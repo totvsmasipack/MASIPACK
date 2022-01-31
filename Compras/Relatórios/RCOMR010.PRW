@@ -121,8 +121,8 @@ TcSetField("QR1","F1_VALCSLL" ,"N",12,02)
 QR1->(DbGoTop())
 
 
-Cabec1  := "N.F.     SER  DATA DE   FORNECEDOR               TOTAL DA                         I  M  P  O  S  T  O  S                   TOTAL DE"   
-Cabec2  := "              DIGITAÇÃO                            N.F.        ISS       INSS      IRRF       PIS     COFINS      CSLL     IMPOSTOS"   
+Cabec1  := "N.F.     SER  DATA DE    FORNECEDOR               TOTAL DA                         I  M  P  O  S  T  O  S                   TOTAL DE"   
+Cabec2  := "              DIGITAÇÃO                             N.F.        ISS       INSS      IRRF       PIS     COFINS      CSLL     IMPOSTOS"   
 Titulo := "Relação de Notas Fiscais com Impostos retidos  -  " + " De: "+dtoc(mv_par01)+" até: "+dtoc(mv_par02)       
 mv_par09 := UPPER(mv_par09)                  
 mv_par10 := UPPER(mv_par10)                  
@@ -144,35 +144,35 @@ While QR1->(!EOF())
    @ Li,000 PSAY QR1->F1_DOC
    @ Li,010 PSAY QR1->F1_SERIE
    @ Li,014 PSAY QR1->F1_DTDIGIT
-   @ Li,024 PSAY SUBSTR(QR1->A2_NREDUZ,1,20)
-   @ Li,046 PSAY QR1->F1_VALMERC 						Picture "@E 9,999,999.99"
-   @ Li,059 PSay QR1->F1_ISS  							Picture "@E 99,999.99"                                                  
-   @ Li,068 PSay QR1->F1_INSS 							Picture "@E 99,999.99"
-   @ Li,078 PSay QR1->F1_IRRF 							Picture "@E 99,999.99"
-   If QR1->F1_VALIMP6 > 0
-      @ Li,088 PSay QR1->F1_VALIMP6                   	Picture "@E 99,999.99"
-   Else   
-      @ Li,088 PSay QR1->F1_VALPIS                     	Picture "@E 99,999.99"
-   EndIf
-   If QR1->F1_VALIMP5 > 0
-      @ Li,098 PSay QR1->F1_VALIMP5                   	Picture "@E 99,999.99"
-   Else  
-      @ Li,098 PSay QR1->F1_VALCOFI                    	Picture "@E 99,999.99"
-   EndIf 
-   If QR1->F1_VALIMP4 > 0
-      @ Li,108 PSay QR1->F1_VALIMP4                   	Picture "@E 99,999.99"
-   Else    
-      @ Li,108 PSay QR1->F1_VALCSLL                     Picture "@E 99,999.99"
-   EndIf   
-   @ Li,120 PSay QR1->F1_ISS+QR1->F1_INSS+QR1->F1_IRRF+QR1->F1_VALPIS+QR1->F1_VALCOFI+QR1->F1_VALCSLL+QR1->F1_VALIMP4+QR1->F1_VALIMP5+QR1->F1_VALIMP6 Picture "@E 99,999.99" 
+   @ Li,025 PSAY SUBSTR(QR1->A2_NREDUZ,1,20)
+   @ Li,047 PSAY QR1->F1_VALMERC 						Picture "@E 9,999,999.99"
+   @ Li,060 PSay QR1->F1_ISS  							Picture "@E 99,999.99"                                                  
+   @ Li,069 PSay QR1->F1_INSS 							Picture "@E 99,999.99"
+   @ Li,079 PSay QR1->F1_IRRF 							Picture "@E 99,999.99"
+   //If QR1->F1_VALIMP6 > 0
+   //   @ Li,088 PSay QR1->F1_VALIMP6                   	Picture "@E 99,999.99"
+   //Else   
+      @ Li,089 PSay QR1->F1_VALPIS                     	Picture "@E 99,999.99"
+   //EndIf
+   //If QR1->F1_VALIMP5 > 0
+   //   @ Li,098 PSay QR1->F1_VALIMP5                   	Picture "@E 99,999.99"
+   //Else  
+      @ Li,099 PSay QR1->F1_VALCOFI                    	Picture "@E 99,999.99"
+   //EndIf 
+   //If QR1->F1_VALIMP4 > 0
+   //   @ Li,108 PSay QR1->F1_VALIMP4                   	Picture "@E 99,999.99"
+   //Else    
+      @ Li,109 PSay QR1->F1_VALCSLL                     Picture "@E 99,999.99"
+   //EndIf   
+   @ Li,121 PSay QR1->F1_ISS+QR1->F1_INSS+QR1->F1_IRRF+QR1->F1_VALPIS+QR1->F1_VALCOFI+QR1->F1_VALCSLL Picture "@E 99,999.99" 
    Li++
    nTotMer := nTotMer + QR1->F1_VALMERC
    nTotIss := nTotIss + QR1->F1_ISS
    nTotIns := nTotIns + QR1->F1_INSS
    nTotIrf := nTotIrf + QR1->F1_IRRF
-   nTotPis := nTotPis + QR1->F1_VALPIS + QR1->F1_VALIMP6
-   nTotCof := nTotCof + QR1->F1_VALCOFI + QR1->F1_VALIMP5
-   nTotCsl := nTotCsl + QR1->F1_VALCSLL+ QR1->F1_VALIMP4
+   nTotPis := nTotPis + QR1->F1_VALPIS //+ QR1->F1_VALIMP6
+   nTotCof := nTotCof + QR1->F1_VALCOFI //+ QR1->F1_VALIMP5
+   nTotCsl := nTotCsl + QR1->F1_VALCSLL //+ QR1->F1_VALIMP4
    nTotImp := nTotImp + QR1->F1_ISS+QR1->F1_INSS+QR1->F1_IRRF+QR1->F1_VALPIS+QR1->F1_VALCOFI+QR1->F1_VALCSLL  
 
    QR1->(dbSkip())
@@ -181,16 +181,16 @@ EndDo
 
 QR1->(dbCloseArea())
     
-@ Li+2,045 Psay "------------------------------------------------------------------------------------" 
+@ Li+2,045 Psay "-------------------------------------------------------------------------------------" 
 
-@ Li+3,045 PSay nTotMer Picture "@E 9,999,999.99"
-@ Li+3,058 PSay nTotIss Picture "@E 99,999.99"
-@ Li+3,068 PSay nTotIns Picture "@E 99,999.99"
-@ Li+3,078 PSay nTotIrf Picture "@E 99,999.99"
-@ Li+3,088 PSay nTotPis Picture "@E 99,999.99"
-@ Li+3,098 PSay nTotCof Picture "@E 99,999.99"
-@ Li+3,108 PSay nTotCsl Picture "@E 99,999.99"
-@ Li+3,120 PSay nTotImp Picture "@E 99,999.99"
+@ Li+3,047 PSay nTotMer Picture "@E 9,999,999.99"
+@ Li+3,059 PSay nTotIss Picture "@E 99,999.99"
+@ Li+3,069 PSay nTotIns Picture "@E 99,999.99"
+@ Li+3,079 PSay nTotIrf Picture "@E 99,999.99"
+@ Li+3,089 PSay nTotPis Picture "@E 99,999.99"
+@ Li+3,099 PSay nTotCof Picture "@E 99,999.99"
+@ Li+3,109 PSay nTotCsl Picture "@E 99,999.99"
+@ Li+3,121 PSay nTotImp Picture "@E 99,999.99"
 
 Set Device To Screen
 Set Filter To
