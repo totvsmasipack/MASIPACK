@@ -50,6 +50,9 @@ ElseIf _nSeq == 4
 	If (SE5->E5_MOTBX) == "FAT"
 		_cConta := "110400008"
 
+	ElseIf SE5->E5_MOTBX == 'DEB' .AND. SE5->E5_TIPO = "NCC"
+		_cConta := "220900009"
+
 	ElseIf SE5->E5_MOTBX == 'DEB'
 		SA1->(DbSetOrder(1))
 		SA1->(DbSeek(xFilial("SA1")+SE5->E5_CLIENTE+SE5->E5_LOJA))
@@ -72,6 +75,8 @@ ElseIf _nSeq == 4
 ElseIf _nSeq == 3
 
 	If SE5->E5_MOTBX == 'DEB' .AND. ALLTRIM(SE5->E5_NATUREZ) == 'L01'
+		_cConta := 'C'+_cCli
+	ElseIf SE5->E5_MOTBX == 'DEB' .AND. SE5->E5_TIPO = "NCC"
 		_cConta := 'C'+_cCli
  	EndIf
 

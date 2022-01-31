@@ -43,9 +43,13 @@ If _nSeq == 5
     Endif
    Endif
 
-ElseIf _nSeq == 1
+ElseIf _nSeq == 1	
+		// Quando for baixa de NCC (devolucao de valor para cliente)
+		If SE5->E5_MOTBX == 'DEB' .AND. SE5->E5_TIPO = "NCC"
+			_cConta := SA6->A6_CONTA
+			
 		// Quando for JUROS FINAME
-		If (SE5->E5_NATUREZ) = "V14" 
+		ElseIf (SE5->E5_NATUREZ) = "V14" 
 			If (Substr(SE5->E5_FATURA,7,1) == "B"  )
 				_cConta := "110400001"
 			Else				
@@ -80,7 +84,6 @@ ElseIf _nSeq == 1
 				EndIf
 				
 		 	EndIf
-		 	
 		EndIf
 ElseIf _nSeq == 4
 
