@@ -168,15 +168,15 @@ TRCell():New(oSection2,"C7_QTSEGUM" 	,"SC7",/*Titulo*/	,/*Picture*/,14,/*lPixel*
 TRCell():New(oSection2,"PRECO"      	,"   ",STR0098		,/*Picture*/,20,/*lPixel*/,{|| nVlUnitSC7 },"RIGHT",,"RIGHT")
 TRCell():New(oSection2,"C7_IPI"     	,"SC7",STR0119		,/*Picture*/,10,/*lPixel*/,/* */,"RIGHT",,"RIGHT")
 TRCell():New(oSection2,"TOTAL"     		,"   ",STR0099		,/*Picture*/,20,/*lPixel*/,{|| nValTotSC7 },"RIGHT",,"RIGHT")
-TRCell():New(oSection2,"C7_DATPRF"  	,"SC7",/*Titulo*/	,/*Picture*/,15,/*lPixel*/,/* */,"CENTER",,"CENTER")
-TRCell():New(oSection2,"C7_CC"      	,"SC7",STR0066		,/*Picture*/,10,/*lPixel*/,/* */,"CENTER",,"CENTER")
+TRCell():New(oSection2,"C7_DATPRF"  	,"SC7",/*Titulo*/	,/*Picture*/,20,/*lPixel*/,/* */,"CENTER",,"CENTER")
+//TRCell():New(oSection2,"C7_CC"      	,"SC7",STR0066		,/*Picture*/,10,/*lPixel*/,/* */,"CENTER",,"CENTER")
 TRCell():New(oSection2,"C7_NUMSC"   	,"SC7",STR0123		,/*Picture*/,16,/*lPixel*/,/* */,"CENTER",,"CENTER")
 TRCell():New(oSection2,"OPCC"       	,"   ",STR0100  	,/*Picture*/,TamSX3("C7_OP")[1],/*lPixel*/,{|| cOPCC },,,,,,.F.)          
-TRCell():New(oSection2,"CERTIFIC"		,"   ","Certificado?",/*Picture*/,20,/*lPixel*/,{|| cCertific },"RIGHT",,"RIGHT")
+TRCell():New(oSection2,"CERTIFIC"		,"   ","Certificado?",/*Picture*/,23,/*lPixel*/,{|| cCertific },"RIGHT",,"RIGHT")
 
 oSection2:Cell("C7_PRODUTO"):SetLineBreak()
 oSection2:Cell("DESCPROD"):SetLineBreak()
-oSection2:Cell("C7_CC"):SetLineBreak()
+//oSection2:Cell("C7_CC"):SetLineBreak()
 oSection2:Cell("OPCC"):SetLineBreak()
 oSection2:Cell("C7_NUMSC"):SetLineBreak()
 
@@ -475,8 +475,11 @@ While !oReport:Cancel() .And. !SC7->(Eof()) .And. SC7->C7_FILIAL == xFilial("SC7
 			ElseIf AllTrim(mv_par06) == "B5_CEME"
 				SB5->(dbSetOrder(1))
 				If SB5->(dbSeek( xFilial("SB5") + SC7->C7_PRODUTO ))
-					//cDescPro := SB5->B5_CEME
-                    cDescPro := IIF( FWCodEmp() $ '15' , ALLTRIM(SB5->B5_CEME) + CRLF + 'OBS.: ' + ALLTRIM(SB5->B5_MSOBS) , SB5->B5_CEME )
+					cDescPro := SB5->B5_CEME
+					If !Empty(SB5->B5_MSOBS)
+						cDescPro += CRLF
+						cDescPro +=  ALLTRIM(SB5->B5_MSOBS)
+					Endif
 				EndIf
 			ElseIf AllTrim(mv_par06) == "C7_DESCRI"
 				cDescPro := SC7->C7_DESCRI
@@ -553,12 +556,12 @@ While !oReport:Cancel() .And. !SC7->(Eof()) .And. SC7->C7_FILIAL == xFilial("SC7
 				oSection2:Cell("OPCC"):Disable()
 			Else
 				oSection2:Cell("C7_DATPRF"):SetSize(9)
-				oSection2:Cell("C7_CC"):Disable()
+//				oSection2:Cell("C7_CC"):Disable()
 				oSection2:Cell("C7_NUMSC"):Disable()
 				If !Empty(SC7->C7_OP)
 					cOPCC := STR0065 + " " + SC7->C7_OP
-				ElseIf !Empty(SC7->C7_CC)
-					cOPCC := STR0066 + " " + SC7->C7_CC
+//				ElseIf !Empty(SC7->C7_CC)
+//					cOPCC := STR0066 + " " + SC7->C7_CC
 				EndIf
 			EndIf
 			
@@ -605,8 +608,8 @@ While !oReport:Cancel() .And. !SC7->(Eof()) .And. SC7->C7_FILIAL == xFilial("SC7
 				oSection2:Cell("C7_QTSEGUM"):SetSize(015) 	// 30
 				oSection2:Cell("PRECO"):SetSize(019) 
 				oSection2:Cell("TOTAL"):SetSize(019)  		// 25
-				oSection2:Cell("C7_DATPRF"):SetSize(013)    			
-				oSection2:Cell("C7_CC"):SetSize(010)
+				oSection2:Cell("C7_DATPRF"):SetSize(020)    			
+//				oSection2:Cell("C7_CC"):SetSize(010)
 				oSection2:Cell("C7_NUMSC"):SetSize(008)
 
 			If oReport:nDevice == 4 .And. oReport:lXlsTable .And. !oReport:lXlsHeader  //impressao em planilha tipo tabela	
