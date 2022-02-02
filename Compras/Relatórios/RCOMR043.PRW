@@ -129,7 +129,7 @@ Local cFilEnt	:= ""
 
 	oReport:Section(1):SetFilter(cCondicao,IndexKey())
 	
-	TRPosition():New(oSection1,"SA2",1,{|| FWxFilial("SA2") + SC8->C8_FORNECE + SC8->C8_LOJA})
+//	TRPosition():New(oSection1,"SA2",1,{|| FWxFilial("SA2") + SC8->C8_FORNECE + SC8->C8_LOJA})
 
 	oReport:onPageBreak( { || nPagina++ , nPrinted := 0 , CabecCT(oReport,oSection1,nPagina,cNumCota,cEmail,cTel) })
 
@@ -142,7 +142,7 @@ Local cFilEnt	:= ""
 		If oReport:Cancel()
 			Exit
 		EndIf
-		
+
 		cCotacao := SC8->C8_NUM  
 		cFornece := SC8->C8_FORNECE
 		cLoja    := SC8->C8_LOJA   
@@ -161,7 +161,7 @@ Local cFilEnt	:= ""
 		nPagina  := 0
 		nPrinted := 0
 			
-		While !oReport:Cancel() .And. !SC8->(Eof()) .And. SC8->C8_FILIAL+SC8->C8_NUM+SC8->C8_FORNECE+SC8->C8_LOJA == xFilial("SC8")+cCotacao+cFornece+cLoja
+		While !oReport:Cancel() .And. !SC8->(Eof()) .And. SC8->C8_FILIAL+SC8->C8_NUM+SC8->C8_FORNECE+SC8->C8_LOJA == FWxFilial("SC8")+cCotacao+cFornece+cLoja
 			
 			If oReport:Cancel()
 				Exit
@@ -487,6 +487,10 @@ Local nPageWidth	:= IIF(nTpImp==1.Or.nTpImp==6,2435,2435)
 
 Default cNumCota := ""
 
+	DbSelectArea('SA2')
+	SA2->(DbSetOrder(1))
+	SA2->(DbSeek(FWxFilial('SA2') + SC8->(C8_FORNECE + C8_LOJA)))
+
 	oSection1:Init()
 
 	If cPaisLoc == "BRA"
@@ -502,7 +506,7 @@ Default cNumCota := ""
 	oReport:SayBitmap(25,25,cLogo,080,080)
 
 	oReport:SkipLine()
-	oReport:PrintText( PadR("C O T A Ç Ã O  D E  C O M P R A S - " + GetMV("MV_MOEDA" + Alltrim(Str(SC8->C8_MOEDA))),64), oReport:Row(), 1030 )
+	oReport:PrintText( PadR("C O T A Ç Ã O  D E  C O M P R A S - " + GetMV("MV_MOEDA" + IIF(Empty(SC8->C8_MOEDA), '1', Alltrim(Str(SC8->C8_MOEDA)))),64), oReport:Row(), 1030 )
 	oReport:PrintText( "Nº: " + SC8->C8_NUM + " - Página: " + Ltrim(Str(nPagina,2)) , oReport:Row(), 1920 )
 
 	oReport:SkipLine(2)
