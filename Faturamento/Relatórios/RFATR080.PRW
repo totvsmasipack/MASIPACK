@@ -4,6 +4,12 @@
 #include 'fileio.ch'
 
 
+/*/{Protheus.doc} User Function RFATR080
+Relatório de Check-Lista da montagem (Nova Versão)
+@type  Function
+@author E.DINIZ - [ DS2U ]
+@since 01/02/2022
+/*/
 User Function RFATR080()
 
 Local aParam	:= {}
@@ -12,14 +18,18 @@ Local aParam	:= {}
 	AADD(aParam,{2,	"Modelo Docto.",	"1",	{"1=Peças/Acessórios","2=Balanças","3=Maq. Vertical"},	090,	"",		.T.})
 	
 	If ParamBox(aParam,"Parâmetros",,,,,,,,.T.,.T.)
-
 		FwMsgRun(,{|oSay| IntMsWord(oSay) }, 'Aguarde', 'Processando..')
-
     Endif
 
 Return
 
 
+/*/{Protheus.doc} User Function IntMsWord
+Atualiza o documento word conforme informações
+@type  Static Function
+@author E.DINIZ - [ DS2U ]
+@since 01/02/2022
+/*/
 Static Function IntMsWord(oSay)
 
 Local cDocFile	:= ''
