@@ -17,7 +17,7 @@ User Function M410STTS()
 
 Local _aArea	:= {}
 Local _aUsrInf	:= FWSFALLUSERS({ RetCodUsr() }, { "USR_DEPTO" })
-Local _cUsrMail	:= "; " + FWSFALLUSERS({ RetCodUsr() }, { "USR_EMAIL" })
+Local _cUsrMail	:= "; " + FWSFALLUSERS({ RetCodUsr() }, { "USR_EMAIL" })[1,3]
 Local _cMsg		:= ''
 Local _cTo		:= ''
 Local _oMail	:= Nil
