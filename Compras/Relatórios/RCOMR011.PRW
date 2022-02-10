@@ -166,7 +166,7 @@ IF !EMPTY(MV_PAR04)
 	_cQuery += "       AND C7_FILIAL = '" + FWxFilial("SC7") + "' AND C7.D_E_L_E_T_ = ' ' "
 	_cQuery += "       AND A2_FILIAL = '" + FWxFilial("SA2") + "' AND A2.D_E_L_E_T_ = ' ' "
 	_cQuery += "       AND B1_FILIAL = '" + FWxFilial("SB1") + "' AND B1.D_E_L_E_T_ = ' ' "
-	_cQuery += " ORDER BY C7_PRODUTO, C7_DATPRF "
+	_cQuery += " ORDER BY C7_ITEM "
 	
 	TcQuery _cQuery New Alias "QR1"
 	
