@@ -21,22 +21,22 @@ Local cRet		:= ''
 
 	DO CASE
 
-		CASE FWCodEmp() $ '01|10' .And. ( "PROJETOS" $ aUsrInf[1,3] .OR. "ENGENHARIA" $ aUsrInf[1,3] )
+		CASE FWCodEmp() $ '01|10' .And. ( "PROJETOS" $ UPPER(aUsrInf[1,3]) .OR. "ENGENHARIA" $ UPPER(aUsrInf[1,3]) )
 			cRet := '0'
 
-		CASE FWCodEmp() $ '01|10' .And. "COMERCIAL" == aUsrInf[1,3]
+		CASE FWCodEmp() $ '01|10' .And. "COMERCIAL" == UPPER(aUsrInf[1,3])
 			cRet := '1'
 
-		CASE FWCodEmp() $ '01|10' .And. ( aScan(aGroup,'000211') > 0 .Or. "COMEX/COMERCIAL" == aUsrInf[1,3] )
+		CASE FWCodEmp() $ '01|10' .And. ( aScan(aGroup,'000211') > 0 .Or. "COMEX/COMERCIAL" == UPPER(aUsrInf[1,3]) )
 			cRet := IIF( M->C5_TIPOCLI == "X", "2", "3" )
 
-		CASE FWCodEmp() $ '01|10' .And. 	"VENDA DE PECAS" == aUsrInf[1,3] 
+		CASE FWCodEmp() $ '01|10' .And. 	"VENDA DE PECAS" == UPPER(aUsrInf[1,3])
 			cRet := IIF( M->C5_TIPOCLI == "X", "2", "3" )
 		
-		CASE FWCodEmp() $ '01|10' .And. "203-MAKLASER" == aUsrInf[1,3]
+		CASE FWCodEmp() $ '01|10' .And. "203-MAKLASER" == UPPER(aUsrInf[1,3])
 			cRet := '5'
 		
-		CASE FWCodEmp() $ '01|10' .And. ( aScan(aGroup,'000212') > 0 .Or. "ASSIST TECNICA" $ aUsrInf[1,3] )
+		CASE FWCodEmp() $ '01|10' .And. ( aScan(aGroup,'000212') > 0 .Or. "ASSIST. TECNICA" $ UPPER(aUsrInf[1,3]) )
 			cRet := '6'
 
 		CASE FWCodEmp() $ '01|10'
