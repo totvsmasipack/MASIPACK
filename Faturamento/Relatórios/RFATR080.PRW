@@ -66,7 +66,7 @@ Local oWord		:= Nil
 
 		CpyS2T(cDocFile, "C:\relato_microsiga\")
 
-		FRename( AllTrim(GetTempPath()) + If(Right(AllTrim(GetTempPath()), 1) == '\', '', '\') + SubStr(cDocFile,RAT('\',cDocFile)+1,Len(cDocFile)),;
+		FRename( "C:\relato_microsiga\" + SubStr(cDocFile,RAT('\',cDocFile)+1,Len(cDocFile)),;
 				"C:\relato_microsiga\" + SC5->C5_NUM + '.dotm')
 
 		cModFile := "C:\relato_microsiga\" + SC5->C5_NUM + '.dotm'
