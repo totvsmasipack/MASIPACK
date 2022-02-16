@@ -16,12 +16,12 @@
 User Function M410STTS()
 
 Local _aArea	:= {}
-Local _aUsrInf	:= FWSFALLUSERS({ RetCodUsr() }, { "USR_DEPTO" })
 Local _cUsrMail	:= "; " + FWSFALLUSERS({ RetCodUsr() }, { "USR_EMAIL" })[1,3]
 Local _cMsg		:= ''
 Local _cTo		:= ''
 Local _oMail	:= Nil
 
+Private _aUsrInf  := FWSFALLUSERS({ RetCodUsr() }, { "USR_DEPTO" })
 Private cEvento   := ""
 Private cCodDepDes:= ""
 Private cDeptoDes := ""
@@ -115,7 +115,7 @@ Private cAux      := ""
 		EndIf
 		//FIM - TICKET: 2017070737000053
 		
-		If SC5->C5_MSCATEG == "1" .And. _cDeptoUsu == "COMERCIAL"
+		If SC5->C5_MSCATEG == "1" .And. _aUsrInf[1,3] == "COMERCIAL"
 			lInclui := .T.  //23/10/14 - LIZANDRA - REUNIAO COMERCIAL/FINANCEIRO
 			If SZM->(DbSeek(xFilial("SZM")+Alltrim(SC5->C5_NUM)))
 				Do While !SZM->(Eof()) .And. Alltrim(SZM->ZM_PEDIDO) == Alltrim(SC5->C5_NUM)
@@ -360,7 +360,7 @@ Local _lGrava := .T.
 		EndIf
 		SZM->ZM_DATA    := Date()
 		SZM->ZM_MSUSER  := UsrRetName(RetCodUsr())
-		SZM->ZM_DEPTO   := _cDeptoUsu
+		SZM->ZM_DEPTO   := _aUsrInf[1,3]
 		SZM->ZM_ASSUNTO := cAssunto
 		If cAssunto <> "LOGPV"
 			SX5->(DbGotop())
