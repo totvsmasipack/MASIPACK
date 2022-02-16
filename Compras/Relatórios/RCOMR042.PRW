@@ -124,12 +124,13 @@ TRCell():New(oSection1,"M0_ENDENT" ,"SM0",STR0088      ,/*Picture*/,48,/*lPixel*
 TRCell():New(oSection1,"M0_CEPENT" ,"SM0",STR0089      ,/*Picture*/,10,/*lPixel*/,{|| Trans(SM0->M0_CEPENT,PesqPict("SA2","A2_CEP")) })
 TRCell():New(oSection1,"M0_CIDENT" ,"SM0",STR0090      ,/*Picture*/,20,/*lPixel*/,/*{|| code-block de impressao }*/)
 TRCell():New(oSection1,"M0_ESTENT" ,"SM0",STR0091      ,/*Picture*/,11,/*lPixel*/,/*{|| code-block de impressao }*/)
-TRCell():New(oSection1,"M0_CGC"    ,"SM0",STR0124      ,/*Picture*/,18,/*lPixel*/,{|| Transform(SM0->M0_CGC,PesqPict("SA2","A2_CGC")) })
+
 If cPaisLoc == "BRA"
 	TRCell():New(oSection1,"M0IE"  ,"   ",STR0041      ,/*Picture*/,18,/*lPixel*/,{|| InscrEst()})
 EndIf
 TRCell():New(oSection1,"M0_TEL"    ,"SM0",STR0092      ,/*Picture*/,14,/*lPixel*/,/*{|| code-block de impressao }*/)
 TRCell():New(oSection1,"M0_FAX"    ,"SM0",STR0093      ,/*Picture*/,34,/*lPixel*/,/*{|| code-block de impressao }*/)
+TRCell():New(oSection1,"M0_CGC"    ,"SM0",STR0124      ,/*Picture*/,18,/*lPixel*/,{|| Transform(SM0->M0_CGC,PesqPict("SA2","A2_CGC")) })
 TRCell():New(oSection1,"A2_NOME"   ,"SA2",/*Titulo*/   ,/*Picture*/,40,/*lPixel*/,/*{|| code-block de impressao }*/)
 TRCell():New(oSection1,"A2_COD"    ,"SA2",/*Titulo*/   ,/*Picture*/,20,/*lPixel*/,/*{|| code-block de impressao }*/)
 TRCell():New(oSection1,"A2_LOJA"   ,"SA2",/*Titulo*/   ,/*Picture*/,04,/*lPixel*/,/*{|| code-block de impressao }*/)
@@ -260,8 +261,6 @@ Local cCidcob	  	:= ""
 Local nLinPC2	  	:= 0
 Local nLinPC3	  	:= 0
 Local nAprovLin 	:= 0
-Local aAux1
-Local nQtdLinhas //, nX
 Local lC7OBSChar  	:= Type( "SC7->C7_OBS" ) == "C"
 
 Private cDescPro  	:= ""
@@ -507,8 +506,13 @@ While !oReport:Cancel() .And. !SC7->(Eof()) .And. SC7->C7_FILIAL == xFilial("SC7
 			If lC7OBSChar .AND. !Empty(SC7->C7_OBS) .And. nLinObs < 17
 				If !(SC7->C7_OBS $ SC7->C7_OBSM) 
 					nLinObs++
-					cVar:="cObs"+StrZero(nLinObs,2)
-					Eval(MemVarBlock(cVar),Alltrim(SC7->C7_OBS))
+					If  nLinObs == 1 .Or. ( nLinObs > 1 .And. ! &("cObs"+StrZero(nLinObs-1,2)) $ Alltrim(SC7->C7_OBS) )
+						cVar:="cObs"+StrZero(nLinObs,2)
+						Eval(MemVarBlock(cVar),Alltrim(SC7->C7_OBS))
+					Else
+						cVar:="cObs"+StrZero(nLinObs,2)
+						Eval(MemVarBlock(cVar),SPACE(1))
+					Endif
 				EndIf 
 			Endif
 			
@@ -690,7 +694,7 @@ While !oReport:Cancel() .And. !SC7->(Eof()) .And. SC7->C7_FILIAL == xFilial("SC7
 		cCidcob := IIF(len(SM0->M0_CIDCOB)>20,Substr(SM0->M0_CIDCOB,1,15),SM0->M0_CIDCOB)
 
 		If Empty(MV_PAR13) //"Local de Entrega  : "
-			oReport:PrintText(STR0008 + SM0->M0_ENDENT+"  "+Rtrim(SM0->M0_CIDENT)+"  - "+SM0->M0_ESTENT+" - "+STR0009+" "+Trans(Alltrim(SM0->M0_CEPENT),PesqPict("SA2","A2_CEP")),, 050 )
+			oReport:PrintText(STR0008 + SM0->M0_ENDENT+"  "+Rtrim(SM0->M0_CIDENT)+" - "+SM0->M0_ESTENT+" - "+STR0009+" "+Trans(Alltrim(SM0->M0_CEPENT),PesqPict("SA2","A2_CEP")),, 050 )
 		Else
 			oReport:PrintText(STR0008 + mv_par13,, 050 ) //"Local de Entrega  : " imprime o endereco digitado na pergunte
 		Endif
@@ -759,7 +763,8 @@ While !oReport:Cancel() .And. !SC7->(Eof()) .And. SC7->C7_FILIAL == xFilial("SC7
 		
 		//ÚÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄ¿
 		//³ Inicializar campos de Observacoes.                           ³
-		//ÀÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÙ		
+		//ÀÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÙ
+/*	
 		If Empty(cObs02) .Or. cObs01 == cObs02
 			
 			cObs02 := ""
@@ -791,6 +796,23 @@ While !oReport:Cancel() .And. !SC7->(Eof()) .And. SC7->C7_FILIAL == xFilial("SC7
 			cObs15:= Substr(cObs15,1,IIf(Len(cObs15)<65,Len(cObs15),65))
 			cObs16:= Substr(cObs16,1,IIf(Len(cObs16)<65,Len(cObs16),65))
 		EndIf
+*/		
+		cObs01:= Substr(cObs01,1,IIf(Len(cObs01)<65,Len(cObs01),65))
+		cObs02:= Substr(cObs02,1,IIf(Len(cObs02)<65,Len(cObs02),65))
+		cObs03:= Substr(cObs03,1,IIf(Len(cObs03)<65,Len(cObs03),65))
+		cObs04:= Substr(cObs04,1,IIf(Len(cObs04)<65,Len(cObs04),65))
+		cObs05:= Substr(cObs05,1,IIf(Len(cObs05)<65,Len(cObs05),65))
+		cObs06:= Substr(cObs06,1,IIf(Len(cObs06)<65,Len(cObs06),65))
+		cObs07:= Substr(cObs07,1,IIf(Len(cObs07)<65,Len(cObs07),65))
+		cObs08:= Substr(cObs08,1,IIf(Len(cObs08)<65,Len(cObs08),65))
+		cObs09:= Substr(cObs09,1,IIf(Len(cObs09)<65,Len(cObs09),65))
+		cObs10:= Substr(cObs10,1,IIf(Len(cObs10)<65,Len(cObs10),65))
+		cObs11:= Substr(cObs11,1,IIf(Len(cObs11)<65,Len(cObs11),65))
+		cObs12:= Substr(cObs12,1,IIf(Len(cObs12)<65,Len(cObs12),65))
+		cObs13:= Substr(cObs13,1,IIf(Len(cObs13)<65,Len(cObs13),65))
+		cObs14:= Substr(cObs14,1,IIf(Len(cObs14)<65,Len(cObs14),65))
+		cObs15:= Substr(cObs15,1,IIf(Len(cObs15)<65,Len(cObs15),65))
+		cObs16:= Substr(cObs16,1,IIf(Len(cObs16)<65,Len(cObs16),65))
 		
 		cComprador:= ""
 		cAlter	  := ""
@@ -888,12 +910,12 @@ While !oReport:Cancel() .And. !SC7->(Eof()) .And. SC7->C7_FILIAL == xFilial("SC7
 		oReport:PrintText(cObs03,nLinPC,050 )
 
 		If !lNewAlc
-			oReport:PrintText( STR0078 + Transform(xMoeda(nTotalNF,SC7->C7_MOEDA,MV_PAR12,SC7->C7_DATPRF,MsDecimais(SC7->C7_MOEDA),nTxMoeda) , tm(nTotalNF,14,MsDecimais(MV_PAR12))) ,nLinPC,1774 ) //"Total Geral :"
+			oReport:PrintText( STR0078 + Transform(xMoeda(nTotalNF,SC7->C7_MOEDA,MV_PAR12,SC7->C7_DATPRF,MsDecimais(SC7->C7_MOEDA),nTxMoeda) , tm(nTotalNF,14,MsDecimais(MV_PAR12))) ,oReport:Row(),1774 ) //"Total Geral :"
 		Else
 			If lLiber
-				oReport:PrintText( STR0078 + Transform(xMoeda(nTotalNF,SC7->C7_MOEDA,MV_PAR12,SC7->C7_DATPRF,MsDecimais(SC7->C7_MOEDA),nTxMoeda) , tm(nTotalNF,14,MsDecimais(MV_PAR12))) ,nLinPC,1774 )
+				oReport:PrintText( STR0078 + Transform(xMoeda(nTotalNF,SC7->C7_MOEDA,MV_PAR12,SC7->C7_DATPRF,MsDecimais(SC7->C7_MOEDA),nTxMoeda) , tm(nTotalNF,14,MsDecimais(MV_PAR12))) ,oReport:Row(),1774 )
 			Else
-				oReport:PrintText( STR0078 + If((SC7->C7_TIPO == 1 .OR. SC7->C7_TIPO == 3),IF(lRejeit,"P E D I D O  B L O Q U E A D O ! ! !",STR0051),STR0086) ,nLinPC,1390 )
+				oReport:PrintText( STR0078 + If((SC7->C7_TIPO == 1 .OR. SC7->C7_TIPO == 3),IF(lRejeit,"P E D I D O  B L O Q U E A D O ! ! !",STR0051),STR0086) ,oReport:Row(),1390 )
 			EndIf
 		EndIf
 		oReport:SkipLine()
@@ -1123,7 +1145,6 @@ Return
 /*/
 Static Function CabecPCxAE(oReport,oSection1,nVias,nPagina)
 
-Local cMoeda		:= IIf( mv_par12 < 10 , Str(mv_par12,1) , Str(mv_par12,2) )
 Local nLinPC		:= 0
 Local nTpImp	  	:= IIF(ValType(oReport:nDevice)!=Nil,oReport:nDevice,0) // Tipo de Impressao
 Local nPageWidth	:= IIF(nTpImp==1.Or.nTpImp==6,2435,2435)
@@ -1132,10 +1153,6 @@ Public nRet		:= 0
 
 	SA2->(dbSetOrder(1))
 	SA2->(dbSeek(xFilial("SA2") + SC7->C7_FORNECE + SC7->C7_LOJA))
-
-	If Val(cMoeda) == 0
-		cMoeda := "1"
-	Endif
 
 	If cPaisLoc == "BRA"
 		cCGC := Transform(SA2->A2_CGC, Iif(SA2->A2_TIPO == 'F', Substr(PICPES(SA2->A2_TIPO),1,17), Substr(PICPES(SA2->A2_TIPO),1,21))) 
@@ -1153,7 +1170,7 @@ Public nRet		:= 0
 
 	oReport:PrintText( If(nPagina > 1,(STR0033)," "),,oSection1:Cell("M0_NOMECOM"):ColPos())
 
-	oReport:PrintText( If( mv_par08 == 1 , (STR0068), (STR0069) ) + " - " + GetMV("MV_MOEDA"+cMoeda) , oReport:Row(), 1030 )
+	oReport:PrintText( If( mv_par08 == 1 , (STR0068), (STR0069) ) + " - " + GetMV("MV_MOEDA"+Alltrim(Str(SC7->C7_MOEDA))) , oReport:Row(), 1030 )
 	oReport:PrintText( If( mv_par08 == 1 , SC7->C7_NUM, SC7->C7_NUMSC + "/" + SC7->C7_NUM ) + " - Página: " + Ltrim(Str(nPagina,2)) , oReport:Row(), 1920 )
 	oReport:SkipLine()
 
@@ -1184,13 +1201,17 @@ Public nRet		:= 0
 	oReport:PrintText(PadR(STR0088 + " " + ALLTRIM(SA2->A2_END),64) + STR0109 + " " + Substr(SA2->A2_BAIRRO,1,25), oReport:Row(), 1025)
 	oReport:SkipLine()
 
-	oReport:PrintText(STR0110 + RTRIM(SM0->M0_CIDENT) + " - " + SM0->M0_ESTENT + " - " + STR0089 + " " + Trans(SM0->M0_CEPENT,PesqPict("SA2","A2_CEP")), oReport:Row(), 15)
+	oReport:PrintText(PadR(STR0110 + RTRIM(SM0->M0_CIDENT) + " - " + SM0->M0_ESTENT, 42) + STR0089 + " " + Trans(SM0->M0_CEPENT,PesqPict("SA2","A2_CEP")), oReport:Row(), 15)
 	oReport:PrintText(PadR(STR0110 + " " + Alltrim(SA2->A2_MUN) + " - " + SA2->A2_EST + "  " + STR0112 + SA2->A2_CEP, 64) + STR0124 + ": " + cCGC, oReport:Row(), 1025)
 	oReport:SkipLine()
 
-	oReport:PrintText(STR0092 + SM0->M0_TEL + Space(2) + STR0093 + SM0->M0_FAX ,oReport:Row(), 15)
+	oReport:PrintText(PadR(STR0092 + SM0->M0_TEL,42) + "CNPJ: " + Transform(SM0->M0_CGC, "@R 99.999.999/9999-99") ,oReport:Row(), 15)
 	oReport:PrintText(PadR(STR0094 + "("+Substr(SA2->A2_DDD,1,3)+") "+Substr(SA2->A2_TEL,1,15) + " "+STR0114+"("+Substr(SA2->A2_DDD,1,3)+") "+SubStr(SA2->A2_FAX,1,15),64) + If( cPaisLoc$"ARG|POR|EUA",space(11) , STR0095 ) + " " + If( cPaisLoc$"ARG|POR|EUA",space(18), SA2->A2_INSCR ), oReport:Row(), 1025)
 	oReport:SkipLine()
+
+	If FWCodEmp() == '15'
+		oReport:PrintText("E-Mail: compras@helsimplast.com.br", oReport:Row(), 15)
+	Endif
 
 	oReport:PrintText("E-Mail: " + ALLTRIM(SA2->A2_EMAIL2), oReport:Row(), 1025)
 
