@@ -1,159 +1,157 @@
-#Include "Rwmake.ch"
-#Include "Topconn.ch"
+#include 'totvs.ch'
+#include 'protheus.ch'
+#include "Rwmake.ch"
 
-/*
-ÜÜÜÜÜÜÜÜÜÜÜÜÜÜÜÜÜÜÜÜÜÜÜÜÜÜÜÜÜÜÜÜÜÜÜÜÜÜÜÜÜÜÜÜÜÜÜÜÜÜÜÜÜÜÜÜÜÜÜÜÜÜÜÜÜÜÜÜÜÜÜÜÜÜÜÜÜ
-±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±
-±±ÉÍÍÍÍÍÍÍÍÍÍÑÍÍÍÍÍÍÍÍÍÍËÍÍÍÍÍÍÍÑÍÍÍÍÍÍÍÍÍÍÍÍÍÍÍÍÍÍÍÍËÍÍÍÍÍÍÑÍÍÍÍÍÍÍÍÍÍÍÍÍ»±±
-±±ºPrograma  ³RFATA003  ºAutor  ³Adriano Luis Brandaoº Data ³  22/10/03   º±±
-±±ÌÍÍÍÍÍÍÍÍÍÍØÍÍÍÍÍÍÍÍÍÍÊÍÍÍÍÍÍÍÏÍÍÍÍÍÍÍÍÍÍÍÍÍÍÍÍÍÍÍÍÊÍÍÍÍÍÍÏÍÍÍÍÍÍÍÍÍÍÍÍÍ¹±±
-±±ºDesc.     ³Funcao de geracao do numero de serie por produto / pedido deº±±
-±±º          ³vendas.                                                     º±±
-±±ÌÍÍÍÍÍÍÍÍÍÍØÍÍÍÍÍÍÍÍÍÍÍÍÍÍÍÍÍÍÍÍÍÍÍÍÍÍÍÍÍÍÍÍÍÍÍÍÍÍÍÍÍÍÍÍÍÍÍÍÍÍÍÍÍÍÍÍÍÍÍÍ¹±±
-±±ºUso       ³ AP - MASIPACK.                                             º±±
-±±ÈÍÍÍÍÍÍÍÍÍÍÏÍÍÍÍÍÍÍÍÍÍÍÍÍÍÍÍÍÍÍÍÍÍÍÍÍÍÍÍÍÍÍÍÍÍÍÍÍÍÍÍÍÍÍÍÍÍÍÍÍÍÍÍÍÍÍÍÍÍÍÍ¼±±
-±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±
-ßßßßßßßßßßßßßßßßßßßßßßßßßßßßßßßßßßßßßßßßßßßßßßßßßßßßßßßßßßßßßßßßßßßßßßßßßßßßß
-*/
-
+/*/{Protheus.doc} User Function RFATA003
+Rotina para gravar os detalhes da base instalada
+@type  Function
+@author E.DINIZ - [ DS2U ]
+@since 23/02/2022
+/*/
 User Function RFATA003()
 
-_cPedido := Space(06)                 
-_nGerou	 := 0
-_cProd   := ""
-_nQuant  := 0
+Local cPedido	:= Space(TamSX3('C5_NUM')[1])
+Local oDlg		:= Nil
 
-@ 089,177 To 330,588 Dialog _oDlg1 Title OemToAnsi("Geração da Serie")
-@ 009,011 To 055,188
-@ 063,011 To 092,188
-@ 020,024 Say OemToAnsi("Esta rotina tem como objetivo dar o numero de serie aos") 	Size 151,008
-@ 034,024 Say OemToAnsi("produtos do pedido de vendas.") 							Size 151,008
-@ 075,024 Say OemToAnsi("Pedido de Vendas") 										Size 055,008
-@ 075,084 Get _cPedido Valid Existcpo("SC5") .And. NaoVazio()						Size 044,010
-@ 101,095 BmpButton Type 1 Action Processa( { || _fGera() } )
-@ 101,142 BmpButton Type 2 Action _oDlg1:End()
-Activate Dialog _oDlg1
+	If !(FwCodEmp() $ '01|10')
+		Help(" ",1,"RFATA003_1",, "A utilização desta rotina é exclusiva para as empresas 01-Masipack e 10-Fabrima",1,0)
+		Return
+	Endif
+
+	@ 089,177 To 330,588 Dialog oDlg Title OemToAnsi("Geração da Serie")
+	@ 009,011 To 055,188
+	@ 063,011 To 092,188
+	@ 020,024 Say OemToAnsi("Esta rotina tem como objetivo dar o numero de serie aos") 	Size 151,008
+	@ 034,024 Say OemToAnsi("produtos do pedido de vendas.") 							Size 151,008
+	@ 075,024 Say OemToAnsi("Pedido de Vendas") 										Size 055,008
+	@ 075,084 Get cPedido Valid Existcpo("SC5") .And. NaoVazio()						Size 044,010
+	@ 101,095 BmpButton Type 1 Action ProcNumSerie(cPedido)
+	@ 101,142 BmpButton Type 2 Action oDlg:End()
+	
+	Activate Dialog oDlg Centered
+
 Return
 
-/*
-ÜÜÜÜÜÜÜÜÜÜÜÜÜÜÜÜÜÜÜÜÜÜÜÜÜÜÜÜÜÜÜÜÜÜÜÜÜÜÜÜÜÜÜÜÜÜÜÜÜÜÜÜÜÜÜÜÜÜÜÜÜÜÜÜÜÜÜÜÜÜÜÜÜÜÜÜÜ
-±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±
-±±ÉÍÍÍÍÍÍÍÍÍÍÑÍÍÍÍÍÍÍÍÍÍËÍÍÍÍÍÍÍÑÍÍÍÍÍÍÍÍÍÍÍÍÍÍÍÍÍÍÍÍËÍÍÍÍÍÍÑÍÍÍÍÍÍÍÍÍÍÍÍÍ»±±
-±±ºPrograma  ³_fGera    ºAutor  ³Adriano Luis Brandaoº Data ³  22/10/03   º±±
-±±ÌÍÍÍÍÍÍÍÍÍÍØÍÍÍÍÍÍÍÍÍÍÊÍÍÍÍÍÍÍÏÍÍÍÍÍÍÍÍÍÍÍÍÍÍÍÍÍÍÍÍÊÍÍÍÍÍÍÏÍÍÍÍÍÍÍÍÍÍÍÍÍ¹±±
-±±ºDesc.     ³ Funcao de geracao do numero de serie dos produtos do pedidoº±±
-±±º          ³ de vendas.                                                 º±±
-±±ÌÍÍÍÍÍÍÍÍÍÍØÍÍÍÍÍÍÍÍÍÍÍÍÍÍÍÍÍÍÍÍÍÍÍÍÍÍÍÍÍÍÍÍÍÍÍÍÍÍÍÍÍÍÍÍÍÍÍÍÍÍÍÍÍÍÍÍÍÍÍÍ¹±±
-±±ºUso       ³ AP - MASIPACK.                                             º±±
-±±ÈÍÍÍÍÍÍÍÍÍÍÏÍÍÍÍÍÍÍÍÍÍÍÍÍÍÍÍÍÍÍÍÍÍÍÍÍÍÍÍÍÍÍÍÍÍÍÍÍÍÍÍÍÍÍÍÍÍÍÍÍÍÍÍÍÍÍÍÍÍÍÍ¼±±
-±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±
-ßßßßßßßßßßßßßßßßßßßßßßßßßßßßßßßßßßßßßßßßßßßßßßßßßßßßßßßßßßßßßßßßßßßßßßßßßßßßß
-*/
-Static Function _fGera()
 
-SC6->(DbSetOrder(1))
-SC6->(DbSeek(xFilial("SC6")+_cPedido))
-If Alltrim(SC6->C6_PRODUTO) == "PEDIDO"
-   apMsgStop("Pedido sem Itens de Maquina - Geração será cancelada")
-   Return
-EndIf   
+/*/{Protheus.doc} User Function ProcNumSerie
+Função para posicionar os ponteiros nas tabelas e fornecer
+a quantidade a ser gerada no número de sérir na base instalada
+@type  Static Function
+@author E.DINIZ - [ DS2U ]
+@since 23/02/2022
+/*/
+Static Function ProcNumSerie(cPedido)
 
-SC5->(DbSetOrder(1))
-SC5->(DbSeek(xFilial("SC5")+_cPedido))
-If SC5->C5_TIPO <> "N"
-   apMsgStop("Este Pedido nao e de venda")
-   Return
-EndIf
+Local lContinua	:= .T.
+Local nQuant	:= 0
 
-SA1->(DbSetOrder(1))
-SA1->(DbSeek(xFilial("SA1")+SC6->C6_CLI+SC6->C6_LOJA))
+	DbSelectArea("SC5")
+	SC5->(DbSetOrder(1))
+	SC5->(DbSeek(FWxFilial("SC5") + PadR(cPedido,TamSx3('C5_NUM')[1])))
 
-If ! apMsgYesNo("Confirma Geracao do Pedido "+_cPedido+" Cliente : "+ SA1->A1_NREDUZ)
-   Return
-EndIf
-//
-// Monta a regua
-//
-_nCont := 0
-Do While ! SC6->(Eof()) .And. SC6->C6_NUM == _cPedido
-   _nCont++
-   SC6->(DbSkip())
-EndDo
+	DbSelectArea("SC6")
+	SC6->(DbSetOrder(1))
+	SC6->(DbSeek(FWxFilial("SC6") + PadR(cPedido,TamSx3('C6_NUM')[1])))
 
-ProcRegua(_nCont)
-SC6->(DbSeek(xFilial("SC6")+_cPedido))
+	DbSelectArea("SA1")
+	SA1->(DbSetOrder(1))
+	SA1->(DbSeek(FWxFilial("SA1") + SC6->(C6_CLI + C6_LOJA)))
 
-Do While ! SC6->(Eof()) .And. SC6->C6_NUM == _cPedido
-   IncProc("Gerando o numero de serie do pedido " + _cPedido + " !!!!")
-   //
-   // Se nao encontrou uma geracao de serie, entao sera gerado a serie.
-   //
-   // alteração do processo - Lizandra - 07/11/13 - ACRESCENTADO " .OR. SUBSTR(C6_PRODUTO,3,6) == _cPedido "
-   If SubStr(SC6->C6_PRODUTO,1,2) == "PV" .OR. SUBSTR(SC6->C6_PRODUTO,3,6) == _cPedido 
-      SG1->(DbSetOrder(1))
-      If SG1->(DbSeek(xFilial("SG1")+SC6->C6_PRODUTO))
-         Do While ! SG1->(Eof()) .And. SC6->C6_PRODUTO == SG1->G1_COD
-            SB1->(DbSeek(xFilial("SB1")+SG1->G1_COMP))
-            If SB1->B1_ETIQUET == "S"
-               _cProd := SG1->G1_COMP
-               _nQuant := SC6->C6_QTDVEN * SG1->G1_QUANT
-               GeraSerie()
-            EndIf   
-            SG1->(DbSkip())
-            Loop
-         EndDo   
-      EndIf   
-   Else
-      SB1->(DbSetOrder(1))
-      SB1->(DbSeek(xFilial("SB1")+SC6->C6_PRODUTO))
-      If SB1->B1_ETIQUET == "S"
-         _cProd  := SC6->C6_PRODUTO
-         _nQuant := SC6->C6_QTDVEN
-         GeraSerie()
-      EndIf
-   EndIf
-   SC6->(DbSkip())
-EndDo                                                                         
+	DbSelectArea("AA3")
+	AA3->(DbOrderNickName("AA3_PEDPRO"))
 
-If _nGerou > 0
-   _cPedido := Space(06)
-   apMsgInfo("Series geradas com sucesso !!!!","AVISO","INFO")
-Else 
-   apMsgAlert("Não houve geração de serie !!!!","AVISO","INFO")  
-EndIf
+	DbSelectArea("SB1")
+	SB1->(DbSetOrder(1))
 
-Static Function GeraSerie() 
+	DbSelectArea("SG1")
+	SG1->(DbSetOrder(1))
 
-Local _nI
-
-    AA3->(DbOrderNickName("AA3_PEDPRO"))
-	If ! AA3->(DbSeek(xFilial("AA3")+SC6->C6_NUM+SC6->C6_ITEM+_cProd))
-	  //
-      // Gera todas as series de acordo com a quantidade do item do pedido de vendas.
-      //
-		For _nI := 1 To _nQuant
-			_cSerie				:= GetMv("MV_MSSERIE")
-			If Left(_cSerie,4) <> Strzero(Year(dDataBase),4)
-				_cSerie			:= Strzero(Year(dDataBase),4)+"0001"
-			Else
-				_cSerie			:= Left(_cSerie,4)+Strzero(Val(Substr(_cSerie,5,4))+1,4)
+	While SC6->(!EOF()) .And. lContinua .And. SC6->(C6_FILIAL + C6_NUM) == FWxFilial("SC6") + cPedido
+		
+		If LEFT(SC6->C6_PRODUTO,2) == "PV" .OR. SUBSTR(SC6->C6_PRODUTO,3,6) == cPedido 
+			If SG1->(DbSeek(FWxFilial("SG1") + SC6->C6_PRODUTO))
+				Do While SG1->(!EOF()) .And. SC6->C6_PRODUTO == SG1->G1_COD
+					If SB1->(DbSeek(FWxFilial("SB1") + SG1->G1_COMP)) .And. SB1->B1_ETIQUET == "S"
+						nQuant := SC6->C6_QTDVEN * SG1->G1_QUANT
+						If MyTECA040(SG1->G1_COMP, nQuant)
+							lContinua := .F.
+							Exit
+						Endif
+					EndIf
+					SG1->(DbSkip())
+				EndDo
 			EndIf
-			RecLock("AA3",.t.)
-			AA3->AA3_FILIAL		:=	xFilial("AA3")
-			AA3->AA3_MSPED		:=	SC6->C6_NUM
-			AA3->AA3_MSITEM		:=	SC6->C6_ITEM
-			AA3->AA3_CODPRO		:=	_cProd
-			AA3->AA3_NUMSER		:=	_cSerie
-			AA3->AA3_MSEMI  	:=  Posicione("SC5",1,xFilial("SC5")+SC6->C6_NUM,"C5_EMISSAO")
-			AA3->AA3_DTVEND     :=	dDataBase
-			AA3->AA3_MSOBS      :=	""
-			AA3->AA3_CODCLI     := SC6->C6_CLI
-			AA3->AA3_LOJA       := SC6->C6_LOJA 
-			AA3->AA3_MODELO     := SB1->B1_MSMAQUI
-			AA3->AA3_CONTRT     := SC5->C5_ORCAM 
-			_nGerou++
-			AA3->(MsUnLock())
-			PutMv("MV_MSSERIE",_cSerie)
-		Next _nI
-	EndIf
+		Else
+			If SB1->(DbSeek(FWxFilial("SB1") + SC6->C6_PRODUTO)) .And. SB1->B1_ETIQUET == "S"
+				nQuant := SC6->C6_QTDVEN
+				If MyTECA040(SC6->C6_PRODUTO, nQuant)
+					lContinua := .F.
+				Endif
+			Endif
+		EndIf
+		SC6->(DbSkip())
+	Enddo
+
+	If lContinua
+		FwAlertSuccess('Números de série gerados com sucesso')
+	Endif
+
 Return
+
+
+/*/{Protheus.doc} User Function ProcNumSerie
+Função para realizar o ExecAuto na rotina TECA040 - Base Instalada
+@type  Static Function
+@author E.DINIZ - [ DS2U ]
+@since 23/02/2022
+/*/
+Static Function MyTECA040(cProduto, nQuant)
+
+Local aCab040 	:= {}
+Local aItens040	:= {}
+Local cSerie	:= ''
+Local nX		:= 0
+
+Private lMsErroAuto := .F.
+
+	If !(AA3->(DbSeek(FWxFilial("AA3")+ SC6->(C6_NUM + C6_ITEM) + _cProd)))
+
+		For nX := 1 to nQuant
+			
+			cSerie := GetMv("MV_MSSERIE")
+
+			If !(Left(_cSerie,4) == Strzero(Year(dDataBase),4))
+				_cSerie := Strzero(Year(dDataBase),4) + "0001"
+			Else
+				_cSerie := Left(_cSerie,4) + Strzero(Val(Substr(_cSerie,5,4))+1,4)
+			EndIf
+			
+			AADD(aCab040, { "AA3_FILIAL",	FWxFilial("AA3"), 	NIL } )
+			AADD(aCab040, { "AA3_CODCLI", 	SC6->C6_CLI,		NIL } )
+			AADD(aCab040, { "AA3_LOJA",		SC6->C6_LOJA,		NIL } )
+			AADD(aCab040, { "AA3_CODPRO",	cProduto,			NIL } )
+			AADD(aCab040, { "AA3_NUMSER",	cSerie,				NIL } )
+			AADD(aCab040, { "AA3_DTVEND",	dDataBase,			NIL } )
+			AADD(aCab040, { "AA3_MSPED",	SC6->C6_NUM,		NIL } )
+			AADD(aCab040, { "AA3_MSITEM",	SC6->C6_ITEM,		NIL } )
+			AADD(aCab040, { "AA3_MODELO",	SB1->B1_MSMAQUI,	NIL } )
+			AADD(aCab040, { "AA3_CONTRT",	SC5->C5_ORCAM,		NIL } )
+			AADD(aCab040, { "AA3_MSEMI",	SC5->C5_EMISSAO,	NIL } )
+			
+			MsExecAuto({|x,y,z| TECA040(x,y,z) }, aCab040, aItens040, 3)                
+			
+			If lMsErroAuto
+				MostraErro()
+				DisarmTransaction()
+				Exit
+			Else
+				PutMv("MV_MSSERIE",_cSerie)
+				aCab040		:= {}
+				aItens040	:= {}
+			Endif
+
+		Next nX
+	
+	Endif
+
+Return lMsErroAuto
