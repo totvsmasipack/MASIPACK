@@ -26,7 +26,7 @@ SC5->(DbSetOrder(1))
 SC5->(DbSeek(xFilial("SC5")+SC6->C6_NUM))
 
 // ANULACAO DA SIMPLES REMESSA
-If SF4->F4_CONTAB == "1" .AND. ALLTRIM(SC5->C5_NATUREZ) $ "T04|T09.1|X04" .AND. SUBSTR(SD2->D2_CF,2,3)=="949"
+If SF4->F4_CONTAB == "1" .AND. ALLTRIM(SC5->C5_NATUREZ) $ "T04|T09.1|X04|T17.1" .AND. SUBSTR(SD2->D2_CF,2,3)=="949"
     If _nSeq == 1      
       _nValor := (SD2->D2_VALBRUT)
     EndIf
