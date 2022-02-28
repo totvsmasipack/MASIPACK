@@ -12,7 +12,7 @@
 *---------------------------------------------------------------------------------------------------*/
 
 User Function RCOMG017()
-Local lRet        := .F. //.T. = permite editar E2_VENCTO no acols - .F. = Nao permite editar
+Local lRet        := .T. //.T. = permite editar E2_VENCTO no acols - .F. = Nao permite editar
 
 If (FWIsInCallStack('MATA103')) //Verifica se está na rotina DOCUMENTO DE ENTRADA
 
