@@ -10,8 +10,9 @@ Rotina para gravar os detalhes da base instalada
 /*/
 User Function RFATA003()
 
-Local cPedido	:= Space(TamSX3('C5_NUM')[1])
 Local oDlg		:= Nil
+
+Private cPedido	:= Space(TamSX3('C5_NUM')[1])
 
 	If !(FwCodEmp() $ '01|10')
 		Help(" ",1,"RFATA003_1",, "A utilização desta rotina é exclusiva para as empresas 01-Masipack e 10-Fabrima",1,0)
@@ -25,7 +26,7 @@ Local oDlg		:= Nil
 	@ 034,024 Say OemToAnsi("produtos do pedido de vendas.") 							Size 151,008
 	@ 075,024 Say OemToAnsi("Pedido de Vendas") 										Size 055,008
 	@ 075,084 Get cPedido Valid Existcpo("SC5") .And. NaoVazio()						Size 044,010
-	@ 101,095 BmpButton Type 1 Action ProcNumSerie(cPedido)
+	@ 101,095 BmpButton Type 1 Action IIF( FwAlertYesNo('Iniciar a geração do número de série?'), ProcNumSerie(), Nil )
 	@ 101,142 BmpButton Type 2 Action oDlg:End()
 	
 	Activate Dialog oDlg Centered
@@ -40,7 +41,7 @@ a quantidade a ser gerada no número de sérir na base instalada
 @author E.DINIZ - [ DS2U ]
 @since 23/02/2022
 /*/
-Static Function ProcNumSerie(cPedido)
+Static Function ProcNumSerie()
 
 Local lContinua	:= .T.
 Local nQuant	:= 0
@@ -73,10 +74,9 @@ Local nQuant	:= 0
 				Do While SG1->(!EOF()) .And. SC6->C6_PRODUTO == SG1->G1_COD
 					If SB1->(DbSeek(FWxFilial("SB1") + SG1->G1_COMP)) .And. SB1->B1_ETIQUET == "S"
 						nQuant := SC6->C6_QTDVEN * SG1->G1_QUANT
-						If MyTECA040(SG1->G1_COMP, nQuant)
-							lContinua := .F.
-							Exit
-						Endif
+						MyTECA040(SG1->G1_COMP, nQuant)
+						//	lContinua := .F.
+						//	Exit
 					EndIf
 					SG1->(DbSkip())
 				EndDo
@@ -84,17 +84,18 @@ Local nQuant	:= 0
 		Else
 			If SB1->(DbSeek(FWxFilial("SB1") + SC6->C6_PRODUTO)) .And. SB1->B1_ETIQUET == "S"
 				nQuant := SC6->C6_QTDVEN
-				If MyTECA040(SC6->C6_PRODUTO, nQuant)
-					lContinua := .F.
-				Endif
+				MyTECA040(SC6->C6_PRODUTO, nQuant)
+				//	lContinua := .F.
 			Endif
 		EndIf
+		
 		SC6->(DbSkip())
-	Enddo
+		
+		If ( SC6->(EOF()) .Or. SC6->(C6_FILIAL + C6_NUM) == FWxFilial("SC6") + cPedido ) .And. lContinua
+			FwAlertSuccess('Números de série gerados com sucesso','TOTVS')
+		Endif
 
-	If lContinua
-		FwAlertSuccess('Números de série gerados com sucesso')
-	Endif
+	Enddo
 
 Return
 
@@ -107,24 +108,25 @@ Função para realizar o ExecAuto na rotina TECA040 - Base Instalada
 /*/
 Static Function MyTECA040(cProduto, nQuant)
 
-Local aCab040 	:= {}
-Local aItens040	:= {}
+//Local aCab040 	:= {}
+//Local aItens040	:= {}
 Local cSerie	:= ''
 Local nX		:= 0
 
 Private lMsErroAuto := .F.
 
-	If !(AA3->(DbSeek(FWxFilial("AA3")+ SC6->(C6_NUM + C6_ITEM) + _cProd)))
+	If !(AA3->(DbSeek(FWxFilial("AA3")+ SC6->(C6_NUM + C6_ITEM) + cProduto)))
 
 		For nX := 1 to nQuant
 			
 			cSerie := GetMv("MV_MSSERIE")
 
-			If !(Left(_cSerie,4) == Strzero(Year(dDataBase),4))
-				_cSerie := Strzero(Year(dDataBase),4) + "0001"
+			If !(Left(cSerie,4) == Strzero(Year(dDataBase),4))
+				cSerie := Strzero(Year(dDataBase),4) + "0001"
 			Else
-				_cSerie := Left(_cSerie,4) + Strzero(Val(Substr(_cSerie,5,4))+1,4)
+				cSerie := Left(cSerie,4) + Strzero(Val(Substr(cSerie,5,4))+1,4)
 			EndIf
+			/*
 			
 			AADD(aCab040, { "AA3_FILIAL",	FWxFilial("AA3"), 	NIL } )
 			AADD(aCab040, { "AA3_CODCLI", 	SC6->C6_CLI,		NIL } )
@@ -149,9 +151,27 @@ Private lMsErroAuto := .F.
 				aCab040		:= {}
 				aItens040	:= {}
 			Endif
+			*/
+
+			RecLock("AA3",.T.)
+			AA3->AA3_FILIAL		:=	xFilial("AA3")
+			AA3->AA3_MSPED		:=	SC6->C6_NUM
+			AA3->AA3_MSITEM		:=	SC6->C6_ITEM
+			AA3->AA3_CODPRO		:=	cProduto
+			AA3->AA3_NUMSER		:=	cSerie
+			AA3->AA3_MSEMI  	:=  Posicione("SC5",1,xFilial("SC5")+SC6->C6_NUM,"C5_EMISSAO")
+			AA3->AA3_DTVEND     :=	dDataBase
+			AA3->AA3_MSOBS      :=	""
+			AA3->AA3_CODCLI     := SC6->C6_CLI
+			AA3->AA3_LOJA       := SC6->C6_LOJA 
+			AA3->AA3_MODELO     := SB1->B1_MSMAQUI
+			AA3->AA3_CONTRT     := SC5->C5_ORCAM 
+			AA3->(MsUnLock())
+			
+			PutMv("MV_MSSERIE",cSerie)
 
 		Next nX
 	
 	Endif
 
-Return lMsErroAuto
+Return
