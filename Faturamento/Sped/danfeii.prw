@@ -1087,6 +1087,7 @@ Local cEsp		    := ""
 Local cLogoD	    := ""
 local cLogoTotvs 	:= "Powered_by_TOTVS.bmp"
 local cStartPath 	:= GetSrvProfString("Startpath","")
+Local cNameGerDoc   := FWLeUserlg("SF2->F2_USERLGI", 1) // CUSTOMIZACAO MASIPACK
 
 Local lPreview      := .F.
 Local lFlag         := .T.
@@ -3171,6 +3172,9 @@ oDanfe:Say(729,352,"RESERVADO AO FISCO",oFont08N:oFont)
 //Logotipo Rodape
 if file(cLogoTotvs) .or. Resource2File ( cLogoTotvs, cStartPath+cLogoTotvs )
 	oDanfe:SayBitmap(866,484,cLogoTotvs,120,20)
+	// CUSTOMIZACAO MASIPACK 
+	oDanfe:Say(875,352,"DOCUMENTO GERADO POR: "+cNameGerDoc,oFont08N:oFont)
+	// FIM CUSTOMIZACAO MASIPACK
 endif
 
 nLenMensagens:= Len(aResFisco)
@@ -3579,6 +3583,9 @@ For nY := 1 To nLenItens
 				//Logotipo Rodape
 				if file(cLogoTotvs) .or. Resource2File ( cLogoTotvs, cStartPath+cLogoTotvs )
 					oDanfe:SayBitmap(866,484,cLogoTotvs,120,20)
+					// CUSTOMIZACAO MASIPACK 
+					oDanfe:Say(875,352,"DOCUMENTO GERADO POR: "+cNameGerDoc,oFont08N:oFont)
+					// FIM CUSTOMIZACAO MASIPACK
 				endif
 
 				// Seta o máximo de itens para o MAXITEMP2
@@ -3828,6 +3835,9 @@ For nY := 1 To nLenItens
 			//ÀÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÙ
 			if file(cLogoTotvs) .or. Resource2File ( cLogoTotvs, cStartPath+cLogoTotvs )
 				oDanfe:SayBitmap(866,484,cLogoTotvs,120,20)
+				// CUSTOMIZACAO MASIPACK 
+				oDanfe:Say(875,352,"DOCUMENTO GERADO POR: "+cNameGerDoc,oFont08N:oFont)
+				// FIM CUSTOMIZACAO MASIPACK
 			endif
 
 			// Seta o máximo de itens para o MAXITEMP2
@@ -3977,6 +3987,9 @@ If lMensagens
 	//Logotipo Rodape
 	if file(cLogoTotvs) .or. Resource2File ( cLogoTotvs, cStartPath+cLogoTotvs )
 		oDanfe:SayBitmap(866,484,cLogoTotvs,120,20)
+		// CUSTOMIZACAO MASIPACK 
+		oDanfe:Say(875,352,"DOCUMENTO GERADO POR: "+cNameGerDoc,oFont08N:oFont)
+		// FIM CUSTOMIZACAO MASIPACK
 	endif
 
 	oDanfe:Box(000,000,095,250)

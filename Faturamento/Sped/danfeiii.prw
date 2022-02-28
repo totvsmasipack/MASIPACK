@@ -4104,7 +4104,8 @@ Static Function DanfeInfC(oDanfe,aMensagem,nBaseTxt,nBaseCol,nLine,nPosMsg, nFol
 	Local cLogoTotvs 		:= "Powered_by_TOTVS.bmp"
 	Local cStartPath 		:= GetSrvProfString("Startpath","")
 	Local nPosAdicionais	:= 0
-	Local nX				:= 0	
+	Local nX			    := 0
+	Local cNameGerDoc       := FWLeUserlg("SF2->F2_USERLGI", 1) // CUSTOMIZACAO MASIPACK
 
 	Default lComplemento := .F.
 
@@ -4148,6 +4149,9 @@ Static Function DanfeInfC(oDanfe,aMensagem,nBaseTxt,nBaseCol,nLine,nPosMsg, nFol
 		//읕컴컴컴컴컴컴컴컴컴컴컴컴컴컴컴컴컴컴컴컴컴컴컴컴컴컴컴컴컴컴컴컴컴컴컴켸												
 		if file(cLogoTotvs) .or. Resource2File ( cLogoTotvs, cStartPath+cLogoTotvs )
 			oDanfe:SayBitmap(MAXBOXV+1,752,cLogoTotvs,120,20)
+			// CUSTOMIZACAO MASIPACK 
+			oDanfe:Say(MAXBOXV+12,600,"DOCUMENTO GERADO POR: "+cNameGerDoc,oFont08N:oFont)
+			// FIM CUSTOMIZACAO MASIPACK
 		endif	
 		nLenMensagens:= Len(aResFisco)
 		nLin:= nLine+618   
@@ -4204,6 +4208,9 @@ Static Function DanfeInfC(oDanfe,aMensagem,nBaseTxt,nBaseCol,nLine,nPosMsg, nFol
 		//읕컴컴컴컴컴컴컴컴컴컴컴컴컴컴컴컴컴컴컴컴컴컴컴컴컴컴컴컴컴컴컴컴컴컴컴켸												
 		if file(cLogoTotvs) .or. Resource2File ( cLogoTotvs, cStartPath+cLogoTotvs )
 			oDanfe:SayBitmap(MAXBOXV+1,752,cLogoTotvs,120,20)
+			// CUSTOMIZACAO MASIPACK 
+			oDanfe:Say(MAXBOXV+12,600,"DOCUMENTO GERADO POR: "+cNameGerDoc,oFont08N:oFont)
+			// FIM CUSTOMIZACAO MASIPACK 
 		endif	
 	EndIf
 
