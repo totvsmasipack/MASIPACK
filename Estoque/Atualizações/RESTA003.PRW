@@ -18,77 +18,77 @@
 
 User Function RESTA003()
 
-	Local	oBpm			:= Nil
-	Private oPsqSHB			:= nil
-	Private _lExiste		:= .F.
-	Private _lAltMao 		:= .F.
-	Private _lAltTem 		:= .F.
-	Private _lAltDt			:= .F.
-	Private _cUsuario   	:= ""
-	Private cUsuarioSZS 	:= ""
-	Private cUsuarioSX5 	:= ""
-	Private _aUsuario   	:= {}
-	Private _cUsuSenha  	:= ""
-	Private _cDeptoUsu  	:= ""
-	Private titulo      	:= ""
-	Private cString     	:= "SC2"
-	Private nomeprog    	:= "RESTA003"
-	Private _cNumOP     	:= ""
-	Private cSetor      	:= ""
-	Private _cUltOpe		:= ""
-	Private cCodSet			:= SPACE(06)
-	Private cRecurso		:= SPACE(50)
-	Private cTE         	:= SPACE(15)
-	Private cCodSetor   	:= ""
-	Private cValidMsg   	:= ""
-	Private nQtde       	:= 0
-	Private cProg       	:= ""
-	Private cOrigem     	:= ""
-	Private cDestino    	:= ""
-	Private cArq        	:= ""
-	Private nQuant      	:= 0
-	Private nEstoque    	:= 0
-	Private nQtdSD4     	:= 0
-	Private nQtdSC2     	:= 0
-	Private I           	:= 0
-	Private _lProc      	:= .T.
-	Private cProduto    	:= ""
-	Private cMens       	:= ""
-	Private cMens2			:= ""
-	Private nDias       	:= 0
-	Private cMP         	:= ""
-	Private nEmpVD      	:= 0
-	//Variaveis criadas para atender a funcao GravaSD3()
-	Private lBxComp			:= .F.	// Baixa componentes
-	Private lFimOp			:= .F.	// Finaliza OP alimentando estoque
-	Private lBxFalta		:= .F.	// Baixa itens lista de faltas
-	Private nQtd1			:= 0
-	Private nQtd2			:= 0
-	Private nQtd3			:= 0
-	Private nVcust1			:= 0
-	Private nVcust2			:= 0
-	Private nVcust3			:= 0
-	Private cCcusto			:= ""
-	Private aAreaSX5		:= {}
-	Private _cObserv		:= ""
-	PRIVATE LMSERROAUTO		:= .F.	// INDICA SE GEROU ERRO NA TRANSACAO
-	PRIVATE CPRODSD3		:= ""		// PRODUTO
-	PRIVATE NQTDSD3	   		:= 0		// QUANTIDADE
-	PRIVATE oListBox 		:= NIL
-	Private aArqlist		:= {{"","","","","",""}}
-	Private oVerde 			:= LoadBitmap( GetResources(), "BR_VERDE_OCEAN" 		)
-	Private oVermelho		:= LoadBitmap( GetResources(), "BR_VERMELHO_OCEAN" 	)
-	Private _cCod			:= SPACE(15)
-	Private _cDescric		:= SPACE(30)
-	Private _oCod			:= Nil
-	Private _oDescr			:= Nil
-	Private _lReqOk			:= .F.
-	Private cArqPRN
-	Private cLocal
-	Private cProd
-	Private cRev
-	Private _nCol 			:= 0
-	Private _lGerou			:= .F.
+Local	oBpm			:= Nil
+Private oPsqSHB			:= nil
+Private _lExiste		:= .F.
+Private _lAltMao 		:= .F.
+Private _lAltTem 		:= .F.
+Private _lAltDt			:= .F.
+Private _cUsuario   	:= ""
+Private cUsuarioSZS 	:= ""
+Private cUsuarioSX5 	:= ""
+Private _aUsuario   	:= {}
+Private _cUsuSenha  	:= ""
+Private _cDeptoUsu  	:= ""
+Private titulo      	:= ""
+Private cString     	:= "SC2"
+Private nomeprog    	:= "RESTA003"
+Private _cNumOP     	:= ""
+Private cSetor      	:= ""
+Private _cUltOpe		:= ""
+Private cCodSet			:= SPACE(06)
+Private cRecurso		:= SPACE(50)
+Private cTE         	:= SPACE(15)
+Private cCodSetor   	:= ""
+Private cValidMsg   	:= ""
+Private nQtde       	:= 0
+Private cProg       	:= ""
+Private cOrigem     	:= ""
+Private cDestino    	:= ""
+Private cArq        	:= ""
+Private nQuant      	:= 0
+Private nEstoque    	:= 0
+Private nQtdSD4     	:= 0
+Private nQtdSC2     	:= 0
+Private I           	:= 0
+Private _lProc      	:= .T.
+Private cProduto    	:= ""
+Private cMens       	:= ""
+Private cMens2			:= ""
+Private nDias       	:= 0
+Private cMP         	:= ""
+Private nEmpVD      	:= 0
+//Variaveis criadas para atender a funcao GravaSD3()
+Private lBxComp			:= .F.	// Baixa componentes
+Private lFimOp			:= .F.	// Finaliza OP alimentando estoque
+Private lBxFalta		:= .F.	// Baixa itens lista de faltas
+Private nQtd1			:= 0
+Private nQtd2			:= 0
+Private nQtd3			:= 0
+Private nVcust1			:= 0
+Private nVcust2			:= 0
+Private nVcust3			:= 0
+Private cCcusto			:= ""
+Private aAreaSX5		:= {}
+Private _cObserv		:= ""
+PRIVATE LMSERROAUTO		:= .F.	// INDICA SE GEROU ERRO NA TRANSACAO
+PRIVATE CPRODSD3		:= ""		// PRODUTO
+PRIVATE NQTDSD3	   		:= 0		// QUANTIDADE
+PRIVATE oListBox 		:= NIL
+Private aArqlist		:= {{"","","","","",""}}
+Private oVerde 			:= LoadBitmap( GetResources(), "BR_VERDE_OCEAN" 		)
+Private oVermelho		:= LoadBitmap( GetResources(), "BR_VERMELHO_OCEAN" 	)
+Private _cCod			:= SPACE(15)
+Private _cDescric		:= SPACE(30)
+Private _oCod			:= Nil
+Private _oDescr			:= Nil
+Private _lReqOk			:= .F.
+Private cArqPRN
+Private cLocal
+Private cProd
+Private cRev
+Private _nCol 			:= 0
+Private _lGerou			:= .F.
 
 	//CASO NAO SEJA MASIPACK, UTILIZAR VERSAO ANTIGA DO RESTA003 NOMEADA COMO RESTA333
 	///If SM0->M0_CODIGO <> '01'
@@ -188,25 +188,22 @@ User Function RESTA003()
 		aArqList[oListBox:nAt][5],;
 		aArqList[oListBox:nAt][6]}}
 
-//		@ 015,038 Get			cCodSet 		Valid ValidaSetor()	F3 "SHB_1"																Size 030,008
-//		@ 015,067 BUTTON "?" 	SIZE 006,010 PIXEL OF oPsqSHB ACTION UndoFilter()
-
 		oGet02 := TGet():New(015,045,{|u| If(PCount() > 0, cCodSet := u, cCodSet) },_oDlg1,030,008,"@!",{|| NAOVAZIO() .AND. ExistCpo('SHB',cCodSet,1) .AND. ValidaSetor() },CLR_BLACK,CLR_WHITE,,.F.,,.T.,,.F.,,.F.,.F.,{|| .T. },.F.,.F.,,'cCodSet',,,,.T.,,,)
         oGet02:cF3 := 'SHB_1'
 
-		@ 015,080 Get 	  		cSetor 		WHEN .F.								 															Size 100,008
-		@ 030,045 Get			cRecurso		WHEN .F.																							Size 135,008
-		@ 045,075 ComboBox 	cCaminho		Items aCaminho								  						  							Size 105,008 OBJECT oCaminho
-		@ 060,075 Get 	  		cProg 		Valid ValidaProg()	Picture "@!"			 						  					Size 045,008 OBJECT oProg
-		@ 075,075 ComboBox 	_cPrat 		Items _aPrat														  							Size 045,008 OBJECT oPrat
-		@ 090,075 Get 	 		_cPosic												   							 							Size 045,008 OBJECT oPosic
-		@ 120,075 Get 	 		_cNumOP		Valid ValidaOP()						 							  				  			Size 055,008 OBJECT oOP
-		@ 135,075 Get 	 		nQtde 		Valid ValidaQtde()	Picture "@E 9999" 		 					  					Size 035,008
-		@ 150,075 Get			_cCod			WHEN .F.																							Size 050,008 OBJECT _oCod
-		@ 165,075 Get			_cDescric	WHEN .F.																							Size 110,008 OBJECT _oDescr
-		@ 180,075 Get 	 		cTE 						 				Picture "@!" 			When ("TRAT.EXTERNO" $ cSetor .OR. "AGUARD MP" $ cSetor )	Size 070,008
-		@ 195,075 Get 			_dtIni		Valid ValidaDI() 						 			When _lAltDt			  	  			Size 045,008 OBJECT oDini
-		@ 210,075 Get 			_dtFim		Valid ValidaDF() 						 			When _lAltDt				 			Size 045,008 OBJECT oDfim
+		@ 015,080 Get 	  		cSetor 		WHEN .F.								Size 100,008
+		@ 030,045 Get			cRecurso	WHEN .F.								Size 135,008
+		@ 045,075 ComboBox 		cCaminho	Items aCaminho							Size 105,008 OBJECT oCaminho
+		@ 060,075 Get 	  		cProg 		Valid ValidaProg()	Picture "@!"		Size 045,008 OBJECT oProg
+		@ 075,075 ComboBox		_cPrat 		Items _aPrat							Size 045,008 OBJECT oPrat
+		@ 090,075 Get 	 		_cPosic												Size 045,008 OBJECT oPosic
+		@ 120,075 Get 	 		_cNumOP		Valid ValidaOP()	Picture "@!"		Size 055,008 OBJECT oOP
+		@ 135,075 Get 	 		nQtde 		Valid ValidaQtde()	Picture "@E 9999" 	Size 035,008
+		@ 150,075 Get			_cCod		WHEN .F.								Size 050,008 OBJECT _oCod
+		@ 165,075 Get			_cDescric	WHEN .F.								Size 110,008 OBJECT _oDescr
+		@ 180,075 Get 	 		cTE			WHEN ("TRAT.EXTERNO" $ cSetor .OR. "AGUARD MP" $ cSetor )	Picture "@!"	Size 070,008
+		@ 195,075 Get 			_dtIni		WHEN _lAltDt	Valid ValidaDI()		Size 045,008 OBJECT oDini
+		@ 210,075 Get 			_dtFim		WHEN _lAltDt	Valid ValidaDF()		Size 045,008 OBJECT oDfim
 
 		@ 225,075 MsGet _cSetup PICTURE _cPict	When _lAltTem	Size 045,008 PIXEL OF _oDlg1 VALID RTA03B(_cSetup)
 		@ 240,075 MsGet _cTempo PICTURE _cPict	When _lAltTem	Size 045,008 PIXEL OF _oDlg1 VALID RTA03B(_cTempo)
