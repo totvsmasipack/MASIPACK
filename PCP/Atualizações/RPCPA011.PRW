@@ -157,7 +157,7 @@ DEFINE MSDIALOG _oDlg1 FROM  094,1 TO 360,360 TITLE "Geração Automatica de OPs" 
 @ 038,090 MSGET _cHoraIni Picture "99:99:99" SIZE 050,008 PIXEL OF _oDlg1
 @ 053,090 MSGET _cHoraFin Picture "99:99:99" SIZE 050,008 PIXEL OF _oDlg1
 @ 068,090 MSGET _cUsuario                    SIZE 050,008 PIXEL OF _oDlg1
-@ 083,090 MSGET _cOP      Picture "999999"   SIZE 050,008 PIXEL OF _oDlg1
+@ 083,090 MSGET _cOP      Picture "@!"   	 SIZE 050,008 PIXEL OF _oDlg1
 @ 098,090 MSGET _dDataNec SIZE 050,008 PIXEL OF _oDlg1
 @ 115,095 BmpButton Type 1 Action Processa( { || AtuOPs() } )
 @ 115,130 BmpButton Type 2 Action _oDlg1:End()
