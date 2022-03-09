@@ -12,10 +12,11 @@ Relatório de Check-Lista da montagem (Nova Versão)
 /*/
 User Function RFATR080()
 
+Local aOption	:= {"1=Peças/Acessórios", "2=Balança - Teste", "3=Maq. Vertical - Teste"}
 Local aParam	:= {}
 
 	AADD(aParam,{1,	"Nº Pedido",		SPACE(TamSX3('C5_NUM')[1]),"","","","",050,	.T.}) 
-	AADD(aParam,{2,	"Modelo Docto.",	"1",	{"1=Peças/Acessórios","2=Balanças","3=Maq. Vertical"},	090,	"",		.T.})
+	AADD(aParam,{2,	"Modelo Docto.",	"1",	aOption,	090,	"",		.T.})
 	
 	If ParamBox(aParam,"Parâmetros",,,,,,,,.T.,.T.)
 		FwMsgRun(,{|oSay| IntMsWord(oSay) }, 'Aguarde', 'Processando..')
@@ -57,9 +58,9 @@ Local oWord		:= Nil
 	If MV_PAR02 == '1'
 		cDocFile := GetSrvProfString('Startpath','') + 'modelos\pcp\'+FWCodEmp()+'_checklist_pecas_acessorios.dotm'
 	ElseIf MV_PAR02 == '2'
-		cDocFile := GetSrvProfString('Startpath','') + 'modelos\pcp\'+FWCodEmp()+'_checklist_balanca.dotm'
+		cDocFile := GetSrvProfString('Startpath','') + 'modelos\pcp\'+FWCodEmp()+'_checklist_balanca_teste.dotm'
 	Else
-		cDocFile := GetSrvProfString('Startpath','') + 'modelos\pcp\'+FWCodEmp()+'_checklist_maq_verticais.dotm'
+		cDocFile := GetSrvProfString('Startpath','') + 'modelos\pcp\'+FWCodEmp()+'_checklist_maq_vertical_teste.dotm'
 	Endif
 
 	If !FwIsAdmin()
