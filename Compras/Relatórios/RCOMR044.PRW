@@ -66,23 +66,24 @@ Local cPerg		:= "RCOMR044"
 	TRCell():New(oSection1,	"B1_PE",		"",	RetTitle('B1_PE'),			PesqPict("SB1","B1_PE"),		TamSX3("B1_PE")[1])
 	TRCell():New(oSection1,	"B1_TIPE",		"",	RetTitle('B1_TIPE'),		PesqPict("SB1","B1_TIPE"),		TamSX3("B1_TIPE")[1])
 	TRCell():New(oSection1,	"B1_PROCED",	"",	RetTitle('B1_PROCED'),		PesqPict("SB1","B1_PROCED"),	TamSX3("B1_PROCED")[1])
-	TRCell():New(oSection1,	"C7_EMISSAO",	"",	RetTitle('C7_EMISSAO'),		PesqPict("SC7","C7_EMISSAO"),	TamSX3("C7_EMISSAO")[1])
-	TRCell():New(oSection1,	"C7_DATPRF",	"",	RetTitle('C7_DATPRF'),		PesqPict("SC7","C7_EMISSAO"),	TamSX3("C7_DATPRF")[1])
+	TRCell():New(oSection1,	"C7_EMISSAO",	"",	RetTitle('C7_EMISSAO'),		PesqPict("SC7","C7_EMISSAO"),	TamSX3("C7_EMISSAO")[1], .F.,	{ || DTOC(STOD((cTRB)->C7_EMISSAO))  })
+	TRCell():New(oSection1,	"C7_DATPRF",	"",	RetTitle('C7_DATPRF'),		PesqPict("SC7","C7_EMISSAO"),	TamSX3("C7_DATPRF")[1], .F.,	{ || DTOC(STOD((cTRB)->C7_DATPRF))  })
 	TRCell():New(oSection1,	"C7_OBS",		"",	RetTitle('C7_OBS'),			PesqPict("SC7","C7_OBS"),		TamSX3("C7_OBS")[1])
 	TRCell():New(oSection1,	"C7_RETFOR",	"",	RetTitle('C7_RETFOR'),		PesqPict("SC7","C7_RETFOR"),	TamSX3("C7_RETFOR")[1])
 
 	TRCell():New(oSection1,	"C1_NUM",		"",	RetTitle('C1_NUM'),			PesqPict("SC1","C1_NUM"),		TamSX3("C1_NUM")[1])
-	TRCell():New(oSection1,	"C1_EMISSAO",	"",	RetTitle('C1_EMISSAO'),		PesqPict("SC7","C7_EMISSAO"),	TamSX3("C1_EMISSAO")[1])
-	TRCell():New(oSection1,	"C1_DATPRF",	"",	RetTitle('C1_DATPRF'),		PesqPict("SC7","C7_EMISSAO"),	TamSX3("C1_DATPRF")[1])
+	TRCell():New(oSection1,	"C1_EMISSAO",	"",	RetTitle('C1_EMISSAO'),		PesqPict("SC7","C7_EMISSAO"),	TamSX3("C1_EMISSAO")[1], .F.,	{ || DTOC(STOD((cTRB)->C1_EMISSAO))  })
+	TRCell():New(oSection1,	"C1_DATPRF",	"",	RetTitle('C1_DATPRF'),		PesqPict("SC7","C7_EMISSAO"),	TamSX3("C1_DATPRF")[1], .F.,	{ || DTOC(STOD((cTRB)->C1_DATPRF))  })
 	TRCell():New(oSection1,	"C1_USER",		"",	RetTitle('C1_USER'),		PesqPict("SC1","C1_USER"),		TamSX3("C1_USER")[1],	.F.,	{ || Alltrim(UsrRetName((cTRB)->C1_USER))  })
 	TRCell():New(oSection1,	"C1_MSAPROP",	"",	RetTitle('C1_MSAPROP'),		PesqPict("SC1","C1_MSAPROP"),	TamSX3("C1_MSAPROP")[1])
 
 	TRCell():New(oSection1,	"C8_NUM",		"",	RetTitle('C8_NUM'),			PesqPict("SC8","C8_NUM"),		TamSX3("C8_NUM")[1])
-	TRCell():New(oSection1,	"C8_EMISSAO",	"",	RetTitle('C8_EMISSAO'),		PesqPict("SC7","C7_EMISSAO"),	TamSX3("C8_EMISSAO")[1])
+	TRCell():New(oSection1,	"C8_EMISSAO",	"",	RetTitle('C8_EMISSAO'),		PesqPict("SC7","C7_EMISSAO"),	TamSX3("C8_EMISSAO")[1], .F.,	{ || DTOC(STOD((cTRB)->C8_EMISSAO))  })
 
 	TRCell():New(oSection1,	"SALDO_ATU",	"",	RetTitle('B2_QATU'),		PesqPict("SB2","B2_QATU"),		TamSX3("B2_QATU")[1])
 	TRCell():New(oSection1,	"EMP_OP",		"",	RetTitle('B2_QEMP'),		PesqPict("SB2","B2_QATU"),		TamSX3("B2_QATU")[1])
-	TRCell():New(oSection1,	"EMP_PV",		"",	RetTitle('B2_RESERVA'),		PesqPict("SB2","B2_QATU"),		TamSX3("B2_QATU")[1])
+	TRCell():New(oSection1,	"EMP_PV",		"",	RetTitle('B2_QPEDVEN'),		PesqPict("SB2","B2_QATU"),		TamSX3("B2_QATU")[1])
+	TRCell():New(oSection1,	"RESERVA",		"",	RetTitle('B2_RESERVA'),		PesqPict("SB2","B2_QATU"),		TamSX3("B2_QATU")[1])
 	TRCell():New(oSection1,	"EMP_SA",		"",	RetTitle('B2_QEMPSA'),		PesqPict("SB2","B2_QATU"),		TamSX3("B2_QATU")[1])
 	TRCell():New(oSection1,	"PRENOTA",		"",	RetTitle('B2_NAOCLAS'),		PesqPict("SB2","B2_QATU"),		TamSX3("B2_QATU")[1])
 	TRCell():New(oSection1,	"SALDO_DIS",	"",	"Saldo Dispon.",			PesqPict("SB2","B2_QATU"),		TamSX3("B2_QATU")[1])
@@ -117,19 +118,20 @@ Local oSection  := oReport:Section(1)
 			(C7_QUANT - C7_QUJE) [C7QTDRES],
 			ROUND((C7_QUANT - C7_QUJE) * C7_PRECO,2) [C7TOTRES], C7_USER,
 			E4_CODIGO, E4_DESCRI,
-			B1_PE, B1_TIPE, B1_PROCED, C7_EMISSAO, C7_DATPRF, C7_OBS, C7_RETFOR,
-					
+			B1_PE, B1_TIPE, B1_PROCED, C7_EMISSAO, C7_DATPRF, C7_OBS, 
+			CASE WHEN C7_RETFOR = 'S' THEN 'SIM' ELSE 'NAO' END [C7_RETFOR],
 			C1_NUM, C1_EMISSAO, C1_DATPRF, C1_USER, C1_MSAPROP,
 
-			COALESCE(C8_NUM,'-')	[C8_NUM], 
+			COALESCE(C8_NUM,'-')		[C8_NUM], 
 			COALESCE(C8_EMISSAO,'-')	[C8_EMISSAO],
 
-			SUM(B2_QATU)	[SALDO_ATU], 
-			SUM(B2_QEMP)	[EMP_OP], 
-			SUM(B2_RESERVA)	[EMP_PV], 
-			SUM(B2_QEMPSA)	[EMP_SA],
-			SUM(B2_NAOCLAS)	[PRENOTA],
-			SUM(B2_QATU) - SUM(B2_QEMP) - SUM(B2_RESERVA) - SUM(B2_QEMPSA)	[SALDO_DIS]
+			COALESCE(B2_QATU,0)	[SALDO_ATU], 
+			COALESCE(B2_QEMP,0)	[EMP_OP], 
+			COALESCE(B2_QPEDVEN,0)	[EMP_PV],
+			COALESCE(B2_RESERVA,0)	[RESERVA],
+			COALESCE(B2_QEMPSA,0)	[EMP_SA],
+			COALESCE(CASE WHEN COALESCE(D1_TIPO,'') IN ('N') THEN B2_NAOCLAS ELSE B2_NAOCLAS - COALESCE(D1_QUANT,0) END, 0) [PRENOTA],
+			COALESCE(B2_QATU - B2_QEMP - B2_RESERVA - B2_QEMPSA, 0)	[SALDO_DIS]
 
 		FROM	%Table:SC7% C7
 					
@@ -144,9 +146,16 @@ Local oSection  := oReport:Section(1)
 			B1_COD			= C7_PRODUTO	AND
 			B1.%NOTDEL%
 
+			LEFT JOIN %Table:SD1% D1 ON
+			D1_FILIAL		= %xFilial:SD1%	AND
+			D1_COD			= C7_PRODUTO	AND
+			D1_TES			= %Exp:''%		AND
+			D1.%NOTDEL%
+
 			LEFT JOIN %Table:SB2% B2 ON
 			B2_FILIAL		= C7_FILIAL		AND
 			B2_COD			= C7_PRODUTO	AND
+			B2_LOCAL		= C7_LOCAL		AND
 			B2.%NOTDEL%
 
 			LEFT JOIN %Table:SC1% C1 ON
@@ -179,8 +188,9 @@ Local oSection  := oReport:Section(1)
 			C7.%NOTDEL%
 
 		GROUP BY	C7_NUM, C7_ITEM, C7_FORNECE, C7_LOJA, A2_NREDUZ, C7_PRODUTO, B1_DESC, C7_UM, C7_QUANT, C7_QUJE, C7_PRECO,
-					C7_TOTAL, C7_QUANT, C7_QUJE, C7_USER, E4_CODIGO, E4_DESCRI, B1_PE, B1_TIPE, B1_PROCED, C7_EMISSAO,
-					C7_DATPRF, C7_OBS, C7_RETFOR, C1_NUM, C1_EMISSAO, C1_DATPRF, C1_USER, C1_MSAPROP, C8_NUM, C8_EMISSAO
+			C7_TOTAL, C7_QUANT, C7_QUJE, C7_USER, E4_CODIGO, E4_DESCRI, B1_PE, B1_TIPE, B1_PROCED, C7_EMISSAO, C7_DATPRF, 
+			C7_OBS, C7_RETFOR, C1_NUM, C1_EMISSAO, C1_DATPRF, C1_USER, C1_MSAPROP, C8_NUM, C8_EMISSAO, D1_TIPO, D1_QUANT,
+			B2_NAOCLAS, B2_QATU, B2_QEMP, B2_RESERVA, B2_QPEDVEN, B2_QEMPSA
 
 		ORDER BY C7_NUM, C7_ITEM
 
