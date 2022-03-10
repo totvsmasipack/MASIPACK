@@ -161,7 +161,6 @@ Local cAutoriza  := ""
 Local cModalidade:= ""
 Local cChaveSFT  := ""
 Local cAliasSFT  := "SFT"
-Local cCondicao	 := ""
 Local cIndex	 := ""
 Local cChave	 := ""
 Local cCampos := ""
@@ -1249,9 +1248,10 @@ EndIf
 Private _vBspc     := SF2->F2_BASIMP6
 Private _vPis      := SF2->F2_VALIMP6
 Private _vCofins   := SF2->F2_VALIMP5
+//aTotais := {"","","","","","","","","","",""}
+aTotais := {"","","","","","","","","","","","","",""}
 // FIM CUSTOMIZACAO MASIPACK
 
-aTotais := {"","","","","","","","","","",""}
 aTotais[01] := Transform(Val(oTotal:_ICMSTOT:_vBC:TEXT),		"@e 9,999,999,999,999.99")
 aTotais[02] := Transform(Val(oTotal:_ICMSTOT:_vICMS:TEXT),		"@e 999,999,999,999.99")
 aTotais[03] := Transform(Val(oTotal:_ICMSTOT:_vBCST:TEXT),		"@e 9,999,999,999,999.99")
@@ -1286,7 +1286,7 @@ aTotais[12] := 	Transform(_vPis,"@e 9,999,999,999,999.99")
 aTotais[13] := 	Transform(_vCofins,"@e 9,999,999,999,999.99")
 // FIM CUSTOMIZACAO MASIPACK
 
-aTotais[11] := 	Transform(Val(oTotal:_ICMSTOT:_vNF:TEXT),		"@e 9,999,999,999,999.99")
+aTotais[14] := 	Transform(Val(oTotal:_ICMSTOT:_vNF:TEXT),		"@e 9,999,999,999,999.99")
 
 //ÚÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄ¿
 //³Impressão da Base de Calculo e ICMS nos campo Proprios do ICMS quando optante pelo Simples Nacional    ³
@@ -2988,7 +2988,8 @@ oDanfe:Box(nLine+328+nAjustaImp,697,nLine+353+nAjustaImp,MAXBOXH+70)
 oDanfe:Say(nLine+336+nAjustaImp,707,"VALOR TOTAL DOS PRODUTOS",oFont08N:oFont)
 oDanfe:Say(nLine+346+nAjustaImp,707,aTotais[05],oFont08:oFont)
 
-
+// CUSTOMIZACAO MASIPACK
+/*/
 oDanfe:Box(nLine+353+nAjustaImp,nBaseCol+30,nLine+378+nAjustaImp,232)
 oDanfe:Say(nLine+361+nAjustaImp,nBaseTxt,"VALOR DO FRETE",oFont08N:oFont)
 oDanfe:Say(nLine+371+nAjustaImp,nBaseTxt,aTotais[06],oFont08:oFont)
@@ -3004,7 +3005,27 @@ oDanfe:Say(nLine+371+nAjustaImp,462,aTotais[09],oFont08:oFont)
 oDanfe:Box(nLine+353+nAjustaImp,592,nLine+378+nAjustaImp,712)
 oDanfe:Say(nLine+361+nAjustaImp,602,"VALOR TOTAL DO IPI",oFont08N:oFont)
 oDanfe:Say(nLine+371+nAjustaImp,602,aTotais[10],oFont08:oFont)
-// CUSTOMIZACAO MASIPACK
+/*/
+
+oDanfe:Box(nLine+353+nAjustaImp,nBaseCol+30,nLine+378+nAjustaImp,180)
+oDanfe:Say(nLine+361+nAjustaImp,nBaseTxt,"VALOR DO FRETE",oFont08N:oFont)
+oDanfe:Say(nLine+371+nAjustaImp,nBaseTxt,aTotais[06],oFont08:oFont)
+oDanfe:Box(nLine+353+nAjustaImp,180,nLine+378+nAjustaImp,280)
+oDanfe:Say(nLine+361+nAjustaImp,182,"VALOR DO SEGURO",oFont08N:oFont)
+oDanfe:Say(nLine+371+nAjustaImp,182,aTotais[07],oFont08:oFont)
+oDanfe:Box(nLine+353+nAjustaImp,260,nLine+378+nAjustaImp,350)
+oDanfe:Say(nLine+361+nAjustaImp,282,"DESCONTO",oFont08N:oFont)
+oDanfe:Say(nLine+371+nAjustaImp,262,aTotais[08],oFont08:oFont)
+oDanfe:Box(nLine+353+nAjustaImp,350,nLine+378+nAjustaImp,480)
+oDanfe:Say(nLine+361+nAjustaImp,362,"OUTRAS DESPESAS ACESSÓRIAS",oFont08N:oFont)
+oDanfe:Say(nLine+371+nAjustaImp,372,aTotais[09],oFont08:oFont)
+oDanfe:Box(nLine+353+nAjustaImp,470,nLine+378+nAjustaImp,570)
+oDanfe:Say(nLine+361+nAjustaImp,472,"VALOR TOTAL DO IPI",oFont08N:oFont)
+oDanfe:Say(nLine+371+nAjustaImp,472,aTotais[10],oFont08:oFont)
+
+oDanfe:Box(nLine+353+nAjustaImp,712,nLine+378+nAjustaImp,MAXBOXH+70)
+oDanfe:Say(nLine+361+nAjustaImp,722,"VALOR TOTAL DA NOTA",oFont08N:oFont)
+oDanfe:Say(nLine+371+nAjustaImp,722,aTotais[11],oFont08:oFont)
 oDanfe:Box(nLine+353+nAjustaImp,560,nLine+378+nAjustaImp,630)
 oDanfe:Say(nLine+361+nAjustaImp,562,"BASE PIS/COFINS",oFont08N:oFont)
 oDanfe:Say(nLine+371+nAjustaImp,562,aTotais[11],oFont08:oFont)
@@ -3014,11 +3035,12 @@ oDanfe:Say(nLine+371+nAjustaImp,622,aTotais[12],oFont08:oFont)
 oDanfe:Box(nLine+353+nAjustaImp,680,nLine+378+nAjustaImp,780)
 oDanfe:Say(nLine+361+nAjustaImp,700,"VALOR DO COFINS",oFont08N:oFont)
 oDanfe:Say(nLine+371+nAjustaImp,700,aTotais[13],oFont08:oFont)
-// FIM CUSTOMIZACAO MASIPACK
-oDanfe:Box(nLine+353+nAjustaImp,712,nLine+378+nAjustaImp,MAXBOXH+70)
-oDanfe:Say(nLine+361+nAjustaImp,722,"VALOR TOTAL DA NOTA",oFont08N:oFont)
-oDanfe:Say(nLine+371+nAjustaImp,722,aTotais[11],oFont08:oFont)
 
+oDanfe:Box(nLine+353+nAjustaImp,780,nLine+378+nAjustaImp,MAXBOXH+70)
+oDanfe:Say(nLine+361+nAjustaImp,782,"VALOR TOTAL DA NOTA",oFont08N:oFont)
+oDanfe:Say(nLine+371+nAjustaImp,782,aTotais[14],oFont08:oFont)
+
+// FIM CUSTOMIZACAO MASIPACK
 nLine -= 3
 
 //ÚÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄ¿

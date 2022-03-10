@@ -1283,10 +1283,11 @@ EndIf
 Private _vBspc     := SF2->F2_BASIMP6
 Private _vPis      := SF2->F2_VALIMP6
 Private _vCofins   := SF2->F2_VALIMP5
-
+//aTotais := {"","","","","","","","","","",""}
+aTotais := {"","","","","","","","","","","","","",""}
 // FIM CUSTOMIZACAO MASIPACK
 
-aTotais := {"","","","","","","","","","",""}
+
 aTotais[01] := Transform(Val(oTotal:_ICMSTOT:_vBC:TEXT),"@e 9,999,999,999,999.99")
 aTotais[02] := Transform(Val(oTotal:_ICMSTOT:_vICMS:TEXT),"@e 9,999,999,999,999.99")
 aTotais[03] := Transform(Val(oTotal:_ICMSTOT:_vBCST:TEXT),"@e 9,999,999,999,999.99")
@@ -1320,6 +1321,7 @@ EndIf
 aTotais[11] := 	Transform(_vBspc,"@e 9,999,999,999,999.99")
 aTotais[12] := 	Transform(_vPis,"@e 9,999,999,999,999.99")
 aTotais[13] := 	Transform(_vCofins,"@e 9,999,999,999,999.99")
+aTotais[14] := 	Transform(Val(oTotal:_ICMSTOT:_vNF:TEXT),"@e 9,999,999,999,999.99")
 // FIM CUSTOMIZACAO MASIPACK
 
 //旼컴컴컴컴컴컴컴컴컴컴컴컴컴컴컴컴컴컴컴컴컴컴컴컴컴컴컴컴컴컴컴컴컴컴컴컴컴컴컴컴컴컴컴컴컴컴컴컴컴컴컴�
