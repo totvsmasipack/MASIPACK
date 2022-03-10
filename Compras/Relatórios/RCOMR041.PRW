@@ -409,7 +409,7 @@ While !oReport:Cancel() .And. !(cAliasSC1)->(Eof()) .And. (cAliasSC1)->C1_FILIAL
 		SB5->(dbSetOrder(1))
 		If SB5->(dbSeek( xFilial("SB5") + (cAliasSC1)->C1_PRODUTO ))
 //			cDescPro := SB5->B5_CEME
-			cDescPro := IIF( FWCodEmp() $ '15' , ALLTRIM(SB5->B5_CEME) + CRLF + 'OBS.: ' + ALLTRIM(SB5->B5_MSOBS) , SB5->B5_CEME )
+			cDescPro := IIF( FWCodEmp() $ '15' , ALLTRIM(SB5->B5_CEME) + CRLF + 'OBS.: ' + ALLTRIM(SB5->B5_MSOBS) , ALLTRIM(SB5->B5_CEME) )
 		EndIf
 	EndIf        
 	
@@ -739,12 +739,26 @@ While !oReport:Cancel() .And. !(cAliasSC1)->(Eof()) .And. (cAliasSC1)->C1_FILIAL
     For nX := 1 To 258 Step 129
         cObs := Substr((cAliasSC1)->C1_OBS,nX,129)
         If !Empty(cObs)
-            oReport:PrintText(cObs,,oSection1:Cell("C1_ITEM"):ColPos()+10) 
-        Endif
+			oReport:PrintText(cObs,,oSection1:Cell("C1_ITEM"):ColPos()+10)
+		Endif
     Next nX
-    oReport:SkipLine()
-    oReport:FatLine()
+    
+	oReport:SkipLine()
 
+	If FwCodEmp() $ '01|10'
+		For nX := 1 To 258
+			If AllTrim(mv_par08) == "B5_CEME" .And. SB5->(FOUND())
+				cObs := MemoLine(SB5->B5_MSOBS,130,nX)
+				If Empty(cObs)
+					Exit
+				Endif
+				oReport:PrintText(cObs,,oSection1:Cell("C1_ITEM"):ColPos()+10)
+				oReport:SkipLine()
+			Endif
+		Next nX
+	Endif
+
+    oReport:FatLine()
 	oReport:SkipLine()
     oReport:SkipLine()
 
