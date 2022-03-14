@@ -133,7 +133,7 @@ aAdd( a811Param,  PadR(cLojD,TamSX3('A1_LOJA')[1])          )   //Loja do client
 aAdd( a811Param,  Repl(cCliAt,TamSX3('A1_COD')[1])          )   //Código do cliente Até (tipo caracter)
 aAdd( a811Param,  Repl(cLojAt,TamSX3('A1_LOJA')[1])         )   //Loja do cliente Até (tipo caracter)
 aAdd( a811Param,  dDataBase - 9999                          )   //Data de emissão De (tipo data)
-aAdd( a811Param,  dDataBase - 4                             )   //Data de emissão Até (tipo data)
+aAdd( a811Param,  dDataBase - 5                             )   //Data de emissão Até (tipo data)
 aAdd( a811Param,  dDataBase                                 )   //Data de referência (tipo data)
 aAdd( a811Param,  0                                         )   //Valor de (tipo numérico)
 aAdd( a811Param,  999999999.99                              )   //Valor Até (tipo numérico)
