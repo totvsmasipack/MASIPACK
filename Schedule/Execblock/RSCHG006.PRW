@@ -98,10 +98,7 @@ Local oHtml		:= Nil
 
 		oMail:Start()
 		oMail:Finish()
-			
 		Sleep(5000)
-
-	    (cAlias)->(dbSkip())
 	Enddo
 
 	(cAlias)->(dbCloseArea())
@@ -123,8 +120,8 @@ Local cRet		:= GetNextAlias()
 
 	BEGINSQL ALIAS cRet
 
-		SELECT	A2_COD +'/'+ A2_LOJA + ' - ' + TRIM(A2_NOME) AS FORNECEDOR, A2_CGC, A2_EMAIL2, C7_NUM, COALESCE(A5_CODPRF,'-'),
-				C7_FORNECE, C7_LOJA, C7_ITEM, C7_PRODUTO, B1_DESC, C7_QUANT, C7_QUJE, C7_QUANT- C7_QUJE AS SALDO, B1_UM, C7_DATPRF, C7_EMISSAO
+		SELECT	A2_COD +'/'+ A2_LOJA + ' - ' + TRIM(A2_NOME) AS FORNECEDOR, A2_CGC, A2_EMAIL2, C7_NUM, C7_FORNECE, C7_LOJA,
+				C7_ITEM, C7_PRODUTO, B1_DESC, C7_QUANT, C7_QUJE, C7_QUANT- C7_QUJE AS SALDO, B1_UM, C7_DATPRF, C7_EMISSAO
 
 		FROM	%Table:SC7% C7
             
