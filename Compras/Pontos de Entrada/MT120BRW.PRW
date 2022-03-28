@@ -15,9 +15,9 @@ Local aEspecifico	:= {}
 Local aGroup		:= UsrRetGrp(UsrRetName( RetCodUsr()),RetCodUsr())
 Local cGrpCom		:= '000157'
 
-    If FwCodEmp() $ ('01|10') .And. ( FwisAdmin() .Or. aScan(aGroup,cGrpCom) > 0 )
-		AADD(aEspecifico, {"Altera Entrega","U_RCOMA023()", 0 , 9, 0, nil})
-		AADD(aRotina, {"Específicos",aEspecifico, 0 , 9, Nil}) 
+    If FWIsAdmin() .Or. aScan(aGroup,cGrpCom) > 0
+		AADD(aEspecifico, {"Altera Entrega","U_RCOMA023()", 0 , 9, 0, Nil})
+		AADD(aRotina, {"Específicos",aEspecifico, 0 , 9, Nil})
 	Endif
 
 Return
