@@ -1,5 +1,6 @@
 #include 'totvs.ch'
 #include 'protheus.ch'
+#include 'topconn.ch'
 
 /*/{Protheus.doc} User Function RCOMA023
 	Função para alterar a Data de Entrega dos Pedidos de Compras em massa
@@ -15,7 +16,6 @@ Local _aIndex	:= {}
 Local _aMvPar	:= {}
 Local _aSeekSC7	:= {}
 Local _cAlias	:= ""
-Local _cQuery	:= ""
 Local _cTitle	:= ""
 Local _nX		:= 0
 Local _oBrowse	:= Nil
@@ -34,11 +34,8 @@ Private _lMarkAll := .T.
 	_aIndex		:= {'C7_NUM'}
 	_aSeekSC7	:= {{ 'Pedido', {{'Pedido','C',TamSx3('C7_NUM')[1],0,'',,}} }}
 
-	_cAlias		:= GetNextAlias()
-	_cTitle		:= 'Alteração da Data de Entrega'
-	_cQuery		:= DefQuery(_aField)
-
-	If !Empty(_cQuery)
+	_cTitle		:= 'TOTVS | Alteração da Data de Entrega'
+	_cAlias		:= DefQuery(_aField)
 
 		_oDlg		:= CreateModal()
 		_oModal		:= _oDlg:GetPanelMain()
@@ -52,11 +49,11 @@ Private _lMarkAll := .T.
 		_oBrowse:SetOwner(_oLayer:GetColPanel("COL1","LIN1"))
 		_oBrowse:SetDescription(_cTitle)
 		_oBrowse:SetAlias(_cAlias)
-		_oBrowse:SetDataQuery(.T.)
-		_oBrowse:SetQuery(_cQuery)
+		_oBrowse:SetDataTable(.T.)
+		_oBrowse:SetTemporary(.F.)
 		_oBrowse:AddMarkColumns( {||IIf((_cAlias)->C7_MARK == 'X', "LBTIK", "LBNO")},;
-								 {|| (_cAlias)->C7_MARK := IIF((_cAlias)->C7_MARK == 'X','','X') },;
-								 {|| _lMarkAll := !(_lMarkAll), (_cAlias)->(DbGoTop()), (_cAlias)->( DbEval( {|| C7_MARK := IIF(_lMarkAll,'X','') }, {|| .T. }, {|| (_cAlias)->(!EOF()) })), _oBrowse:GoTop(.T.) })
+								 {|| RecLock((_cAlias),.F.), (_cAlias)->C7_MARK := IIF((_cAlias)->C7_MARK == 'X','','X'), (_cAlias)->(MsUnlock()) },;
+								 {|| _lMarkAll := !(_lMarkAll), (_cAlias)->(DbGoTop()), RecLock((_cAlias),.F.), (_cAlias)->( DbEval( {|| C7_MARK := IIF(_lMarkAll,'X',''), (_cAlias)->(MsUnlock()) }, {|| .T. }, {|| (_cAlias)->(!EOF()) })), _oBrowse:GoTop(.T.) })
 		_oBrowse:AddButton('Confirmar',	{|| IF( FwAlertYesNo('Confirma a alteração da Data de Entrega dos pedidos selecionados?',"ATENÇÃO"), (Processa({|lEnd| ProcRegua(0), DateChange(@_cAlias) },"Aguarde..","",.F.), _oDlg:DeActivate()), Nil) })
 		_oBrowse:AddButton('Fechar',	{|| _oDlg:DeActivate() })
 		_oBrowse:SetQueryIndex(_aIndex)
@@ -66,11 +63,7 @@ Private _lMarkAll := .T.
 		For _nX := 1 To Len(_aField)
 			If !(_aField[_nX] == 'C7_MARK')
 				_oCol := FWBrwColumn():New()
-				If TamSX3(_aField[_nX])[3] == 'D'
-					_oCol:SetData( &("{|| DTOC(STOD((_cAlias)->" + _aField[_nX] + ")) }") )
-				Else
-					_oCol:SetData( &("{|| (_cAlias)->" + _aField[_nX] + " }") )
-				Endif
+				_oCol:SetData( &("{|| (_cAlias)->" + _aField[_nX] + " }") )
 				_oCol:SetTitle( RetTitle(_aField[_nX]) )
 				_oCol:SetType( TamSX3(_aField[_nX])[3] )
 				_oCol:SetSize( TamSX3(_aField[_nX])[1] )
@@ -92,8 +85,6 @@ Private _lMarkAll := .T.
 		_oBrowse:Activate()
 
 		_oDlg:Activate()
-	
-	Endif
 
 	For _nX := 1 To Len( _aMvPar )
 		&( "mv_par" + StrZero( _nX, 2, 0 ) ) := _aMvPar[ _nX ]
@@ -118,7 +109,8 @@ Local uRet
 	uRet:SetBackground(.T.)
 	uRet:SetEscClose(.T.)
     uRet:SetPos(_aCoord[1], _aCoord[2])
-    uRet:SetSize(_aCoord[3]/2.1, _aCoord[4]/2.5)
+    uRet:SetSize(_aCoord[3]/2.6, _aCoord[4]/2.5)
+	uRet:EnableFormBar(.F.)
     uRet:CreateDialog()
 
 Return uRet
@@ -132,38 +124,72 @@ Return uRet
 /*/
 Static Function DefQuery(_aField)
 
-Local _cField	:= ""
-Local _cPerg	:= "MSCOMA023"
-Local _cRet		:= ""
+Local _aCpoC7	:= {}
+Local _cField	:= ''
+Local _cPerg	:= 'MSCOMA023'
+Local _cTRB		:= GetNextAlias()
+Local _cRet		:= ''
+Local _oTable	:= Nil
 
 	If Pergunte(_cPerg, .T.)
 
 		AEval(_aField,{|x| _cField += IIF( x == 'C7_MARK', "'X' [C7_MARK]", x) + ',' })
+		_cField := '%' + SubStr(_cField, 1, RAT(',',_cField)-1) + '%'
 
-		_cRet := "SELECT	" + SubStr(_cField, 1, RAT(',',_cField)-1) + SPACE(1)
-		_cRet += "FROM	" + RetSqlName('SC7') + CRLF
-		_cRet += "WHERE	C7_FILIAL	=	'"+FWxFilial('SC7')+"'			AND" + CRLF
-		_cRet += "		C7_FORNECE	BETWEEN	'"+MV_PAR02+"'	AND	'"+MV_PAR04+"'	AND" + CRLF
-		_cRet += "		C7_LOJA		BETWEEN	'"+MV_PAR03+"'			AND '"+MV_PAR05+"'		AND" + CRLF
-		_cRet += "		C7_NUM		NOT IN (SELECT	E2_NUM" + CRLF
-		_cRet += "							FROM	"+RetSqlName('SE2') + CRLF 
-		_cRet += "							WHERE	E2_FILIAL	=	'"+FWxFilial('SE2')+"'		AND" + CRLF
-		_cRet += "									E2_PREFIXO	=	'999'		AND" + CRLF
-		_cRet += "									E2_NUM		=	C7_NUM		AND" + CRLF
-		_cRet += "									E2_FORNECE	=	C7_FORNECE	AND" + CRLF
-		_cRet += "									E2_LOJA		=	C7_LOJA		AND" + CRLF
-		_cRet += "									E2_TIPO		=	'PA'		AND" + CRLF
-		_cRet += "									D_E_L_E_T_	= ' '" + CRLF
-		_cRet += ") AND" + CRLF
-		_cRet += "		C7_COND		=	'"+MV_PAR06+"'			AND" + CRLF
-		_cRet += "		C7_QUANT	>	C7_QUJE			AND" + CRLF
-		_cRet += "		C7_RESIDUO	=	' '				AND" + CRLF
-		_cRet += "		D_E_L_E_T_	=	' '" + CRLF
-		_cRet += "ORDER BY C7_NUM, C7_ITEM" + CRLF
+		AEval(_aField,{|x| IIF(	x == 'C7_MARK',	AADD(_aCpoC7,{ Alltrim(x), 'C', 1, 0 }) , ;
+												AADD(_aCpoC7,{ Alltrim(x), TamSX3(x)[3], TamSX3(x)[1],TamSX3(x)[2] }) ) })
 
-		_cRet := ChangeQuery(_cRet)
+		_oTable := FWTemporaryTable():New()  
+		_oTable:SetFields(_aCpoC7)
+		_oTable:Create() 	
+
+		BEGINSQL ALIAS _cTRB
+
+			SELECT	%Exp:_cField%
+			FROM	%Table:SC7% SC7
+			WHERE	SC7.C7_FILIAL	=	%xFilial:SC7%							AND
+					SC7.C7_FORNECE	BETWEEN	%Exp:MV_PAR02%	AND	%Exp:MV_PAR04%	AND
+					SC7.C7_LOJA		BETWEEN	%Exp:MV_PAR03%	AND %Exp:MV_PAR05%	AND
+					SC7.C7_NUM		NOT IN (	
+											SELECT	FIE_NUM
+											FROM	%Table:FIE% FIE
+											WHERE	FIE_FILIAL	=	SC7.C7_FILIAL	AND
+													FIE_CART	=	%Exp:'P'%		AND
+													FIE_PEDIDO	=	SC7.C7_NUM		AND
+													FIE_TIPO	=	%Exp:'PA'%		AND
+													FIE_FORNEC	=	SC7.C7_FORNECE	AND
+													FIE_LOJA	=	SC7.C7_LOJA		AND
+													FIE.%NOTDEL%
+										) 				AND
+					SC7.C7_COND		=	%Exp:MV_PAR06%	AND
+					SC7.C7_QUANT	>	SC7.C7_QUJE		AND
+					SC7.C7_RESIDUO	=	%Exp:''%		AND
+					SC7.%NOTDEL%
+			ORDER BY C7_NUM, C7_ITEM
+		
+		ENDSQL
+
+		While (_cTRB)->(!EOF())
+			
+			(_oTable:GetAlias())->(dbAppend(.T.))
+			(_oTable:GetAlias())->C7_MARK		:= (_cTRB)->C7_MARK
+			(_oTable:GetAlias())->C7_NUM		:= (_cTRB)->C7_NUM
+			(_oTable:GetAlias())->C7_ITEM		:= (_cTRB)->C7_ITEM
+			(_oTable:GetAlias())->C7_PRODUTO	:= (_cTRB)->C7_PRODUTO
+			(_oTable:GetAlias())->C7_FORNECE	:= (_cTRB)->C7_FORNECE
+			(_oTable:GetAlias())->C7_LOJA		:= (_cTRB)->C7_LOJA
+			(_oTable:GetAlias())->C7_OBS		:= (_cTRB)->C7_OBS
+			(_oTable:GetAlias())->C7_DATPRF		:= STOD((_cTRB)->C7_DATPRF)
+
+			(_cTRB)->(DbSkip())
+		
+		Enddo
+
+		_cRet := (_oTable:GetAlias())
 
 	Endif
+
+	(_cTRB)->(DbCloseArea())
 
 Return _cRet
 
