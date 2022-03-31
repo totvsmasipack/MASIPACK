@@ -28,7 +28,7 @@ Private	lMsErroAuto    := .F.            	// Indica se gerou erro na Transacao
 Private lMsHelpAuto    := .T.
 Private lAutoErrNoFile := .F.
 Private _aOpsSC2       := {}
-Private _nNumOP        := 0
+Private cNumOP        := 0
 Private _nQtdOP        := 0
 Private _lOK           := .F.
 Private aAreaSZU       := {}
@@ -201,9 +201,10 @@ If _lRet
 	If Empty(_dDataNec)
 		_dDataNec := CTOD("31/12/49")
 	EndIf
-	_nNumOP   := Val(_cOP)
-	_lOK      := .T.
-	_aOpsSC2  := {}
+//	_nNumOP   := Val(_cOP)
+	cNumOP		:= _cOP
+	_lOK		:= .T.
+	_aOpsSC2	:= {}
 	
 	SB1->(DbSetOrder(1))
 	SG1->(DbSetOrder(1))
@@ -327,7 +328,7 @@ If _lRet
 		EndIf
 		QR9->(DbSkip())
 	EndDo
-	Alert("Ops Geradas: "+Str(_nQtdOP,6))
+	FwAlertInfo("Ops Geradas: "+Str(_nQtdOP,6))
 	//MostraErro(_cPath,_cArqLog)
 	// Copia do Arquivo de Log para ser analisado pelo PCP
 	//CPYS2T(_cPath + _cArqLog," C:\LIXO\")
@@ -376,15 +377,15 @@ EndIf
 For I := 1 to SZU->ZU_QTDEOP
 	_lOK := .F.
 	Do While !_lOK
-		If !SC2->(DbSeek(xFilial("SC2")+StrZero(_nNumOP,6)))
+		If !SC2->(DbSeek( FWxFilial("SC2") + PadR(cNumOP,TamSX3('C2_NUM')[1])))
 			_lOK := .T.
 		Else
-			_nNumOP++
+			cNumOP := Soma1(cNumOP)
 		EndIf
 	EndDo
 	//Alert("OP: "+Str(_nNumOP)+" - Produto: "+QR9->ZU_PRODUTO)
-	_aOPsSC2 := {{"C2_FILIAL", xFilial("SC2")      , NIL},;
-	{"C2_NUM"    , StrZero(_nNumOP,6) , NIL},;
+	_aOPsSC2 := {{"C2_FILIAL", FWxFilial("SC2")      , NIL},;
+	{"C2_NUM"    , cNumOP			 , NIL},;
 	{"C2_ITEM"   , '01'              , NIL},;
 	{"C2_SEQUEN" , '001'             , NIL},;
 	{"C2_MSLISTA", 'N'               , NIL},;
@@ -421,10 +422,10 @@ For I := 1 to SZU->ZU_QTDEOP
 
 		DisarmTransaction()
 	Else
-		_cOPs += StrZero(_nNumOP,6) + "/"
+		_cOPs += cNumOP + "/"
 	EndIf
 	End Transaction
-	_nNumOP++
+	cNumOP := Soma1(cNumOP)
 	_nQtdOP++
 Next I
 Return
