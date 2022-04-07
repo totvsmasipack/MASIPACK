@@ -20,23 +20,19 @@ Private lMarkAll := .F.
 
 		cQuery := " SELECT  '' AS C7_MARK, C7_NUM, C7_FORNECE, C7_LOJA, C7_XENVIAD, A2_NOME, A2_EMAIL2, A2_TEL "
 		cQuery += " FROM " + RetSQLName('SC7') + " SC7 "
-
 		cQuery += " 	INNER JOIN " + RetSQLName('SA2') + " SA2 ON "
 		cQuery += " 	A2_FILIAL = '" + FWxFilial('SA2') + "' "
 		cQuery += " 	AND SA2.A2_COD = SC7.C7_FORNECE "
 		cQuery += " 	AND SA2.A2_LOJA = SC7.C7_LOJA "
 		cQuery += " 	AND A2_EST != 'EX' "
 		cQuery += " 	AND SA2.D_E_L_E_T_ = ' ' "
-
 		cQuery += " WHERE C7_FILIAL = '" + FWxFilial('SC7') + "' "
 		cQuery += " AND C7_NUM BETWEEN '"+MV_PAR01+"' AND '"+MV_PAR02+"'
 		cQuery += " AND C7_FORNECE BETWEEN '"+MV_PAR03+"' AND '"+MV_PAR05+"'
 		cQuery += " AND C7_LOJA BETWEEN '"+MV_PAR04+"' AND '"+MV_PAR06+"'
 
-		If MV_PAR07 == 1	// Pedidos em Aberto
-			
+		If MV_PAR07 == 1	// Pedidos em Aberto		
 			cQuery += " AND C7_QUANT > C7_QUJE "
-		
 		ElseIf MV_PAR07 == 2	// Pedidos Em Atraso
 
 			cQuery += " AND C7_QUANT > SC7.C7_QUJE "
@@ -68,23 +64,20 @@ Função para exibição do FormBrowse dos pedidos de compras (SC7)
 Static Function ShowFormSC7(cQuery)
 
 Local aCpoTMP	:= {'C7_MARK','C7_NUM','C7_FORNECE','C7_LOJA','A2_NOME','A2_EMAIL2','A2_TEL','C7_XENVIAD'}
-//Local aCpoSC7	:= {'C7_NUM','C7_ITEM','C7_PRODUTO','C7_QUANT','C7_QUJE','C7_DATPRF'}
 Local aIndex	:= {"C7_NUM"}
 Local aSeekSC7	:= {{ "Num. Pedido", {{"Pedido","C",TamSx3('C7_NUM')[1],0,"",,}} }}
 Local cAlias	:= GetNextAlias()
 Local cTitle	:= 'Pedidos de Compras' + IIF(MV_PAR07 == 1,' - Em Aberto',IIF(MV_PAR07 == 2,' - Em Atraso',' - Todos'))
 Local nPos		:= 0
 Local oDlg		:= CreateModal(cTitle)
-Local oBrwTMP, /*oBrwSC7,*/ oCol, oModal, oLayer
+Local oBrwTMP, oCol, oModal, oLayer
 	
 	oModal := oDlg:GetPanelMain()
 
 	oLayer := FWLayer():New()
     oLayer:Init(oModal, .F., .T.)
     oLayer:AddLine("LIN1",100, .F.)
-//	oLayer:AddLine("LIN2",040, .F.)
 	oLayer:AddCollumn("COL1", 100, .F., "LIN1")
-//	oLayer:AddCollumn("COL2", 100, .F., "LIN2")
     
 	oBrwTMP := FWFormBrowse():New()
 	oBrwTMP:SetOwner(oLayer:GetColPanel("COL1","LIN1"))
@@ -119,36 +112,6 @@ Local oBrwTMP, /*oBrwSC7,*/ oCol, oModal, oLayer
     Next nPos
 
 	oBrwTMP:Activate()
-/*
-	oBrwSC7 := FWFormBrowse():New()
-	oBrwSC7:SetOwner(oLayer:GetColPanel("COL2","LIN2"))
-	oBrwSC7:SetDescription('Itens do Pedido de Compra')
-    oBrwSC7:SetAlias('SC7')
-    oBrwSC7:SetDataTable(.T.)
-	oBrwSC7:AddLegend( "SC7->C7_QUJE == 0", "GREEN", "Item Pendente" )
-	oBrwSC7:AddLegend( "SC7->C7_QUJE > 0 .And. SC7->C7_QUANT > SC7->C7_QUJE", "YELLOW", "Item Parcialmente Atendido" )
-	oBrwSC7:AddLegend( "SC7->C7_QUANT == SC7->C7_QUJE", "RED", "Item Atendido" )
-    oBrwSC7:DisableDetails()
-
-	For nPos := 1 To Len(aCpoSC7)
-		oCol := FWBrwColumn():New()
-		oCol:SetTitle( RetTitle(aCpoSC7[nPos]) )
-		oCol:SetData( &("{|| " + aCpoSC7[nPos] + " }") )
-		oCol:SetType( TamSX3(aCpoSC7[nPos])[3] )
-		oCol:SetSize( TamSX3(aCpoSC7[nPos])[1] )
-		oCol:SetDecimal( TamSX3(aCpoSC7[nPos])[2] )
-		oCol:SetPicture( PesqPict('SC7',aCpoSC7[nPos]) )
-		oBrwSC7:SetColumns({oCol})
-    Next nPos
-	
-	oBrwSC7:Activate()
-
-	oRelation := FWBrwRelation():New() 
-	oRelation:AddRelation(oBrwTMP,oBrwSC7,{{"C7_NUM","C7_NUM"}})
-	oRelation:Activate()
-
-	oBrwSC7:Refresh()
-*/
 	oDlg:Activate()
 
 Return
@@ -168,12 +131,12 @@ Local uRet
     uRet := FwDialogModal():New()
 	uRet:SetBackground(.T.)
 	uRet:SetEscClose(.T.)
-//  uRet:SetTitle(Alltrim(cTitle))
     uRet:SetPos(aCoors[1], aCoors[2])
     uRet:SetSize(aCoors[3]/2, aCoors[4]/2)
     uRet:CreateDialog()
 
 Return uRet
+
 
 /*/{Protheus.doc} b_ConsPed
 Consulta o pedido de compras posicionado
@@ -293,6 +256,7 @@ Local nTIPI		:= 0
 Local nTCIPI	:= 0 
 Local nTLiq		:= 0
 Local nCount	:= 0
+Local nBegin	:= 0
 Local oMail, oHtml
 
 	(cAlias)->(dbGoTop())
@@ -302,6 +266,12 @@ Local oMail, oHtml
 		Endif
 		(cAlias)->(dbSkip())
 	Enddo
+
+	DbSelectArea('SB1')
+	SB1->(DbSetOrder(1))
+
+	DbSelectArea('SB5')
+	SB5->(DbSetOrder(1))
 
 	ProcRegua(nTotal)
 
@@ -380,7 +350,7 @@ Local oMail, oHtml
 					oMail:cBCC := Alltrim(GetMv("MS_WFMQCCO"))
 				Else
 					oMail:cTo  := AllTrim(cTo) + Alltrim(GetMv("MS_INTMAIL"))
-					oMail:cCC  := "compras@masipack.com.br"
+					oMail:cCC  := IIF( FWCodEmp() == '01', 'compras@masipack.com.br' , 'pedidos02@fabrima.com.br' )
 				Endif
 			Else
 				oMail:cTo  := AllTrim(cTo)
@@ -437,13 +407,20 @@ Local oMail, oHtml
 					
 					AADD( (oHtml:ValByName( "T1.1"	))	,SC7->C7_ITEM	)
 					AADD( (oHtml:ValByName( "T1.2" 	))	,SC7->C7_PRODUTO)
-					
-					If ! SubStr(cNumEmp,1,2) == "15"
-						cDesc	:= If( !Empty(POSICIONE("SB5", 1, xFilial("SB5") + SC7->C7_PRODUTO, "B5_CEME")),; 
-										POSICIONE("SB5", 1, xFilial("SB5") + SC7->C7_PRODUTO, "B5_CEME"),;
-										POSICIONE("SB1", 1, xFilial("SB1") + SC7->C7_PRODUTO, "B1_DESC") )	
+
+					SB1->(DbSeek( FWxFilial("SB1") + PadR(SC7->C7_PRODUTO, TamSX3('B1_COD')[1]) ))
+					If ! (FwCodEmp() == "15")
+						
+						SB5->(DbSeek( FWxFilial("SB5") + PadR(SC7->C7_PRODUTO, TamSX3('B5_COD')[1]) ))
+						cDesc	:= IIF( SB5->(FOUND()) .AND. !Empty(SB5->B5_CEME), ALLTRIM(SB5->B5_CEME), ALLTRIM(SB1->B1_DESC) )
+						If SB5->(FOUND()) .AND. !Empty(SB5->B5_MSOBS)
+							For nBegin := 1 To MLCount(SB5->B5_MSOBS,100)
+								cDesc += "<br>" + OemToAnsi(MemoLine(SB5->B5_MSOBS,100,nBegin))
+							Next nBegin
+						Endif
+
 					Else
-						cDesc	:= POSICIONE("SB1", 1, xFilial("SB1") + SC7->C7_PRODUTO, "B1_DESC")
+						cDesc	:=  ALLTRIM(SB1->B1_DESC)
 					Endif
 					
 					AADD( (oHtml:ValByName( "T1.3"	))	,cDesc)
@@ -461,11 +438,9 @@ Local oMail, oHtml
 					AADD( (oHtml:ValByName( "T1.10"	))	,DTOC(SC7->C7_DATPRF))
 					AADD( (oHtml:ValByName( "T1.11"	))	,If( SubStr(POSICIONE("SB1", 1, xFilial("SB1") + SC7->C7_PRODUTO, "B1_PROCED"),2,1) == "P", "I", "C" ) )
 					
-//					nTIPI 	+= SC7->(((((C7_QUANT - C7_QUJE) * C7_PRECO) * C7_IPI) /100))
 					nTIPI 	+= SC7->(((((C7_QUANT - C7_QUJE) * C7_PRECO) + C7_VALFRE) * C7_IPI) / 100 )
 					nTFrete	+= SC7->C7_VALFRE
 					nTDesc	+= SC7->C7_VLDESC
-//					nTCIPI	+= SC7->(((C7_QUANT - C7_QUJE) * C7_PRECO) + ((((C7_QUANT - C7_QUJE) * C7_PRECO) * C7_IPI) /100))
 					nTCIPI	+= SC7->(((C7_QUANT - C7_QUJE) * C7_PRECO) + ((((C7_QUANT - C7_QUJE) * C7_PRECO) + C7_VALFRE) * C7_IPI) / 100)
 					nTLiq	+= SC7->(((C7_QUANT - C7_QUJE) * C7_PRECO) + (((((C7_QUANT - C7_QUJE) * C7_PRECO) + C7_VALFRE) * C7_IPI) / 100)) - SC7->C7_VLDESC + SC7->C7_VALFRE
 
