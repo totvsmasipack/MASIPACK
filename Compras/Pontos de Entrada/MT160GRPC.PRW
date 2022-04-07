@@ -12,10 +12,6 @@ User Function MT160GRPC
 
 Local _aArea	:= { SC1->(GetArea()), SB1->(GetArea()), SA2->(GetArea()) }
 
-	If FieldPos('C7_PRECO') > 0
-		SC7->C7_PRECO	:= U_RCOMG016( SC7->C7_PRODUTO )
-	Endif
-
 	If FieldPos('C7_RETFOR') > 0	
 		SC7->C7_RETFOR	:= 'N'
 	Endif

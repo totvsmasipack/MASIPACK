@@ -11,16 +11,27 @@
 User Function MT120ISC()
 
 Local _aArea	:= {SC1->(GetArea()), SC7->(GetArea())}
-Local _nRetFor	:= aScan(aHeader,{|x| AllTrim(x[2]) == "C7_RETFOR"})	//Identifica o campo Retorno do Fornecedor
-Local _nUltPrc	:= aScan(aHeader,{|x| AllTrim(x[2]) == "C7_PRECO"})		//Identifica o campo Preço Unitário
-Local _nPosPrd	:= aScan(aHeader,{|x| AllTrim(x[2]) == "C7_PRODUTO"})	//Identifica o campo do código do Produto
+Local _aPosLin	:= Array(5)
 
-	If _nRetFor > 0
-		aCols[N][_nRetFor] 	:= 'N'
+	_aPosLin[1]	:= aScan(aHeader,{|x| AllTrim(x[2]) == "C7_RETFOR"})	//Identifica o campo Retorno do Fornecedor
+	_aPosLin[2]	:= aScan(aHeader,{|x| AllTrim(x[2]) == "C7_PRECO"})		//Identifica o campo Preço Unitário
+	_aPosLin[3]	:= aScan(aHeader,{|x| AllTrim(x[2]) == "C7_PRODUTO"})	//Identifica o campo do código do Produto
+	_aPosLin[4]	:= aScan(aHeader,{|x| AllTrim(x[2]) == "C7_TOTAL"})		//Identifica o campo do total do item
+	_aPosLin[5]	:= aScan(aHeader,{|x| AllTrim(x[2]) == "C7_QUANT"})		//Identifica o campo da quantidade do item
+
+	// Atualiza o campo do Retorno do Fornecedor (C7_RETFOR)
+	If _aPosLin[1] > 0
+		aCols[N][_aPosLin[1]] 	:= 'N'
 	Endif
 
-	If _nPosPrd > 0 .And. _nUltPrc > 0
-		aCols[N][_nUltPrc] 	:= U_RCOMG016( aCols[N][_nPosPrd] )
+	//Atualiza o campo Preço Unitário (C7_PRECO)
+	If _aPosLin[3] > 0 .And. _aPosLin[2] > 0
+		aCols[N][_aPosLin[2]] 	:= U_RCOMG016( aCols[N][_aPosLin[3]] )
+	Endif
+
+	//Atualiza o campo Valor Total (C7_TOTAL)
+	If _aPosLin[4] > 0 .And. _aPosLin[5] > 0
+		aCols[N][_aPosLin[4]]	:= aCols[N][_aPosLin[5]] * aCols[N][_aPosLin[2]]
 	Endif
 
 	AEval(_aArea,{|x| RestArea(x) })
