@@ -3,46 +3,32 @@
 #include 'topconn.ch'
 
 /*/{Protheus.doc} User Function RCOMG016
-Gatilho utilizado no campo C7_PRODUTO para retornar o último preço de compra.
+	Gatilho utilizado no campo C7_PRODUTO para retornar o último preço de compra.
 @type  Function
 @author E.DINIZ - [ DS2U ]
 @since 12/01/2022
 /*/
-User Function RCOMG016()
+User Function RCOMG016( uProd )
 
-Local _cQry		:= ''
 Local _cTRB		:= ''
 Local _aArea	:= {SB1->(GetArea())}
 Local _nRet		:= 0
 
+Default uProd	:= M->C7_PRODUTO
+
 	dbSelectArea('SB1')
 	SB1->(dbSetOrder(1))
-	SB1->(dbSeek(FWxFilial("SB1")+M->C7_PRODUTO))
+	SB1->(dbSeek(FWxFilial("SB1") + PadR(uProd, TamSX3('B1_COD')[1])))
 	
 	If SB1->(FOUND()) .And. SB1->B1_UPRC > 0
-		
 		_nRet := SB1->B1_UPRC
-
 	Else
-
 		_cTRB := GetNextAlias()
-		_cQry := "SELECT " + CRLF 
-		_cQry += "	COALESCE(( SELECT TOP 1 C7_PRECO " + CRLF
-		_cQry += "		FROM	"+RetSQLName('SC7') +" C7 " + CRLF
-		_cQry += "		WHERE	C7_FILIAL		= '"+FWxFilial('SC7')+"'" + CRLF
-		_cQry += "				AND C7_PRODUTO	= '"+M->C7_PRODUTO+"'	" + CRLF
-		_cQry += "				--AND C7_NUM	<> '"+cA120Num+"'		" + CRLF
-		_cQry += "				AND C7_RESIDUO	= ' ' 	" + CRLF
-		_cQry += "				AND D_E_L_E_T_	= ' '	" + CRLF
-		_cQry += "		ORDER BY C7_EMISSAO DESC  " + CRLF
-		_cQry += "	),0 ) [ULTPRC]  " + CRLF
-
-		TCQuery _cQry New Alias (_cTRB)
-
+		BeginSQL Alias _cTRB
+			SELECT COALESCE(SELECT TOP 1 C7_PRECO FROM %Table:SC7% SC7 WHERE SC7.C7_FILIAL = %xFilial:SC7% AND SC7.C7_PRODUTO = %Exp:uProd% AND SC7.C7_RESIDUO = %Exp:''% AND SC7.%NOTDEL%, 0)
+		EndSQL
 		_nRet := (_cTRB)->ULTPRC
-
 		(_cTRB)->(dbCloseArea())
-
 	Endif
 
 	AEval(_aArea,{|x| RestArea(x) })
