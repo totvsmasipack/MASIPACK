@@ -89,7 +89,7 @@ Pergunte("MTR140",.F.)
 //³ExpC5 : Descricao                                                       ³
 //³                                                                        ³
 //ÀÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÙ
-oReport := TReport():New("MTR140",cTitle,If(lAuto,Nil,"MTR140"), {|oReport| ReportPrint(oReport,cAliasSC1,nReg)},"Emissao das solicitacoes de compras cadastradas")
+oReport := TReport():New("RCOMR041",cTitle,If(lAuto,Nil,"MTR140"), {|oReport| ReportPrint(oReport,cAliasSC1,nReg)},"Emissao das solicitacoes de compras cadastradas")
 oReport:SetLandscape() 
 //ÚÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄ¿
 //³Criacao da secao utilizada pelo relatorio                               ³
@@ -130,6 +130,7 @@ oSection1:SetHeaderPage()
 
 TRCell():New(oSection1,"C1_ITEM"   ,"SC1",/*Titulo*/,/*Picture*/,/*Tamanho*/,/*lPixel*/,/*{|| code-block de impressao }*/)
 TRCell():New(oSection1,"C1_PRODUTO","SC1",/*Titulo*/,/*Picture*/,TamSX3("C1_PRODUTO")[1]+10,/*lPixel*/,/*{|| code-block de impressao }*/)
+TRCell():New(oSection1,"B1_REVATU" ,"SB1","Rev",/*Picture*/,5,/*lPixel*/,/*{|| code-block de impressao }*/)
 TRCell():New(oSection1,"C1_QUANT"  ,"SC1",/*Titulo*/,PesqPict("SC1","C1_QUANT" ,12),/*Tamanho*/,/*lPixel*/,/*{|| code-block de impressao }*/)
 TRCell():New(oSection1,"DESCPROD"  ,"   ",'Descricao',/*Picture*/,60,/*lPixel*/, {|| cDescPro })
 TRCell():New(oSection1,"B2_QATU"   ,"SB2",/*Titulo*/,PesqPict("SB2","B2_QATU" ,12),/*Tamanho*/,/*lPixel*/,/*{|| code-block de impressao }*/)
@@ -424,6 +425,10 @@ While !oReport:Cancel() .And. !(cAliasSC1)->(Eof()) .And. (cAliasSC1)->C1_FILIAL
 	If EMPTY(SB1->B1_FABRIC)
 		oSection1:Cell("B1_FABRIC"):Disable()
 	eNDIF
+
+	If EMPTY(SB1->B1_REVATU)
+		oSection1:Cell("B1_REVATU"):Disable()
+	Endif
 
 /*
 	//ÚÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄ¿
