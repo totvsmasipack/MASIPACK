@@ -10,6 +10,8 @@ Envio de pedidos de compras em atraso ao fornecedor
 /*/
 User Function RSCHG006(aParam)
 
+Default aParam	:= {'',''}
+
     CONOUT('=========================|RSCHG006|==========================')
     CONOUT('= INICIADO EM: ' + DTOC(DATE()) + ' - ' + TIME())
 
@@ -55,7 +57,7 @@ Local oHtml		:= Nil
 	
 	While (cAlias)->(!EOF())
 
-		cKey := (cAlias)->(C7_FORNECE + C7_LOJA + C7_NUM)
+		cKey := (cAlias)->(C7_FILIAL + C7_FORNECE + C7_LOJA + C7_NUM)
 
 		oMail := TWFProcess():New( "RSCHG006", "Pedido de Compras em Atraso" )
 		oMail:NewTask( "RSCHG006", "\WORKFLOW\MODELOS\PC\PCATRASO_1.htm" )
@@ -79,7 +81,7 @@ Local oHtml		:= Nil
         oHtml:ValByName("cFoneCli", Alltrim(SM0->M0_TEL))
 		oHtml:ValByName("cContato", Alltrim(GetMv('MS_WFMAIL',.F.,'')))
 
-		While (cAlias)->(!EOF()) .And. (cAlias)->(C7_FORNECE + C7_LOJA + C7_NUM) == cKey
+		While (cAlias)->(!EOF()) .And. (cAlias)->(C7_FILIAL + C7_FORNECE + C7_LOJA + C7_NUM) == cKey
 			AADD((oHtml:ValByName('IT1.1')),NoAcento((cAlias)->C7_ITEM))
 			AADD((oHtml:ValByName('IT1.2')),(cAlias)->C7_PRODUTO)
 			AADD((oHtml:ValByName('IT1.3')),'-')
@@ -120,7 +122,7 @@ Local cRet		:= GetNextAlias()
 
 	BEGINSQL ALIAS cRet
 
-		SELECT	A2_COD +'/'+ A2_LOJA + ' - ' + TRIM(A2_NOME) AS FORNECEDOR, A2_CGC, A2_EMAIL2, C7_NUM, C7_FORNECE, C7_LOJA,
+		SELECT	C7_FILIAL, A2_COD +'/'+ A2_LOJA + ' - ' + TRIM(A2_NOME) AS FORNECEDOR, A2_CGC, A2_EMAIL2, C7_NUM, C7_FORNECE, C7_LOJA,
 				C7_ITEM, C7_PRODUTO, B1_DESC, C7_QUANT, C7_QUJE, C7_QUANT- C7_QUJE AS SALDO, B1_UM, C7_DATPRF, C7_EMISSAO
 
 		FROM	%Table:SC7% C7
@@ -167,7 +169,7 @@ Local cRet		:= GetNextAlias()
 							F1.%NOTDEL%
 				)
 
-		ORDER BY C7_NUM, C7_ITEM
+		ORDER BY C7_FILIAL, C7_NUM, C7_ITEM
 
 	ENDSQL
 	
