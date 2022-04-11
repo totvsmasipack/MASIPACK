@@ -13,23 +13,26 @@ User Function RCOMG016( uProd )
 Local _cTRB		:= ''
 Local _aArea	:= {SB1->(GetArea())}
 Local _nRet		:= 0
+Local _uPedCom	:= IIF(Type('cA120Num')=='C',cA120Num,'')
 
 Default uProd	:= M->C7_PRODUTO
 
-	dbSelectArea('SB1')
-	SB1->(dbSetOrder(1))
-	SB1->(dbSeek(FWxFilial("SB1") + PadR(uProd, TamSX3('B1_COD')[1])))
+	_cTRB := GetNextAlias()
 	
-	If SB1->(FOUND()) .And. SB1->B1_UPRC > 0
-		_nRet := SB1->B1_UPRC
-	Else
-		_cTRB := GetNextAlias()
-		BeginSQL Alias _cTRB
-			SELECT TOP 1 COALESCE(C7_PRECO,0) [ULTPRC] FROM %Table:SC7% SC7 WHERE SC7.C7_FILIAL = %xFilial:SC7% AND SC7.C7_PRODUTO = %Exp:uProd% AND SC7.C7_RESIDUO = %Exp:''% AND SC7.%NOTDEL% ORDER BY R_E_C_N_O_ DESC
-		EndSQL
-		_nRet := (_cTRB)->ULTPRC
-		(_cTRB)->(dbCloseArea())
-	Endif
+	BeginSQL Alias _cTRB
+		SELECT	TOP 1 COALESCE(C7_PRECO,0) [ULTPRC] 
+		FROM	%Table:SC7% SC7 
+		WHERE	SC7.C7_FILIAL	= %xFilial:SC7%		AND
+				SC7.C7_PRODUTO	= %Exp:uProd%		AND
+				SC7.C7_RESIDUO	= %Exp:''%			AND
+				SC7.C7_NUM		!= %Exp:_uPedCom%	AND
+				SC7.%NOTDEL% 
+		ORDER BY SC7.R_E_C_N_O_ DESC
+	EndSQL
+	
+	_nRet := (_cTRB)->ULTPRC
+	
+	(_cTRB)->(dbCloseArea())
 
 	AEval(_aArea,{|x| RestArea(x) })
 
