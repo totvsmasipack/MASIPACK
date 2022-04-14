@@ -79,109 +79,115 @@ Local nOrientation	:= oReport:GetOrientation()
 Local nMaxLin		:= IIF(nOrientation == 1, 2990 , 2000)
 Local nOrdem		:= oReport:Section(1):GetOrder() 
 Local oSection1  	:= oReport:Section(1)
-Local oSection2  	:= oReport:Section(2) 
+Local oSection2  	:= oReport:Section(2)
+Local lContinua		:= .T.
 
 	oReport:SetMeter(0)
 
 	dbSelectArea('SD4')
 	SD4->(dbSetOrder(11))
 	SD4->(dbSeek(FWxFilial("SD4") + PadR(MV_PAR01,TamSX3('D4_MSREFER')[1])))
-	While SD4->(!EOF()) .And. SD4->(D4_FILIAL + D4_MSREFER) == FWxFilial("SD4") + PadR(MV_PAR01,TamSX3('D4_MSREFER')[1])
+	While SD4->(!EOF()) .And. FWCodEmp() $ '01' .And. SD4->(D4_FILIAL + D4_MSREFER) == FWxFilial("SD4") + PadR(MV_PAR01,TamSX3('D4_MSREFER')[1])
 		If !Empty(SD4->D4_MSIMPLI)
 			cD4MSIMPLI	:= DTOC(SD4->D4_MSIMPLI)
-			FwAlertWarning('Referência impressa em: ' + cD4MSIMPLI, 'ATENÇÃO')
+			FwAlertError('Referência impressa em: ' + cD4MSIMPLI, 'ATENÇÃO')
+			lContinua := .F.
 			Exit
 		Endif
 		SD4->(dbSkip())
 	Enddo
 
-	cAlias := GetSD4Detail(.F.,nOrdem)	//Itens com saldo em estoque p/ separação
-
-	oReport:PrintText('L I S T A  D E  S E P A R A Ç Ã O | REFERÊNCIA: ' + MV_PAR01 + IIF( !Empty(cD4MSIMPLI) , '  |  ' + "IMPRESSO EM: " + cD4MSIMPLI , '' ), oReport:Row(), oReport:Col()+10)
-	oReport:SkipLine()
-	oReport:FatLine()
+	If lContinua
 		
-	If (cAlias)->(!EOF())
-		lEmpFound	:= .T.
-		oSection1:Init()
-		While (cAlias)->(!EOF())
-			oSection1:Cell("D4_COD"):SetValue( (cAlias)->D4_COD )
-			oSection1:Cell("B1_DESC"):SetValue( (cAlias)->B1_DESC )
-			oSection1:Cell("B1_LOCAL"):SetValue( (cAlias)->B1_LOCAL )
-			oSection1:Cell("D4_MSLF"):SetValue( (cAlias)->D4_MSLF )
-			oSection1:Cell("D3_QUANT"):SetValue( (cAlias)->D3_QUANT )
-			oSection1:PrintLine()
+		cAlias := GetSD4Detail(.F.,nOrdem)	//Itens com saldo em estoque p/ separação
 
-			If oReport:Row() == nMaxLin
-				oSection1:Finish()
-				oReport:EndPage(.T.)
-				oReport:PrintText('L I S T A  D E  S E P A R A Ç Ã O | REFERÊNCIA: ' + MV_PAR01 + IIF( !Empty(cD4MSIMPLI) , '  |  ' + "IMPRESSO EM: " + cD4MSIMPLI , '' ), oReport:Row(), oReport:Col())
-				oSection1:Init()
-				oReport:SkipLine()
-				oReport:FatLine()
-			Endif
+		oReport:PrintText('L I S T A  D E  S E P A R A Ç Ã O | REFERÊNCIA: ' + MV_PAR01 + IIF( !Empty(cD4MSIMPLI) , '  |  ' + "IMPRESSO EM: " + cD4MSIMPLI , '' ), oReport:Row(), oReport:Col()+10)
+		oReport:SkipLine()
+		oReport:FatLine()
+			
+		If (cAlias)->(!EOF())
+			lEmpFound	:= .T.
+			oSection1:Init()
+			While (cAlias)->(!EOF())
+				oSection1:Cell("D4_COD"):SetValue( (cAlias)->D4_COD )
+				oSection1:Cell("B1_DESC"):SetValue( (cAlias)->B1_DESC )
+				oSection1:Cell("B1_LOCAL"):SetValue( (cAlias)->B1_LOCAL )
+				oSection1:Cell("D4_MSLF"):SetValue( (cAlias)->D4_MSLF )
+				oSection1:Cell("D3_QUANT"):SetValue( (cAlias)->D3_QUANT )
+				oSection1:PrintLine()
 
-			(cAlias)->(dbSkip())
-		Enddo
-		oSection1:Finish()
-	Else
-		oReport:PrintText('Não há empenhos para separação', oReport:Row(), oReport:Col())
-	Endif
+				If oReport:Row() == nMaxLin
+					oSection1:Finish()
+					oReport:EndPage(.T.)
+					oReport:PrintText('L I S T A  D E  S E P A R A Ç Ã O | REFERÊNCIA: ' + MV_PAR01 + IIF( !Empty(cD4MSIMPLI) , '  |  ' + "IMPRESSO EM: " + cD4MSIMPLI , '' ), oReport:Row(), oReport:Col())
+					oSection1:Init()
+					oReport:SkipLine()
+					oReport:FatLine()
+				Endif
 
-	(cAlias)->(dbCloseArea())
+				(cAlias)->(dbSkip())
+			Enddo
+			oSection1:Finish()
+		Else
+			oReport:PrintText('Não há empenhos para separação', oReport:Row(), oReport:Col())
+		Endif
 
-	cAlias := GetSD4Detail(.T.,nOrdem)	//Itens sem saldo em estoque
-	
-	oReport:EndPage(.T.)
-	oReport:PrintText('L I S T A  D E  F A L T A  | REFERÊNCIA: ' + MV_PAR01 + IIF( !Empty(cD4MSIMPLI) , '  |  ' + "IMPRESSO EM: " + cD4MSIMPLI , '' ), oReport:Row(), oReport:Col())
-	oReport:SkipLine()
-	oReport:FatLine()
-	
-	If (cAlias)->(!EOF())
+		(cAlias)->(dbCloseArea())
+
+		cAlias := GetSD4Detail(.T.,nOrdem)	//Itens sem saldo em estoque
 		
-		lFoundLF := .T.
-		oSection2:Init()
-		While (cAlias)->(!EOF())
-			oSection2:Cell("D4_COD"):SetValue( (cAlias)->D4_COD )
-			oSection2:Cell("B1_DESC"):SetValue( (cAlias)->B1_DESC )
-			oSection2:Cell("B1_LOCAL"):SetValue( (cAlias)->B1_LOCAL )
-			oSection2:Cell("D4_MSLF"):SetValue( (cAlias)->D4_MSLF )
-			oSection2:Cell("D4_QUANT"):SetValue( (cAlias)->D4_QUANT )
-			oSection2:PrintLine()
-
-			If oReport:Row() >= nMaxLin
-				oSection2:Finish()
-				oReport:EndPage(.T.)
-				oReport:PrintText('L I S T A  D E  F A L T A  | REFERÊNCIA: ' + MV_PAR01 + IIF( !Empty(cD4MSIMPLI) , '  |  ' + "IMPRESSO EM: " + cD4MSIMPLI , '' ), oReport:Row(), oReport:Col())
-				oSection2:Init()
-				oReport:SkipLine()
-				oReport:FatLine()
-			Endif
-
-			(cAlias)->(dbSkip())
-		Enddo
-		oSection2:Finish()
-	Else
-		oReport:PrintText('Não há empenhos na lista de falta', oReport:Row(), oReport:Col())
 		oReport:EndPage(.T.)
-	Endif
-	
-	If !(lEmpFound) .And. !(lFoundLF)
-		FwAlertError('Referência não vinculada a Ordem de Produção','TOTVS')
-	Endif
+		oReport:PrintText('L I S T A  D E  F A L T A  | REFERÊNCIA: ' + MV_PAR01 + IIF( !Empty(cD4MSIMPLI) , '  |  ' + "IMPRESSO EM: " + cD4MSIMPLI , '' ), oReport:Row(), oReport:Col())
+		oReport:SkipLine()
+		oReport:FatLine()
+		
+		If (cAlias)->(!EOF())
+			
+			lFoundLF := .T.
+			oSection2:Init()
+			While (cAlias)->(!EOF())
+				oSection2:Cell("D4_COD"):SetValue( (cAlias)->D4_COD )
+				oSection2:Cell("B1_DESC"):SetValue( (cAlias)->B1_DESC )
+				oSection2:Cell("B1_LOCAL"):SetValue( (cAlias)->B1_LOCAL )
+				oSection2:Cell("D4_MSLF"):SetValue( (cAlias)->D4_MSLF )
+				oSection2:Cell("D4_QUANT"):SetValue( (cAlias)->D4_QUANT )
+				oSection2:PrintLine()
 
-	(cAlias)->(dbCloseArea())
+				If oReport:Row() >= nMaxLin
+					oSection2:Finish()
+					oReport:EndPage(.T.)
+					oReport:PrintText('L I S T A  D E  F A L T A  | REFERÊNCIA: ' + MV_PAR01 + IIF( !Empty(cD4MSIMPLI) , '  |  ' + "IMPRESSO EM: " + cD4MSIMPLI , '' ), oReport:Row(), oReport:Col())
+					oSection2:Init()
+					oReport:SkipLine()
+					oReport:FatLine()
+				Endif
 
-	If Empty(cD4MSIMPLI)
-		SD4->(dbGoTop())
-		SD4->(dbSeek(FWxFilial("SD4") + PadR(MV_PAR01,TamSX3('D4_MSREFER')[1])))
-		While SD4->(!EOF()) .And. SD4->(D4_FILIAL + D4_MSREFER) == FWxFilial("SD4") + PadR(MV_PAR01,TamSX3('D4_MSREFER')[1])
-			If RecLock('SD4',.F.)
-				SD4->D4_MSIMPLI := dDataBase
-				SD4->(MsUnlock())
-			Endif
-			SD4->(dbSkip())
-		Enddo
+				(cAlias)->(dbSkip())
+			Enddo
+			oSection2:Finish()
+		Else
+			oReport:PrintText('Não há empenhos na lista de falta', oReport:Row(), oReport:Col())
+			oReport:EndPage(.T.)
+		Endif
+		
+		If !(lEmpFound) .And. !(lFoundLF)
+			FwAlertError('Referência não vinculada a Ordem de Produção','TOTVS')
+		Endif
+
+		(cAlias)->(dbCloseArea())
+
+		If Empty(cD4MSIMPLI)
+			SD4->(dbGoTop())
+			SD4->(dbSeek(FWxFilial("SD4") + PadR(MV_PAR01,TamSX3('D4_MSREFER')[1])))
+			While SD4->(!EOF()) .And. SD4->(D4_FILIAL + D4_MSREFER) == FWxFilial("SD4") + PadR(MV_PAR01,TamSX3('D4_MSREFER')[1])
+				If RecLock('SD4',.F.)
+					SD4->D4_MSIMPLI := dDataBase
+					SD4->(MsUnlock())
+				Endif
+				SD4->(dbSkip())
+			Enddo
+		Endif
+
 	Endif
 	
 Return 
