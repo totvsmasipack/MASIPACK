@@ -16,7 +16,7 @@
 User Function M410STTS()
 
 Local _aArea	:= {}
-Local _cUsrMail	:= "; " + FWSFALLUSERS({ RetCodUsr() }, { "USR_EMAIL" })[1,3]
+Local _cUsrMail	:= ''
 Local _cMsg		:= ''
 Local _cTo		:= ''
 Local _oMail	:= Nil
@@ -33,6 +33,8 @@ Private cAux      := ""
 	If FwCodEmp() $ '01|10'
 
 		_aArea := {SA1->(GetArea()), SA3->(GetArea())}
+
+		_cUsrMail	:= "; " + FWSFALLUSERS({ RetCodUsr() }, { "USR_EMAIL" })[1,3]
 
 		DO CASE
 
