@@ -1156,7 +1156,7 @@ Do While !TMP->(EOF())
 	nTotIpi += nValIpi
 	nTotGer += nTotItem
 	////Ticket#2017071837000096 — ADICIONAR NO ORÇAMENTO INFORMAÇÕES DE ICMS REDUZIDO - MASIPACK E FABRIMA
-	IF !EMPTY(TMP->B1_GRTRIB) .And. Alltrim(TMP->B1_GRTRIB) $ "001_002" //.AND. TMP->YD_BICMS = "S"
+	IF !EMPTY(TMP->B1_GRTRIB) .And. Alltrim(TMP->B1_GRTRIB) $ "001_002_007" //.AND. TMP->YD_BICMS = "S"
 		If Select("TMF7") > 0 
 		   DbSelectArea("TMF7")
 		   DbCloseArea()
@@ -1464,7 +1464,7 @@ Return()
 lPagPrint := .T.
 oQPrint:StartPage()
 
-oQPrint:SayBitmap(40,1220,cFileLogo,474,117)
+oQPrint:SayBitmap(35,100,cFileLogo,220,170)
 oQPrint:Say(40,2100,"Pag.:"+Transform(nPag,"@E 99"),oFont11)
 
 oQPrint:Box(230,  30,850,1180 )
