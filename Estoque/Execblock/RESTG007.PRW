@@ -20,7 +20,7 @@ Default cField := ''
 			CASE FwIsAdmin()	//Acesso Administradores
 				lRet := .T.
 			
-			CASE cField == 'B1_UM' .And. (INCLUI .OR. ALTERA)	
+			CASE cField == 'B1_UM' .And. ALTERA
 				
 				For nPos := 1 To Len(UsrRetGrp(RetCodUsr()))
 					If UsrRetGrp(RetCodUsr())[nPos] $ "000235|000215|000216"	//Acesso Contábil
@@ -32,6 +32,9 @@ Default cField := ''
 					Endif
 				Next nPos
 			
+			CASE cField == 'B1_UM' .And. INCLUI
+				lRet := .T.
+				
 		ENDCASE
 
 	EndIf
