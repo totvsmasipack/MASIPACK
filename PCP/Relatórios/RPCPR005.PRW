@@ -247,9 +247,9 @@ _cCond	:= " !TRB->(EOF())  "
 
 _cQuery := " SELECT C2_PRODUTO, C2_NUM, C2_ITEM, C2_SEQUEN, C2_DATAJI, C2_DATPRF, (C2_QUANT-C2_QUJE-C2_PERDA) AS SALDO, "
 _cQuery += "        C2_MSREDUZ, C2_MSPOSIC, C2_VATU1,C2_MSIMPR, C2_MSUSER, C2_MSCI, C2_MSDTCI, C2_PEDIDO, "
-_cQuery += "        C2_MSPED, C2_MSLISTA, C2_DATPRI, C2_OBS, B2_QATU, "
+_cQuery += "        C2_MSPED, C2_MSLISTA, C2_DATPRI, C2_OBS, B2.B2_QATU, "
 _cQuery += "        B1_REVATU, B1_DESC, B1_UM,  B1_LOCAL, "
-_cQuery += "        D4_MSLF, D4_QUANT, D4_DATA, D4_COD, D4_OP,  "
+_cQuery += "        D4_MSLF, D4_QUANT, D4_DATA, D4_COD, D4_OP, B2EMP.B2_QEMP [SLDEMP], "
 _cQuery += "        C6_NUM, C6_PRODUTO, (C6_QTDVEN - C6_QTDENT) AS QUANTC6, "
 _cQuery += "        C5_NUM, C5_MSDTENT "
 _cQuery += "        G2_TEMPAD, G2_SETUP, G2_RECURSO "
@@ -257,10 +257,13 @@ _cQuery += " FROM " + RetSqlName("SC2") + " C2 "
 _cQuery += " INNER JOIN " + retSqlName("SB1") + " B1 "
 _cQuery += "       ON C2_PRODUTO = B1_COD "
 _cQuery += " INNER JOIN " + RetSqlName("SB2") + " B2 "
-_cQuery += "       ON C2_PRODUTO = B2_COD "
+_cQuery += "       ON C2_PRODUTO = B2.B2_COD "
 _cQuery += " LEFT OUTER JOIN " + RetSqlName("SD4") + " D4 "
 _cQuery += "       ON (C2_PRODUTO = D4_COD OR C2_NUM+C2_ITEM+C2_SEQUEN = D4_OP) AND D4_FILIAL = '" + xFilial("SD4") + "' AND  D4.D_E_L_E_T_ = ' ' "
 _cQuery += "       AND D4_QUANT >0 "
+
+_cQuery += " LEFT JOIN " + RetSQLName('SB2') + " B2EMP ON B2EMP.B2_FILIAL = '"+FWxFilial('SB2')+"' AND B2EMP.B2_COD = D4_COD AND B2EMP.B2_LOCAL = D4_LOCAL AND B2EMP.D_E_L_E_T_ = ' ' "
+
 _cQuery += " LEFT OUTER JOIN " + RetSqlName("SC6") + " C6 "
 _cQuery += "       ON C2_PRODUTO = C6_PRODUTO AND C6_BLQ = ' ' AND C6_MSPCP <> '        ' "
 _cQuery += "       AND C6_FILIAL = '" + xFilial("SC6") + "' AND  C6.D_E_L_E_T_ = ' ' "
@@ -278,7 +281,7 @@ ELSE
 	_cQuery += "       AND C2_DATPRF BETWEEN '" + DTOS(MV_PAR07) + "' AND '" + DTOS(MV_PAR08) +  "' "
 ENDIF
 _cQuery += "       AND C2_FILIAL = '" + xFilial("SC2") + "' AND B1_FILIAL = '" + xFilial("SB1") + "' "
-_cQuery += "       AND B2_FILIAL = '" + xFilial("SB2") + "' AND B2.D_E_L_E_T_ = ' ' "
+_cQuery += "       AND B2.B2_FILIAL = '" + xFilial("SB2") + "' AND B2.D_E_L_E_T_ = ' ' "
 _cQuery += "       AND (C2_QUJE + C2_PERDA) < C2_QUANT AND C2_DATRF = '        ' AND C2.D_E_L_E_T_ = ' ' AND  B1.D_E_L_E_T_ = ' ' "
 IF MV_PAR05 == 1  // LISTA / OP
 	_cQuery += "   AND C2_MSLISTA <> 'S' "
@@ -566,6 +569,7 @@ DO WHILE !QR1->(EOF())
 		TRB->TB_MSUSER	:= QR1->C2_MSUSER
 		TRB->TB_MSCI	:= QR1->C2_MSCI
 		TRB->TB_MSDTCI	:= QR1->C2_MSDTCI
+		TRB->TB_MSEMPEN	:= QR1->SLDEMP
 		If !Empty(QR1->C2_MSIMPR)
 			TRB->TB_MSIMPR	:=  "I"
 		EndIf
