@@ -16,8 +16,8 @@
 User Function M410STTS()
 
 Local _aArea	:= {}
-Local _aVoltage := {}
-Local _aFrequen := {}
+Local _aVoltage := {"110V", "220V"}
+Local _aFrequen := {"60Hz"}
 Local _cUsrMail	:= ''
 Local _cMsg		:= ''
 Local _cTo		:= ''
