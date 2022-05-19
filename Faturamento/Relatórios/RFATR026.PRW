@@ -1155,12 +1155,13 @@ Do While !TMP->(EOF())
 	MaFisEnd() // FINALIZA A OPERAÇÃO E LIMPA TODOS OS ARRAYS INTERNOS DA MATXFIS	
 	nTotIpi += nValIpi
 	nTotGer += nTotItem
-	////Ticket#2017071837000096 — ADICIONAR NO ORÇAMENTO INFORMAÇÕES DE ICMS REDUZIDO - MASIPACK E FABRIMA
+	//Fecha a query antes de validar se o item tem grupo tributario
+	If Select("TMF7") > 0 
+		DbSelectArea("TMF7")
+		DbCloseArea()
+	EndIf
+
 	IF !EMPTY(TMP->B1_GRTRIB) .And. Alltrim(TMP->B1_GRTRIB) $ "001_002_007" //.AND. TMP->YD_BICMS = "S"
-		If Select("TMF7") > 0 
-		   DbSelectArea("TMF7")
-		   DbCloseArea()
-		EndIf
 		_cQryF7 := "Select F7_BASEICM, F7_ALIQINT From "+RetSQLName("SF7")+" Where F7_GRTRIB = '"+TMP->B1_GRTRIB+"' 
 		_cQryF7 += " And F7_EST = '"+TMP->A1_EST+"' And F7_FILIAL = '"+xFilial("SF7")+"' And D_E_L_E_T_ = '' "
 		
@@ -1243,27 +1244,17 @@ Do While !TMP->(EOF())
 	SF4->(ORDSETFOCUS(1))
 	If SF4->(dbSeek(xFILIAL("SF4") + Alltrim(TMP->CK_TES)))
 	   If SF4->F4_ICM == "S" 
-	      //Ivandro - 27/09/16
-	      //[Ticket#2016092037000161] ICMS ERRADO NO ORÇAMENTO
-	    	If cEstCli == "SP" .And. Select("TMF7") > 0 //.And. TMF7->F7_ALIQINT > 0
+	    	If cEstCli == "SP" .And. Select("TMF7") > 0
 				nICM := IIF( TMF7->F7_ALIQINT > 0, TMF7->F7_ALIQINT, SB1->B1_PICM )
-			
-		  //Thomas - 02/02/2021
-		  //[Ticket#20210201000005] Demonstrativo de alíquota de ICMS
-	      //If cEstCli == "SP" .Or. Alltrim(TMP->A1_INSCR) == "ISENTO"
-	      //[Ticket#2016092037000161] - Fim da alteração
-	         //nICM := SB1->B1_PICM
 	    	Else  
-/*				dbSelectArea("SX6")
-				dbSetOrder(1)			
-				If DbSeek(xFilial("SX6")+"MS_ALINICM")
-					nICM := val(Substr(SX6->X6_CONTEUD,At(cEstCli,SX6->X6_CONTEUD)+2,2))
-				Endif
-*/
-				cAliICM := GetMV('MS_ALINICM')
-				If !Empty(cAliICM)
-					nICM := Val(Substr(cAliICM,At(cEstCli,cAliICM)+2,2))
-				Endif
+				nICM := SB1->B1_PICM
+					If nICM == 0
+						cAliICM := GetMV('MS_ALINICM')
+						If !Empty(cAliICM)
+							nICM := Val(Substr(cAliICM,At(cEstCli,cAliICM)+2,2))
+						Endif
+					EndIf
+			
 			EndIf   
    	EndIf
    	If SF4->F4_IPI == "S"
