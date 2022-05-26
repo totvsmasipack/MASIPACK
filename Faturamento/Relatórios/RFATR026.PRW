@@ -415,7 +415,7 @@ Do While !TMP->(Eof())
 			nICM := 0
 			_cGrupo := ""
 			If SubStr(cNumEmp,1,2) <> "05"
-				SB1->(ORDSETFOCUS(1))
+				SB1->(DbSetOrder(1))
 				If SB1->(dbSeek(xFilial("SB1") + Alltrim(TMP->CK_PRODUTO)))
 					_cGrupo := Alltrim(TMP->B1_GRUPO)
 				Else
@@ -1233,7 +1233,7 @@ Do While !TMP->(EOF())
 	nICM := 0
    _cGrupo := ""
 	If SubStr(cNumEmp,1,2) <> "05"
-      SB1->(ORDSETFOCUS(1))
+      SB1->(DbSetOrder(1))
 	   If SB1->(dbSeek(xFilial("SB1") + Alltrim(TMP->CK_PRODUTO)))
 	      _cGrupo := Alltrim(TMP->B1_GRUPO)   
    	Else
@@ -1241,27 +1241,27 @@ Do While !TMP->(EOF())
  	   EndIf     
   	EndIf   
 
-	SF4->(ORDSETFOCUS(1))
+	SF4->(DbSetOrder(1))
 	If SF4->(dbSeek(xFILIAL("SF4") + Alltrim(TMP->CK_TES)))
 	   If SF4->F4_ICM == "S" 
 	    	If cEstCli == "SP" .And. Select("TMF7") > 0
 				nICM := IIF( TMF7->F7_ALIQINT > 0, TMF7->F7_ALIQINT, SB1->B1_PICM )
-	    	Else  
+	    	ElseIf nICM == 0
+				cAliICM := GetMV('MS_ALINICM')
+				If !Empty(cAliICM)
+					nICM := Val(Substr(cAliICM,At(cEstCli,cAliICM)+2,2))
+				Endif
+			Else
 				nICM := SB1->B1_PICM
-					If nICM == 0
-						cAliICM := GetMV('MS_ALINICM')
-						If !Empty(cAliICM)
-							nICM := Val(Substr(cAliICM,At(cEstCli,cAliICM)+2,2))
-						Endif
-					EndIf
+			EndIf
 			
-			EndIf   
-   	EndIf
-   	If SF4->F4_IPI == "S"
-			nIPI := SB1->B1_IPI
-		Endif
-	Else
+		EndIf   
+   	Else
 		Alert("TES não cadastrada: " + TMP->CK_TES)
+	EndIf
+
+   	If SF4->F4_IPI == "S"
+		nIPI := SB1->B1_IPI
 	EndIf
 
 	//***************************************************************************************
