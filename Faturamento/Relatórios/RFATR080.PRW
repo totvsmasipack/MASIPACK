@@ -12,7 +12,7 @@ Relatório de Check-Lista da montagem (Nova Versão)
 /*/
 User Function RFATR080()
 
-Local aOption	:= {"1=Peças/Acessórios", "2=Balança - Teste", "3=Maq. Vertical - Teste"}
+Local aOption	:= {"1=Peças/Acessórios", "2=Balança - Montagem", "3=Balança - Teste" , "4=Vertical - Montagem", "5=Maq. Vertical - Teste"}
 Local aParam	:= {}
 
 	AADD(aParam,{1,	"Nº Pedido",		SPACE(TamSX3('C5_NUM')[1]),"","","","",050,	.T.}) 
@@ -56,14 +56,18 @@ Local oWord		:= Nil
 	OLE_SetProperty(oWord, oleWdVisible, .F.)
 
 	If MV_PAR02 == '1'
-		cDocFile := GetSrvProfString('Startpath','') + 'modelos\pcp\'+FWCodEmp()+'_checklist_pecas_acessorios.dotm'
+		cDocFile := GetSrvProfString('Startpath','') + 'modelos\pcp\'+FWCodEmp()+'_01_Pecas_e_Acessorios.dotm'
 	ElseIf MV_PAR02 == '2'
-		cDocFile := GetSrvProfString('Startpath','') + 'modelos\pcp\'+FWCodEmp()+'_checklist_balanca_teste.dotm'
-	Else
-		cDocFile := GetSrvProfString('Startpath','') + 'modelos\pcp\'+FWCodEmp()+'_checklist_maq_vertical_teste.dotm'
+		cDocFile := GetSrvProfString('Startpath','') + 'modelos\pcp\'+FWCodEmp()+'_02_Balanca_Montagem.dotm'
+	ElseIf MV_PAR02 == '3'
+		cDocFile := GetSrvProfString('Startpath','') + 'modelos\pcp\'+FWCodEmp()+'_03_Balanca_Teste.dotm'
+	ElseIf MV_PAR02 == '4'
+		cDocFile := GetSrvProfString('Startpath','') + 'modelos\pcp\'+FWCodEmp()+'_04_Vertical_Montagem.dotm'
+	Else 
+		cDocFile := GetSrvProfString('Startpath','') + 'modelos\pcp\'+FWCodEmp()+'_05_Maq_Vertical_Teste.dotm'
 	Endif
 
-	If !FwIsAdmin()
+	If !FwIsAdmin() 
 
 		CpyS2T(cDocFile, "C:\relato_microsiga\")
 
@@ -85,8 +89,9 @@ Local oWord		:= Nil
 	
 	OLE_NewFile(oWord, Alltrim(cModFile))
 
-	OLE_SetDocumentVar(oWord, 'cNumero',	ALLTRIM(SC5->C5_NUM)	)
+	OLE_SetDocumentVar(oWord, 'cNumero' ,	ALLTRIM(SC5->C5_NUM)	)
 	OLE_SetDocumentVar(oWord, 'cCliente',	ALLTRIM(SA1->A1_NREDUZ)	)
+	OLE_SetDocumentVar(oWord, 'cData'   ,	dToc(Date())			)
 	
 	OLE_UpdateFields(oWord)
 
