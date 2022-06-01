@@ -16,11 +16,17 @@ Default cField := ''
 	If FWCodEmp() $ '01|10'
 		
 		DO CASE
+
+			CASE cField $ 'B1_UM|B1_PICM|B1_IPI' .And. INCLUI
+				lRet := .T.
+
+			CASE Empty(FWSFUsrGrps(RetCodUsr())) // Valida se o usuário possui grupo
+				lRet := .F.
 			
 			CASE FwIsAdmin()	//Acesso Administradores
 				lRet := .T.
 			
-			CASE cField == 'B1_UM' .And. ALTERA
+			CASE cField $ 'B1_UM|B1_PICM|B1_IPI' .And. ALTERA
 				
 				For nPos := 1 To Len(UsrRetGrp(RetCodUsr()))
 					If UsrRetGrp(RetCodUsr())[nPos] $ "000235|000215|000216"	//Acesso Contábil
@@ -31,9 +37,6 @@ Default cField := ''
 						Exit
 					Endif
 				Next nPos
-			
-			CASE cField == 'B1_UM' .And. INCLUI
-				lRet := .T.
 				
 		ENDCASE
 
