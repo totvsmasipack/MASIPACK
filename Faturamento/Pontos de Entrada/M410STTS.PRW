@@ -16,8 +16,8 @@
 User Function M410STTS()
 
 Local _aArea	:= {}
-Local _aVoltage := {"110V", "220V"}
-Local _aFrequen := {"60Hz"}
+Local _aVoltage := {"","110V", "220V"}
+Local _aFrequen := {"","60Hz"}
 Local _cUsrMail	:= ''
 Local _cMsg		:= ''
 Local _cTo		:= ''
@@ -106,10 +106,10 @@ Private cAux      := ""
 				@ 35,50 COMBOBOX _oRadio VAR _cFrequen ITEMS _aFrequen SIZE 060,080 PIXEL
 				_oDlg:lEscClose := .F.
 								
-				DEFINE SBUTTON FROM 053,140 TYPE 1 ENABLE OF _oDlg ACTION {|| IIF(!Empty(_cVoltage) .AND. !Empty(_cFrequen),_oDlg:End(),Alert("Preencher todos os campos!")) }
+				DEFINE SBUTTON FROM 053,140 TYPE 1 ENABLE OF _oDlg ACTION {|| _oDlg:End() }
 				ACTIVATE MSDIALOG _oDlg CENTERED
 				
-				If !Empty(_cVoltage) .AND. !Empty(_cFrequen)
+				If !Empty(_cVoltage) .or. !Empty(_cFrequen)
 					Reclock("SC5",.F.)
 					SC5->C5_VOLTAGE	:= VAL(_cVoltage)
 					SC5->C5_HZ		:= VAL(_cFrequen)
