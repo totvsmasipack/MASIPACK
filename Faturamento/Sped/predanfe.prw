@@ -517,7 +517,7 @@ static function DPreDanfeNF(cModNF,cNota,cSerie,cCliFor)
 	SC5->(DbSetOrder(1))
 	SC5->(DbSeek(xFilial("SC5")+SC6->C6_NUM))
 	If SC5->(FOUND())
-		cRetForm := FORMULA(SC5->C5_MENPAD)
+		cRetForm := Iif(!Empty(SC5->C5_MENPAD),FORMULA(SC5->C5_MENPAD),"")
 	Else
 		cRetForm :=""
 	EndIf
