@@ -1715,19 +1715,21 @@ SB1->(DbSetOrder(1))
 SB1->(MsSeek(xFilial("SB1")+cProduto,.F.))
 
 IF !EMPTY(SB1->B1_GRTRIB) .And. Alltrim(SB1->B1_GRTRIB) $ "001_002_007" //.AND. TMP->YD_BICMS = "S"
-		_cQryF7 := "Select F7_BASEICM, F7_ALIQINT From "+RetSQLName("SF7")+" Where F7_GRTRIB = '"+TMP->B1_GRTRIB+"' 
-		_cQryF7 += " And F7_EST = '"+TMP->A1_EST+"' And F7_FILIAL = '"+xFilial("SF7")+"' And D_E_L_E_T_ = '' "
+		_cQryF7 := "Select F7_BASEICM, F7_ALIQINT From "+RetSQLName("SF7")+" Where F7_GRTRIB = '"+SB1->B1_GRTRIB+"' 
+		_cQryF7 += " And F7_EST = '"+SA1->A1_EST+"' And F7_FILIAL = '"+xFilial("SF7")+"' And D_E_L_E_T_ = '' "
 		
 		TcQuery _cQryF7 New Alias "TMF7"
 
 		dbSelectArea("TMF7")
 		TMF7->(DbGoTop())
 		nPerRed := TMF7->F7_BASEICM
-		nIcm    := TMF7->F7_ALIQINT
+		nIcm    := TMF7->F7_ALIQINT		
 Else
 		nPerRed := 0
 		nIcm    := 0
 Endif
+
+TMF7->(DbCloseArea())
 
 // Se nao houver exceção fiscal, buscara aliquota do produto ou interestadual
 SF4->(DbSetOrder(1))
@@ -1751,7 +1753,7 @@ EndIf
 //******************************** FIM DO ICMS ESPECIFICO ******************************************* 
 
 If nPerRed > 0
-	aImp[04] := MaFisRet(1,"IT_BASEICM") - (MaFisRet(1,"IT_BASEICM") * 	nPerRed)	//04 Base do ICMS
+	aImp[04] := MaFisRet(1,"IT_BASEICM") * (nPerRed / 100)	//04 Base do ICMS
 Else
 	aImp[04] := MaFisRet(1,"IT_BASEICM")	//04 Base do ICMS
 EndIf
