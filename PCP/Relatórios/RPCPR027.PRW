@@ -191,6 +191,15 @@ ElseIF MV_PAR07 = 3
 EndIF
 
 
+
+If Empty(mv_par14)
+	Alert("É obrigatório preencher ao menos uma categoria de pedido.")
+	Return .F.
+EndIf 
+
+
+
+
 aArray      := {}
 aArrayC2 	:= StrToKarr( MV_PAR01 , ';')
 nNumElem := Len(aArrayC2)
@@ -230,7 +239,7 @@ For n := 1 to nNumElem
 	cQuery := " SELECT C2_NUM + C2_ITEM + C2_SEQUEN AS LISTA,B1C2.B1_UM 'C2_UM',C2_MSPED,C2_MSREDUZ,C2_NUM,C2_ITEM,C2_PRODUTO AS PAI," 
 	cQuery += " ISNULL(C6_DESCRI,B1C2.B1_DESC) 'C6_DESCRI',ISNULL(C6_QTDVEN,0) 'C6_QTDVEN', "
 	cQuery += "(SELECT ISNULL(SUM(C6_QTDVEN),0) FROM "+RetSQLName("SC6")+" C6 WHERE C6_NUM = '603190' AND C6_PRODUTO = C2_PRODUTO AND C6.D_E_L_E_T_ = '' AND C6_FILIAL = '"+xFilial("SC6")+"') AS 'NQUANTPAI',"
-	cQuery += " D4_COD AS FILHO,SB1.B1_DESC, SB1.B1_UM, "
+	cQuery += " ISNULL(D4_COD, G1_COMP) AS FILHO ,SB1.B1_DESC, SB1.B1_UM, "
 	cQuery += " B2_RESERVA + B2_QEMP AS NB,B2_QEMP,D4_QUANT,D4_QTDEORI,B2_QATU,B2_RESERVA,C2_MSDTCI,D4_MSLF,SB1.B1_PROCED,C2_MSREDUZ,D4_MSREFER,C2_MSIMPR, SB1.B1_UPRC,SB1.B1_TIPO "
 	cQuery += " 	,(Select ISNULL(SUM(ISNULL(C6_QTDVEN,0))-SUM(ISNULL(C6_QTDENT,0)),0) FROM SC6010 SC6 "
 	cQuery += " WHERE C6_PRODUTO = SC2.C2_PRODUTO"
@@ -246,6 +255,7 @@ For n := 1 to nNumElem
 	cQuery += " FROM "+RetSqlName("SC2")+" SC2 "
 	cQuery += " INNER JOIN "+RetSqlName("SB1")+" B1C2 ON C2_PRODUTO = B1_COD AND B1C2.D_E_L_E_T_ = ' ' AND B1C2.B1_FILIAL = '"+xFilial("SB1")+"'"   
 	cQuery += " LEFT  JOIN "+RetSqlName("SD4")+" SD4 ON C2_NUM + C2_ITEM + C2_SEQUEN = D4_OP AND SD4.D_E_L_E_T_ = ' ' AND D4_FILIAL = C2_FILIAL "
+	cQuery += " LEFT  JOIN "+RetSqlName("SG1")+" SG1 ON SG1.G1_FILIAL = SD4.D4_FILIAL AND SG1.G1_COD = SD4.D4_COD AND SG1.D_E_L_E_T_ = ''  "
 	cQuery += " INNER JOIN "+RetSqlName("SB1")+" SB1 ON D4_COD = SB1.B1_COD AND SB1.D_E_L_E_T_ = ' ' AND SB1.B1_FILIAL = '"+xFilial("SB1")+"' "
 	cQuery += " INNER JOIN "+RetSqlName("SB2")+" SB2 ON D4_COD = B2_COD AND SB2.D_E_L_E_T_ = ' ' AND B2_FILIAL = '"+xFilial("SB2")+"' AND B2_LOCAL = SB1.B1_LOCPAD"
 	cQuery += "	LEFT  JOIN "+RetSqlName("SC6")+" SC6 ON C6_NUM = C2_NUM AND C6_PRODUTO = C2_PRODUTO AND  C6_FILIAL = '01' AND SC6.D_E_L_E_T_ = ' ' "
@@ -283,9 +293,9 @@ For n := 1 to nNumElem
 	
 	cQuery += " AND SC2.D_E_L_E_T_ = ' ' "
 	cQuery += " ORDER BY C2_NUM, C2_ITEM,C2_SEQUEN,D4_COD   "
-	If !(SC5->C5_MSCATEG == "1") .AND. SubStr(cNumEmp,1,2) $ "01"
+	If !(SC5->C5_MSCATEG $ mv_par14)
 	   	lCheckT := .T.
-	 		Alert("O pedido "+AllTrim(aArrayC2[n])+" não é de categoria 1")
+	 	Alert("O pedido "+AllTrim(aArrayC2[n])+" não é de uma categoria escolhida.")
 		Return .F.
 	EndIf
 	
@@ -1187,3 +1197,41 @@ Static Function VerCC()
 	EndIf 
 
 RETURN lOk
+
+
+User Function MASITPPV(l1Elem)
+
+    Local cTitulo:=""
+    Local MvPar
+    Local MvParDef:=""
+ 	Local lTipoRet := .T.
+	Local nx       := 0
+    
+	Private aCatPV:= Strtokarr (GetSx3Cache( "C5_MSCATEG", "X3_CBOX" ), ";")
+    
+   
+
+    l1Elem := If (l1Elem = Nil , .F. , .T.)
+    cAlias := Alias() 
+
+	If len(aCatPV) > 0
+		For nx := 1 to Len(aCatPV)
+			MvParDef += SubStr(aCatPV[nx], 1, 1)
+		Next nx 
+	EndIf 
+
+    IF lTipoRet
+        MvPar:=&(Alltrim(ReadVar()))         // Carrega Nome da Variavel do Get em Questao
+        mvRet:=Alltrim(ReadVar())            // Iguala Nome da Variavel ao Nome variavel de Retorno
+    EndIF
+
+        cTitulo :="Categorias de PV"
+
+    IF lTipoRet
+        IF f_Opcoes(@MvPar,cTitulo,aCatPV,MvParDef,12,49,l1Elem,1,len(aCatPV))  // Chama funcao f_Opcoes do padrão
+            &MvRet := mvpar                                                                         
+        EndIF
+    EndIf 
+    dbSelectArea(cAlias)                                 
+
+Return( IF( lTipoRet , .T. , MvParDef ) )
