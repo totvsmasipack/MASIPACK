@@ -1658,34 +1658,37 @@ dData  := Stod(cData)
 Return PadR(StrZero(Day(dData),2)+ "/" + StrZero(Month(dData),2)+ "/" + StrZero(Year(dData),4),15)
 
 
-/*______________________________________________________________________
-   ¦Autor     ¦ Breno Ferreira                      ¦ Data ¦ 09/09/14 ¦
-   +----------+-------------------------------------------------------¦
-   ¦Descrição ¦ Funcao para calcular os impostos                      ¦
-  ¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯*/
+/*/----------------------------------------------------------------------------
+| {Protheus.doc} FIMPOSTOS													  |
+| Funcao para calcular os impostos 											  |
+|																			  |
+| @author T. MORAES [DS2U]													  |
+| @since jun.2022											  				  |
+| @type function															  |
+-------------------------------------------------------------------------------/*/
+
 #include "rwmake.ch"
 #include "protheus.ch"
 
 user function FIMPOSTOS(cCliente,cLoja,cTipo,cProduto,cTes,nQtd,nPrc,nValor)
-Local aImp := {}
-	
-for i := 1 to 62
-	AAdd(aImp,0)
-next
+Local aImp 		:= {}
+Local aArea     := GetArea()
+Local nICM		:= 0
+Local cAliICM	:= 0
 
 // -------------------------------------------------------------------
 // Realiza os calculos necessários
 // -------------------------------------------------------------------
 MaFisIni(cCliente,;										// 01- Codigo Cliente/Fornecedor
 			cLoja,;										// 02- Loja do Cliente/Fornecedor
-			"C",;											// 03- C: Cliente / F: Fornecedor
-			"N",;											// 04- Tipo da NF
+			"C",;										// 03- C: Cliente / F: Fornecedor
+			"N",;										// 04- Tipo da NF
 			cTipo,;										// 05- Tipo do Cliente/Fornecedor
-			MaFisRelImp("MTR700",{"SC5","SC6"}),;			// 06- Relacao de Impostos que suportados no arquivo
-			,;												// 07- Tipo de complemento
-			,;												// 08- Permite incluir impostos no rodape (.T./.F.)
+			MaFisRelImp("MTR700",{"SC5","SC6"}),;		// 06- Relacao de Impostos que suportados no arquivo
+			,;											// 07- Tipo de complemento
+			,;											// 08- Permite incluir impostos no rodape (.T./.F.)
 			"SB1",;										// 09- Alias do cadastro de Produtos - ("SBI" para Front Loja)
-			"MTR700")										// 10- Nome da rotina que esta utilizando a funcao
+			"MTR700")									// 10- Nome da rotina que esta utilizando a funcao
 
 // -------------------------------------------------------------------
 // Monta o retorno para a MaFisRet
@@ -1695,12 +1698,67 @@ MaFisAdd(cProduto,cTes,nQtd,nPrc,0,"","",,0,0,0,0,nValor,0)
 // -------------------------------------------------------------------
 // Monta um array com os valores necessários
 // -------------------------------------------------------------------
-aImp[01] := cProduto
-aImp[02] := cTes
+
+for i := 1 to 62
+	AAdd(aImp,0)
+next
+
+aImp[01] := cProduto						//01 PRODUTO
+aImp[02] := cTes							//02 TES
 aImp[03] := "ICM"							//03 ICMS
-aImp[04] := MaFisRet(1,"IT_BASEICM")		//04 Base do ICMS
-aImp[05] := MaFisRet(1,"IT_ALIQICM")		//05 Aliquota do ICMS
-aImp[06] := MaFisRet(1,"IT_VALICM")			//06 Valor do ICMS
+
+//******************************** ICMS ESPECIFICO ******************************************* 
+
+//Verificar se o produto possui exceção fiscal
+DbSelectArea("SB1")
+SB1->(DbSetOrder(1))
+SB1->(MsSeek(xFilial("SB1")+cProduto,.F.))
+
+IF !EMPTY(SB1->B1_GRTRIB) .And. Alltrim(SB1->B1_GRTRIB) $ "001_002_007" //.AND. TMP->YD_BICMS = "S"
+		_cQryF7 := "Select F7_BASEICM, F7_ALIQINT From "+RetSQLName("SF7")+" Where F7_GRTRIB = '"+SB1->B1_GRTRIB+"' 
+		_cQryF7 += " And F7_EST = '"+SA1->A1_EST+"' And F7_FILIAL = '"+xFilial("SF7")+"' And D_E_L_E_T_ = '' "
+		
+		TcQuery _cQryF7 New Alias "TMF7"
+
+		dbSelectArea("TMF7")
+		TMF7->(DbGoTop())
+		nPerRed := TMF7->F7_BASEICM
+		nIcm    := TMF7->F7_ALIQINT		
+Else
+		nPerRed := 0
+		nIcm    := 0
+Endif
+
+TMF7->(DbCloseArea())
+
+// Se nao houver exceção fiscal, buscara aliquota do produto ou interestadual
+SF4->(DbSetOrder(1))
+If SF4->(dbSeek(xFILIAL("SF4") + Alltrim(SC6->C6_TES)))
+	If SF4->F4_ICM == "S" 
+		If aDestinat[9] == "SP" .And. Select("TMF7") > 0
+			nICM := IIF( TMF7->F7_ALIQINT > 0, TMF7->F7_ALIQINT, SB1->B1_PICM )
+		ElseIf nICM == 0
+			cAliICM := GetMV('MS_ALINICM')
+			If !Empty(cAliICM)
+				nICM := Val(Substr(cAliICM,At(aDestinat[9],cAliICM)+2,2))
+			Endif
+		Else
+			nICM := MaFisRet(1,"IT_ALIQICM")
+		EndIf
+		
+	EndIf   
+Else
+	Alert("TES não cadastrada: " + SC6->C6_TES)
+EndIf
+//******************************** FIM DO ICMS ESPECIFICO ******************************************* 
+
+If nPerRed > 0
+	aImp[04] := MaFisRet(1,"IT_BASEICM") * (nPerRed / 100)	//04 Base do ICMS
+Else
+	aImp[04] := MaFisRet(1,"IT_BASEICM")	//04 Base do ICMS
+EndIf
+aImp[05] := nICM							//05 Aliquota do ICMS
+aImp[06] := aImp[04] * (aImp[05]/100)		//06 Valor do ICMS
 aImp[07] := "IPI"							//07 IPI
 aImp[08] := MaFisRet(1,"IT_BASEIPI")		//08 Base do IPI
 aImp[09] := MaFisRet(1,"IT_ALIQIPI")		//09 Aliquota do IPI
