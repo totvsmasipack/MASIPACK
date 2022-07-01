@@ -613,8 +613,14 @@ While SF2->F2_FILIAL == xFilial("SF2") .And. SF2->F2_DOC <= mv_par02 .And. !Eof(
 		cMensSZO := ""
 		SZO->(DbSetOrder(1))
 		If !SZO->(DbSeek(xFilial("SZO")+SF2->F2_SERIE+SF2->F2_DOC))
+			If SUBSTR(cNumEmp,1,2) = '01' //MASIPACK - Obrigatoriedade de informar exclusão do PIS/COFINS da base do ICMS
+				cMensSZO :="PROCESSO - Nº. 5002468-80.2021.4.03.6114 - Exclusão do ICMS na Base de Cálculo do PIS e COFINS. - "
+			Else //FABRIMA - Obrigatoriedade de informar exclusão do PIS/COFINS da base do ICMS
+				cMensSZO := "PROCESSO - Nº. 0009214-25.2007.4.03.6119 - Exclusão do ICMS na Base de Cálculo do PIS e COFINS. - "
+			EndIf
+
 			If Alltrim(_cPC) <> ""
-				cMensSZO := "S/ Pedido: " + Alltrim(_cPC) + " - "
+				cMensSZO += "S/ Pedido: " + Alltrim(_cPC) + " - "
 			EndIf
 			
 			If Alltrim(_cOrcam) <> ""
@@ -697,7 +703,9 @@ While SF2->F2_FILIAL == xFilial("SF2") .And. SF2->F2_DOC <= mv_par02 .And. !Eof(
 				EndIf
 			Endif
 		EndIf
-	Else
+	Else 
+		//HELSIMPLAST - Obrigatoriedade de informar exclusão do PIS/COFINS da base do ICMS
+		cMensSZO := "PROCESSO - Nº. 5002469-65.2021.4.03.6114 - Exclusão do ICMS na Base de Cálculo do PIS e COFINS.  - "
 		If Len(aMens) > 0
 			ASORT(aMens,,,{ |x, y| x[1]+x[2] < y[1]+y[2] })
 			cCodMens := ""
@@ -706,11 +714,19 @@ While SF2->F2_FILIAL == xFilial("SF2") .And. SF2->F2_DOC <= mv_par02 .And. !Eof(
 					cCodMens := Alltrim(aMens[I][1])
 					SM4->(dbSetOrder(1))
 					If SM4->(dbSeek(xFilial("SM4")+cCodMens))
-						cMensSZO := " " + Alltrim(SM4->M4_FORMULA) + "-Item(s):" + aMens[I][2]
+						cMensSZO += " " + Alltrim(SM4->M4_FORMULA) + "-Item(s):" + aMens[I][2]
 					Endif
 				Endif
 			next
 		Endif
+		RecLock("SZO",.T.)
+		SZO->ZO_FILIAL  := xFilial("SF2")
+		SZO->ZO_SERIE   := SF2->F2_SERIE
+		SZO->ZO_NFISCAL := SF2->F2_DOC
+		SZO->ZO_MENS    := Alltrim(cMensSZO)
+		SZO->ZO_DATA    := SF2->F2_EMISSAO
+		SZO->ZO_IMPR    := "N"
+		SZO->(MsUnlock())
 	EndIf
 	// Verifica se o tamanho das mensagens para não ultrapassar a qtde. de linhas disponíveis
 	IF SUBSTR(cNumEmp,1,2) <> '15'
@@ -841,25 +857,27 @@ While SF2->F2_FILIAL == xFilial("SF2") .And. SF2->F2_DOC <= mv_par02 .And. !Eof(
 		@ _nLi , 180 Psay _aItens[_nI,10] Picture "99.99"									// Perc. Ipi
 		@ _nLi , 184 Psay _aItens[_nI,11] Picture "@E 9,999,999.99"							// Valor do Ipi
 		_nLi++
-		If !Empty(SE4->E4_MSCOND)
-			If !Empty(SB1->B1_ISBN)
-				@ _nLi , 020 Psay "COD.FINAME: "+Alltrim(SB1->B1_ISBN)+"  ////  "+"N.SERIE: "+Alltrim(SC6->C6_MSSERIE)
-				_nLi++
+		IF SUBSTR(cNumEmp,1,2) <> '15'
+			If !Empty(SE4->E4_MSCOND)
+				If !Empty(SB1->B1_ISBN)
+					@ _nLi , 020 Psay "COD.FINAME: "+Alltrim(SB1->B1_ISBN)+"  ////  "+"N.SERIE: "+Alltrim(SC6->C6_MSSERIE)
+					_nLi++
+				Endif
+				If !Empty(SC5->C5_MSCONT)
+					@ _nLi , 020 Psay "CONTRATO: " + Alltrim(SC5->C5_MSCONT)
+					_nLi++
+				Endif
+				If !Empty(SC5->C5_MSFAVOR)
+					@ _nLi , 020 Psay Alltrim(SC5->C5_MSFAVOR)
+					_nLi++
+				Endif
+				//			_nLi++
+				If !Empty(SC6->C6_MSOBS)
+					@ _nLi , 020 Psay Alltrim(SC6->C6_MSOBS)
+					_nLi++
+				Endif
 			Endif
-			If !Empty(SC5->C5_MSCONT)
-				@ _nLi , 020 Psay "CONTRATO: " + Alltrim(SC5->C5_MSCONT)
-				_nLi++
-			Endif
-			If !Empty(SC5->C5_MSFAVOR)
-				@ _nLi , 020 Psay Alltrim(SC5->C5_MSFAVOR)
-				_nLi++
-			Endif
-			//			_nLi++
-			If !Empty(SC6->C6_MSOBS)
-				@ _nLi , 020 Psay Alltrim(SC6->C6_MSOBS)
-				_nLi++
-			Endif
-		Endif
+		EndIf
 		_nTamdesc := Len(_aItens[_nI,02])
 		If _nTamdesc > 90
 			_nDesc := 91
