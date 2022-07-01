@@ -81,6 +81,7 @@ Local nOrdem		:= oReport:Section(1):GetOrder()
 Local oSection1  	:= oReport:Section(1)
 Local oSection2  	:= oReport:Section(2)
 Local lContinua		:= .T.
+Local cMsgImp       := ""
 
 	oReport:SetMeter(0)
 
@@ -88,11 +89,21 @@ Local lContinua		:= .T.
 	SD4->(dbSetOrder(11))
 	SD4->(dbSeek(FWxFilial("SD4") + PadR(MV_PAR01,TamSX3('D4_MSREFER')[1])))
 	While SD4->(!EOF()) .And. FWCodEmp() $ '01' .And. SD4->(D4_FILIAL + D4_MSREFER) == FWxFilial("SD4") + PadR(MV_PAR01,TamSX3('D4_MSREFER')[1])
-		If !Empty(SD4->D4_MSIMPLI)
+		If !Empty(SD4->D4_MSIMPLI) 
 			cD4MSIMPLI	:= DTOC(SD4->D4_MSIMPLI)
-			FwAlertError('Referência impressa em: ' + cD4MSIMPLI, 'ATENÇÃO')
-			lContinua := .F.
-			Exit
+			If !Empty(SD4->D4_MSHRIMP) .and. !Empty(SD4->D4_MSUSRIM)
+					cMsgImp := 'Referência impressa em: ' + cD4MSIMPLI + " as: " + cValToChar(SD4->D4_MSHRIMP) + " pelo usuário: " + cValtoChar(FwGetUserName(SD4->D4_MSUSRIM)) + "."
+				Else 
+					cMsgImp := 'Referência impressa em: ' + cD4MSIMPLI + ". "
+			EndIf 
+			If libimpre()
+				lContinua := MsgYesNo(cMsgImp + " Deseja reimprimir? ", "Deseja reimprimir? ")
+				Exit
+			Else  	
+				FwAlertError(cMsgImp,'ATENÇÃO')
+				lContinua := .F.
+				Exit
+			EndIf 
 		Endif
 		SD4->(dbSkip())
 	Enddo
@@ -176,18 +187,18 @@ Local lContinua		:= .T.
 
 		(cAlias)->(dbCloseArea())
 
-		If Empty(cD4MSIMPLI)
-			SD4->(dbGoTop())
-			SD4->(dbSeek(FWxFilial("SD4") + PadR(MV_PAR01,TamSX3('D4_MSREFER')[1])))
-			While SD4->(!EOF()) .And. SD4->(D4_FILIAL + D4_MSREFER) == FWxFilial("SD4") + PadR(MV_PAR01,TamSX3('D4_MSREFER')[1])
-				If RecLock('SD4',.F.)
-					SD4->D4_MSIMPLI := dDataBase
-					SD4->(MsUnlock())
-				Endif
-				SD4->(dbSkip())
-			Enddo
-		Endif
-
+		SD4->(dbGoTop())
+		SD4->(dbSeek(FWxFilial("SD4") + PadR(MV_PAR01,TamSX3('D4_MSREFER')[1])))
+		While SD4->(!EOF()) .And. SD4->(D4_FILIAL + D4_MSREFER) == FWxFilial("SD4") + PadR(MV_PAR01,TamSX3('D4_MSREFER')[1])
+			If RecLock('SD4',.F.)
+				SD4->D4_MSIMPLI := dDataBase
+				SD4->D4_MSUSRIM := RetCodUsr()
+				SD4->D4_MSHRIMP := cValtoChar(Time())
+				SD4->(MsUnlock())
+			Endif
+			SD4->(dbSkip())
+		Enddo
+		
 	Endif
 	
 Return 
@@ -535,3 +546,27 @@ Local cExec		:= "cmd /c net use LPT1: /delete"
 	(cAlias)->(dbCloseArea())
 
 Return
+
+
+/*/{Protheus.doc} libimpre
+	Função para validar se o usuário ou grupo do usuário pode reimprimir a referencia.
+	@type  Static Function
+	@author Fernando Corrêa (DS2U)
+	@since 20/06/2022
+	@version version
+	@param param_name, param_type, param_descr
+	@return return_var, return_type, return_description
+	@example
+	(examples)
+	@see (links_or_references)
+/*/
+
+
+Static Function libimpre()
+
+	Local aGrpUsr       := UsrRetGrp() // Retorna grupos que o usuario logado pertence
+	Local cUsersConf    := getMv("ES_R024USR",,"000000")
+	Local cGrUsrConf    := getMv("ES_R024GPR",,"000227")
+	Local lLibera    := (  aScan( aGrpUsr, { |x| allTrim( x ) $ cGrUsrConf } ) > 0 .or. retCodUsr() $ cUsersConf )
+
+Return lLibera

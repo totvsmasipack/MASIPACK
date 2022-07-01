@@ -12,7 +12,7 @@ Relatório de Check-Lista da montagem (Nova Versão)
 /*/
 User Function RFATR080()
 
-Local aOption	:= {"1=Peças/Acessórios", "2=Balança - Montagem", "3=Balança - Teste" , "4=Vertical - Montagem", "5=Maq. Vertical - Teste"}
+Local aOption	:= {"1=Peças/Acessórios", "2=Balança - Montagem", "3=Balança - Teste" , "4=Vertical - Montagem", "5=Vertical - Teste"}
 Local aParam	:= {}
 
 	AADD(aParam,{1,	"Nº Pedido",		SPACE(TamSX3('C5_NUM')[1]),"","","","",050,	.T.}) 
