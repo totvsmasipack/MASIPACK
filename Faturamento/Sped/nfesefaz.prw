@@ -595,7 +595,7 @@ If cTipo == "1"
 	//-----------------------------------
 	//- ESPECIFICO GRUPO MASIPACK		-
 	//-----------------------------------
-	IF cEmpAnt $ '01|10'
+	IF cEmpAnt $ '01|10|15'
 		If !(SF2->F2_MSIMPR == 'S')
 			cNFe := ""
 			cString := ""
@@ -6455,21 +6455,21 @@ Else
 				//-----------------------------------
 				//- ESPECIFICO GRUPO MASIPACK		-
 				//-----------------------------------
-				IF !(cEmpAnt $ "15")
-					dbSelectArea('SZO')
-					SZO->(DbSetOrder(1))
-  	          		SZO->(DbSeek(xFilial("SZO")+SF1->F1_SERIE+SF1->F1_DOC))
-  	          		If !Empty(Alltrim(MEMOLINE(SZO->ZO_MENS,130,1))) 
-  	             		cRetForm := ''
-						nLin := mlcount(SZO->ZO_MENS,130)
-						For _nY := 1 to nLin
-                      		cRetForm += Alltrim(MEMOLINE(SZO->ZO_MENS,130,_nY)) 
-                  		Next _nY
-						If !(Alltrim(cRetForm) $ cMensCli)
-							cMensCli += cRetForm
-						Endif
-          			EndIf
-  	      		ENDIF
+				
+				dbSelectArea('SZO')
+				SZO->(DbSetOrder(1))
+				SZO->(DbSeek(xFilial("SZO")+SF1->F1_SERIE+SF1->F1_DOC))
+				If !Empty(Alltrim(MEMOLINE(SZO->ZO_MENS,130,1))) 
+					cRetForm := ''
+					nLin := mlcount(SZO->ZO_MENS,130)
+					For _nY := 1 to nLin
+						cRetForm += Alltrim(MEMOLINE(SZO->ZO_MENS,130,_nY)) 
+					Next _nY
+					If !(Alltrim(cRetForm) $ cMensCli)
+						cMensCli += cRetForm
+					Endif
+				EndIf
+  	      		
 				//-----------------------------------
 				//- FINAL DA CUSTOMIZACAO			-
 				//-----------------------------------
