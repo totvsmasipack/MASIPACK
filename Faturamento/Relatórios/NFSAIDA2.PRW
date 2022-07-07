@@ -705,7 +705,7 @@ While SF2->F2_FILIAL == xFilial("SF2") .And. SF2->F2_DOC <= mv_par02 .And. !Eof(
 		EndIf
 	Else 
 		//HELSIMPLAST - Obrigatoriedade de informar exclusão do PIS/COFINS da base do ICMS
-		cMensSZO := "PROCESSO - Nº. 5002469-65.2021.4.03.6114 - Exclusão do ICMS na Base de Cálculo do PIS e COFINS.  - "
+		cMensSZO := "Em 01/07/2022, iniciamos a Exclusão do ICMS na Base de Cálculo do PIS e COFINS - IN 1.911/2019 (RFB) - "
 		If Len(aMens) > 0
 			ASORT(aMens,,,{ |x, y| x[1]+x[2] < y[1]+y[2] })
 			cCodMens := ""
