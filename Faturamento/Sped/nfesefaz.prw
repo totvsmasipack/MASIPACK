@@ -2396,7 +2396,7 @@ If cTipo == "1"
 								
 							ENDIF
 
-							If !(cEmpAnt $ "15|40|45")
+							If !(cEmpAnt $ "40|45")
 								dbSelectArea('SZO')
 								SZO->(DbSetOrder(1))
 								SZO->(DbSeek(xFilial("SZO")+SF2->F2_SERIE+SF2->F2_DOC))
