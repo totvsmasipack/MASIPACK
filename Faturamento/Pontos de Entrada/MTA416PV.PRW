@@ -18,7 +18,7 @@ Local aUsuario   := {}
 Local _aGrupos   := {}
 Local _cDeptoUsu := ""
 Local _cGrupo    := ""   
-Local nAux 		  := PARAMIXB  
+Local nAux 		 := PARAMIXB
 Local I
 Private lOkCB1   := .F.    
 Private aConj    := {}
@@ -57,6 +57,18 @@ If SubStr(cNumEmp,1,2) $ "01_10"            // apenas para empresa Masipack
 	M->C5_MSCLIEN := SA1->A1_NREDUZ
 	M->C5_OBS     := SA1->A1_NREDUZ
 	M->C5_MSLINK  := M->C5_NUM
+	
+	aDadosCfo := {}
+	Aadd(aDadosCfo,{"OPERNF"  ,"S"}) 
+	Aadd(aDadosCfo,{"TPCLIFOR",M->C5_TIPOCLI})
+	Aadd(aDadosCfo,{"UFDEST"  ,SA1->A1_EST})
+	Aadd(aDadosCfo,{"INSCR"   ,SA1->A1_INSCR})
+	Aadd(aDadosCfo,{"CONTR"   ,SA1->A1_CONTRIB})
+
+	SF4->(DbSetOrder(1))
+	SF4->(DbSeek(xFilial("SF4")+_aCols[nAux][9]))
+	_aCols[nAux][21] := MaFisCfo(nAux,SF4->F4_CF,aDadosCfo) //Processa o CFOP do item especificado na MATXFIS
+
 	If "ENGENHARIA" $ _cGrupo .OR. "PROJETOS" $ _cGrupo
 		M->C5_MSCATEG := "0"
 	ElseIf _cDeptoUsu == "COMERCIAL"
