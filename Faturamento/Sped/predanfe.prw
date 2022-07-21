@@ -1750,6 +1750,7 @@ If SF4->(dbSeek(xFILIAL("SF4") + Alltrim(SC6->C6_TES)))
 Else
 	Alert("TES não cadastrada: " + SC6->C6_TES)
 EndIf
+
 //******************************** FIM DO ICMS ESPECIFICO ******************************************* 
 
 If nPerRed > 0
@@ -1787,14 +1788,27 @@ aImp[31] := "CSL"							//31 CSLL
 aImp[32] := MaFisRet(1,"IT_BASECSL")		//32 Base do CSLL
 aImp[33] := MaFisRet(1,"IT_ALIQCSL")		//33 Aliquota CSLL
 aImp[34] := MaFisRet(1,"IT_VALCSL")			//34 Valor do CSLL
-aImp[35] := "PS2"							//35 PIS/Pasep - Via Apuração
-aImp[36] := MaFisRet(1,"IT_BASEPS2")		//36 Base do PS2 (PIS/Pasep - Via Apuração)
-aImp[37] := MaFisRet(1,"IT_ALIQPS2")		//37 Aliquota PS2 (PIS/Pasep - Via Apuração)
-aImp[38] := MaFisRet(1,"IT_VALPS2")			//38 Valor do PS2 (PIS/Pasep - Via Apuração)
-aImp[39] := "CF2"							//39 COFINS - Via Apuração
-aImp[40] := MaFisRet(1,"IT_BASECF2")		//40 Base do CF2 (COFINS - Via Apuração)
-aImp[41] := MaFisRet(1,"IT_ALIQCF2")		//41 Aliquota CF2 (COFINS - Via Apuração)
-aImp[42] := MaFisRet(1,"IT_VALCF2")			//42 Valor do CF2 (COFINS - Via Apuração)
+
+If GetMV("MV_DEDBPIS") == "I"
+	aImp[35] := "PS2"							//35 PIS/Pasep - Via Apuração
+	aImp[36] := nValor - aImp[06]				//36 Base do PS2 (PIS/Pasep - Via Apuração) excluindo ICMS da base
+	aImp[37] := MaFisRet(1,"IT_ALIQPS2")		//37 Aliquota PS2 (PIS/Pasep - Via Apuração)
+	aImp[38] := aImp[36] * (aImp[37] / 100)			//38 Valor do PS2 (PIS/Pasep - Via Apuração)
+	aImp[39] := "CF2"							//39 COFINS - Via Apuração
+	aImp[40] := nValor - aImp[06]				//40 Base do CF2 (COFINS - Via Apuração)
+	aImp[41] := MaFisRet(1,"IT_ALIQCF2")		//41 Aliquota CF2 (COFINS - Via Apuração)
+	aImp[42] := aImp[40] * (aImp[41] / 100)				//42 Valor do CF2 (COFINS - Via Apuração)
+Else
+	aImp[35] := "PS2"							//35 PIS/Pasep - Via Apuração
+	aImp[36] := MaFisRet(1,"IT_BASEPS2")		//36 Base do PS2 (PIS/Pasep - Via Apuração)
+	aImp[37] := MaFisRet(1,"IT_ALIQPS2")		//37 Aliquota PS2 (PIS/Pasep - Via Apuração)
+	aImp[38] := MaFisRet(1,"IT_VALPS2")			//38 Valor do PS2 (PIS/Pasep - Via Apuração)
+	aImp[39] := "CF2"							//39 COFINS - Via Apuração
+	aImp[40] := MaFisRet(1,"IT_BASECF2")		//40 Base do CF2 (COFINS - Via Apuração)
+	aImp[41] := MaFisRet(1,"IT_ALIQCF2")		//41 Aliquota CF2 (COFINS - Via Apuração)
+	aImp[42] := MaFisRet(1,"IT_VALCF2")			//42 Valor do CF2 (COFINS - Via Apuração)
+EndIf
+
 aImp[43] := "ICC"							//43 ICMS Complementar
 aImp[44] := MaFisRet(1,"IT_ALIQCMP")		//44 Base do ICMS Complementar
 aImp[45] := MaFisRet(1,"IT_ALIQCMP")		//45 Aliquota do ICMS Complementar
