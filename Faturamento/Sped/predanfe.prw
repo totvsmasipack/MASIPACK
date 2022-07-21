@@ -1723,13 +1723,12 @@ IF !EMPTY(SB1->B1_GRTRIB) .And. Alltrim(SB1->B1_GRTRIB) $ "001_002_007" //.AND. 
 		dbSelectArea("TMF7")
 		TMF7->(DbGoTop())
 		nPerRed := TMF7->F7_BASEICM
-		nIcm    := TMF7->F7_ALIQINT		
+		nIcm    := TMF7->F7_ALIQINT
+		TMF7->(DbCloseArea())
 Else
 		nPerRed := 0
 		nIcm    := 0
 Endif
-
-TMF7->(DbCloseArea())
 
 // Se nao houver exceção fiscal, buscara aliquota do produto ou interestadual
 SF4->(DbSetOrder(1))
