@@ -25,6 +25,10 @@ User Function RCONA003()
 	Local aHelpPor := {}
 	Local cTitoDlg := "Importacao de lancamentos contabeis"
 	Local cPerg    := "RCON03"
+	Local aLogAuto := {}
+	Local cLogTxt  := ""
+	Local cArquivo := "C:\Relato_Microsiga\ocorrencias_importa_lancamentos.txt"
+	Local nAux     := 0
 	
 	//Pergunta 01
 	aHelpPor := {}
@@ -80,7 +84,7 @@ Static Function RCON03OK()
 			Return
 		EndIf
 		FT_FSkip()
-		IncProc()
+		IncProc("Analisando registro " + nLinha + " de " + cValToChar(FT_FLastRec()) + "...")
 		cBuffer := FT_FReadLn()
 		aDataImp:= Separa(cBuffer, ';', .T.)
 		cDtLote := aDataImp[1]
@@ -113,7 +117,7 @@ Static Function RCON03OK()
 										{"CT2_MOEDLC", "01", Nil}})  //Sempre moeda 01-Real
 										//{"CT2_CONVER", Iif(Alltrim(aDataImp[2]) == "4", "55555", "15555"), Nil},;  //Utilizando o default do plano de contas
 						FT_FSkip()
-						IncProc()
+						IncProc("Analisando registro " + nLinha + " de " + cValToChar(FT_FLastRec()) + "...")
 					Else
 						If Len(aItensCT2) > 0
 							cQuery := "SELECT MAX(CT2_DOC) AS CT2_DOC"
@@ -140,10 +144,11 @@ Static Function RCON03OK()
 				
 							MsExecAuto( {|X,Y,Z| CTBA102(X,Y,Z)} ,aCabecCT2 ,aItensCT2, 3)
 							If lMsErroAuto
-								Alert("Ocorreu um erro na importacao dos lancamentos, verificar proxima tela")
-								MostraErro()
-								lMsErroAuto := .F.
-								lMSHelpAuto := .T.
+								aLogAuto := GetAutoGRLog()
+								For nAux := 1 To Len(aLogAuto)
+									cLogTxt += aLogAuto[nAux] +CRLF
+								Next
+								MEMOWRITE( cArquivo, cLogTxt )
 							Endif
 							aItensCT2 := {}
 							aCabecCT2 := {}
@@ -178,10 +183,11 @@ Static Function RCON03OK()
 			
 						MsExecAuto( {|X,Y,Z| CTBA102(X,Y,Z)} ,aCabecCT2 ,aItensCT2, 3)
 						If lMsErroAuto
-							Alert("Ocorreu um erro na importacao dos lancamentos, verificar proxima tela")
-							MostraErro()
-							lMsErroAuto := .F.
-							lMSHelpAuto := .T.
+							aLogAuto := GetAutoGRLog()
+							For nAux := 1 To Len(aLogAuto)
+								cLogTxt += aLogAuto[nAux] +CRLF
+							Next
+							MEMOWRITE( cArquivo, cLogTxt )
 						Endif
 						aItensCT2 := {}
 						aCabecCT2 := {}
@@ -220,10 +226,11 @@ Static Function RCON03OK()
 
 			MsExecAuto( {|X,Y,Z| CTBA102(X,Y,Z)} ,aCabecCT2 ,aItensCT2, 3)
 			If lMsErroAuto
-				Alert("Ocorreu um erro na importacao dos lancamentos, verificar proxima tela")
-				MostraErro()
-				lMsErroAuto := .F.
-				lMSHelpAuto := .T.
+				aLogAuto := GetAutoGRLog()
+				For nAux := 1 To Len(aLogAuto)
+					cLogTxt += aLogAuto[nAux] +CRLF
+				Next
+				MEMOWRITE( cArquivo, cLogTxt )
 			Endif
 			aItensCT2 := {}
 			aCabecCT2 := {}
