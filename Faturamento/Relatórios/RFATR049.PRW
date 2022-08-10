@@ -177,8 +177,44 @@ If  SubStr(cNumEmp,1,2) <> "15"
 	_cQuery += "	    AND C5_MSTPVEN BETWEEN '" + MV_PAR08 + "' AND '" + MV_PAR09 + "' " 
 EndIf
 _cQuery += "       AND F2.D_E_L_E_T_ = ' ' "
-_cQuery += " ORDER BY F2_EMISSAO, C5_NATUREZ "
 
+If MV_PAR10 == 1
+	_cQuery += " UNION SELECT DISTINCT F2_TIPO, F2_DOC, F2_SERIE, F2_CLIENTE, F2_LOJA,F2_EMISSAO, F2_VALFAT, A1_NREDUZ,  A1_EST,"
+	_cQuery += "A1_PAIS, YA_DESCR, C5_NATUREZ, ED_DESCRIC,C5_NUM, F2_VALBRUT "
+	If  SubStr(cNumEmp,1,2) <> "15"
+	_cQuery += "                 , C5_MSTPVEN  "
+	EndIf
+	_cQuery += " FROM " + RetSqlName("SF2") +  " F2 "
+	_cQuery += " INNER JOIN " + RetSqlName("SD2") + " D2 "
+	_cQuery += "       ON D2_DOC = F2_DOC AND D2_SERIE = D2_SERIE AND D2_CLIENTE = F2_CLIENTE AND D2_LOJA = F2_LOJA "
+	_cQuery += "       AND D2_EMISSAO = F2_EMISSAO AND D2_DTDIGIT = F2_DTDIGIT "
+	_cQuery += "       AND D2_FILIAL = '" + xFilial("SD2") + "' AND D2.D_E_L_E_T_ = ' '   "
+	_cQuery += " INNER JOIN " + RetSqlName("SC5") + " C5 "
+	_cQuery += "       ON C5_NUM = D2_PEDIDO AND C5_FILIAL = '" + xFilial("SC5") + "' AND C5.D_E_L_E_T_ = ' '   "
+	_cQuery += " INNER JOIN " + RetSqlName("SA1") + " A1  "
+	_cQuery += "       ON A1_FILIAL = '" + xFilial("SA1") + "' AND A1_COD = F2_CLIENTE "
+	_cQuery += "       AND A1_LOJA = F2_LOJA AND A1.D_E_L_E_T_ = ' ' "
+	_cQuery += " INNER JOIN " + RetSqlName("SYA") + " YA "
+	_cQuery += "       ON YA_FILIAL = '" + xFilial("SYA") + "' AND YA_CODGI = A1_PAIS AND YA.D_E_L_E_T_ = ' ' "
+	_cQuery += " INNER JOIN " + RetSqlName("SED") + " ED "
+	_cQuery += "       ON LTRIM(RTRIM(C5_NATUREZ)) = LTRIM(RTRIM(ED_CODIGO)) "
+	_cQuery += "       AND ED_FILIAL= '" + xFilial("SED") + "' AND ED.D_E_L_E_T_ = ' ' "     
+	_cQuery += " INNER JOIN " + RetSqlName("SF4") + " F4"
+	_cQuery += "       ON D2_TES = F4_CODIGO "
+	_cQuery += "       AND F4.D_E_L_E_T_ = ' ' AND F4_FILIAL= '" + xFilial("SF4") + "' "
+	_cQuery += " WHERE F2_FILIAL = '" + xFilial("SF2") + "' AND F2_TIPO = 'N' " //AND F2_DUPL <> '         ' "
+	_cQuery += "       AND F2_EMISSAO BETWEEN '" + DTOS(MV_PAR01) + "' AND '" + DTOS(MV_PAR02) + "' "
+	_cQuery += "	    AND C5_NATUREZ = 'V05.8     ' " 
+	_cQuery += "	    AND F2_CLIENTE BETWEEN '" + MV_PAR05 + "' AND '" + MV_PAR06 + "' " 
+	If  SubStr(cNumEmp,1,2) <> "15"
+		_cQuery += "	    AND C5_MSTPVEN BETWEEN '" + MV_PAR08 + "' AND '" + MV_PAR09 + "' " 
+	EndIf
+	_cQuery += "       AND F2.D_E_L_E_T_ = ' ' "
+	_cQuery += " ORDER BY F2_EMISSAO, C5_NATUREZ "
+Else
+	_cQuery += " ORDER BY F2_EMISSAO, C5_NATUREZ "
+EndIf
+	
 TcQuery _cQuery New Alias "QR1"
 
 TcSetField("QR1","F2_EMISSAO","D",08,00)
