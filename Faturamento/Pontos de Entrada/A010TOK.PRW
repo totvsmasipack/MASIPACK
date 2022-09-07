@@ -38,7 +38,7 @@ Private _cDeptoUsu	:= ""
 Private _cUsuario 	:= RetCodUsr()
 Private _aArea 	  	:= GetArea()
 
-	If !FwIsInCallStack('NFESYNCB')
+	If .not. ("NFESYNCB" $ FunName() )
 
 		If Type("lCopia")="U" 
 			lCopia := .F.
