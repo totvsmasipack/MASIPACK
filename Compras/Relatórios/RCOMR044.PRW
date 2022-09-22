@@ -19,6 +19,8 @@ User Function RCOMR044()
 Local oReport
 Local cTRB
 
+Private cFilCust  := SUPERGETMV( "ES_MSPENDF",,'01|10' )
+
 	If !(FwCodEmp() $ '01|10')
 		Help(" ",1,"RCOMR044_1",, "Este relatório é de uso exclusivo das empresas 01-Masipack e 10-Fabrima",1,0)
 		Return
@@ -48,6 +50,9 @@ Local cPerg		:= "RCOMR044"
 	TRCell():New(oSection1,	"C7_FORNECE",	"",	RetTitle('C7_FORNECE'),		PesqPict("SC7","C7_FORNECE"),	TamSX3("C7_FORNECE")[1])
 	TRCell():New(oSection1,	"C7_LOJA",		"",	RetTitle('C7_LOJA'),		PesqPict("SC7","C7_LOJA"),		TamSX3("C7_LOJA")[1])
 	TRCell():New(oSection1,	"A2_NREDUZ",	"",	RetTitle('A2_NREDUZ'),		PesqPict("SA2","A2_NREDUZ"),	TamSX3("A2_NREDUZ")[1])
+	If cEmpAnt $ cFilCust
+		TRCell():New(oSection1,	"A2_XPENDFI",	"",	"Pendencia",				,	5)
+	EndIf 
 	TRCell():New(oSection1,	"C7_PRODUTO",	"",	RetTitle('C7_PRODUTO'),		PesqPict("SC7","C7_PRODUTO"),	TamSX3("C7_PRODUTO")[1])
 	TRCell():New(oSection1,	"B1_DESC",		"",	RetTitle('B1_DESC'),		PesqPict("SB1","B1_DESC"),		TamSX3("B1_DESC")[1])
 	TRCell():New(oSection1,	"C7_UM",		"",	RetTitle('C7_UM'),			PesqPict("SC7","C7_UM"),		TamSX3("C7_UM")[1])
@@ -94,7 +99,19 @@ Return oReport
 Static Function ReportPrint(oReport, cTRB)
 
 Local cWhere	:= ''
+Local cPend     := ''
+Local cOrder    := ''
 Local oSection  := oReport:Section(1)
+
+	cPend :=  "%"
+	If cEmpAnt $ cFilCust
+		cPend += " CASE " + CRLF 																				
+		cPend += " 			WHEN A2_XPENDFI = '1' THEN 'Sim' " + CRLF										
+		cPend += " 				ELSE 'Nao' " + CRLF																	
+		cPend += " 		END [A2_XPENDFI], " + CRLF 			
+	EndIf 
+	cPend +=  "%"
+	
 
 	cWhere := "%"
 	IF MV_PAR11 == 1	//Pendentes
@@ -107,14 +124,27 @@ Local oSection  := oReport:Section(1)
 		cWhere += " C7_RESIDUO = 'S' " + CRLF
 	Endif
 	cWhere += "%"
+	
+	cOrder := "%"
+	cOrder += " GROUP BY	C7_NUM, C7_ITEM, C7_FORNECE, C7_LOJA, A2_NREDUZ, C7_PRODUTO, B1_DESC, C7_UM, C7_QUANT, C7_QUJE, C7_PRECO, " + CRLF
+	cOrder += " 		C7_TOTAL, C7_QUANT, C7_QUJE, C7_USER, E4_CODIGO, E4_DESCRI, B1_PE, B1_TIPE, B1_PROCED, C7_EMISSAO, C7_DATPRF, " + CRLF 
+	cOrder += " 		C7_OBS, C7_RETFOR, C1_NUM, C1_EMISSAO, C1_DATPRF, C1_USER, C1_MSAPROP, C8_NUM, C8_EMISSAO, D1_TIPO, D1_QUANT, " + CRLF
+	cOrder += " 		B2_NAOCLAS, B2_QATU, B2_QEMP, B2_RESERVA, B2_QPEDVEN, B2_QEMPSA " + CRLF
+	If cEmpAnt $ cFilCust
+		cOrder += " ,A2_XPENDFI "
+	EndIf 
+	cOrder += "%"
 
 	cTRB := GetNextAlias()
-
+	
 	BEGINSQL ALIAS cTRB
 
 		SELECT	
 			
 			C7_NUM, C7_ITEM, C7_FORNECE, C7_LOJA, A2_NREDUZ, C7_PRODUTO, B1_DESC, C7_UM, C7_QUANT, C7_QUJE, C7_PRECO, C7_TOTAL, 
+
+			%Exp:cPend%
+			
 			(C7_QUANT - C7_QUJE) [C7QTDRES],
 			ROUND((C7_QUANT - C7_QUJE) * C7_PRECO,2) [C7TOTRES], C7_USER,
 			E4_CODIGO, E4_DESCRI,
@@ -189,12 +219,7 @@ Local oSection  := oReport:Section(1)
 			%Exp:cWhere%	AND
 			C7.%NOTDEL%
 
-		GROUP BY	C7_NUM, C7_ITEM, C7_FORNECE, C7_LOJA, A2_NREDUZ, C7_PRODUTO, B1_DESC, C7_UM, C7_QUANT, C7_QUJE, C7_PRECO,
-			C7_TOTAL, C7_QUANT, C7_QUJE, C7_USER, E4_CODIGO, E4_DESCRI, B1_PE, B1_TIPE, B1_PROCED, C7_EMISSAO, C7_DATPRF, 
-			C7_OBS, C7_RETFOR, C1_NUM, C1_EMISSAO, C1_DATPRF, C1_USER, C1_MSAPROP, C8_NUM, C8_EMISSAO, D1_TIPO, D1_QUANT,
-			B2_NAOCLAS, B2_QATU, B2_QEMP, B2_RESERVA, B2_QPEDVEN, B2_QEMPSA
-
-		ORDER BY C7_NUM, C7_ITEM
+		%Exp:cOrder%
 
 	ENDSQL	
 

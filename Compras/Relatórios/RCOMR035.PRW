@@ -22,8 +22,9 @@
 */
 
 User Function RCOMR035()
-Private CLRF := CHR(13)+CHR(10)
-Private cPerg:= "XCOMR35"
+Private CLRF      := CHR(13)+CHR(10)
+Private cPerg     := "XCOMR35"
+Private cFilCust  := SUPERGETMV( "ES_MSPENDF",,'01|10' )
 
 Pergunte(cPerg,.T.)
 
@@ -61,6 +62,12 @@ _cQuery += "	C7_NUM, 																					"+CLRF
 _cQuery += "	C7_ITEM, 																					"+CLRF
 _cQuery += "	C7_FORNECE,																					"+CLRF
 _cQuery += "	A2_NREDUZ, 																					"+CLRF
+If cEmpAnt $ cFilCust
+	_cQuery += "	CASE 																					"+CLRF
+	_cQuery += "	WHEN A2_XPENDFI = '1' THEN 'Sim'														"+CLRF
+	_cQuery += "		ELSE 'Nao'																			"+CLRF
+	_cQuery += "		END PEND_FIN, 																		"+CLRF
+EndIf 
 _cQuery += "	C7_PRODUTO, 																				"+CLRF
 _cQuery += "	C7_DESCRI, 																					"+CLRF
 _cQuery += "	C7_QUANT, 																					"+CLRF
@@ -128,12 +135,16 @@ Static Function MSRE35PF()
 
 Local oExcel	:= FWMSEXCEL():New()
 
+
 oExcel:AddWorkSheet("PC PENDÊNCIA FINANCEIRA")
 oExcel:AddTable ("PC PENDÊNCIA FINANCEIRA","PEDIDOS")
 oExcel:AddColumn("PC PENDÊNCIA FINANCEIRA","PEDIDOS","Pedido"		 ,2,1,.F.)
 oExcel:AddColumn("PC PENDÊNCIA FINANCEIRA","PEDIDOS","Item_PC"	 ,2,1,.F.)
 oExcel:AddColumn("PC PENDÊNCIA FINANCEIRA","PEDIDOS","Cod_Fornec",2,1,.F.)
 oExcel:AddColumn("PC PENDÊNCIA FINANCEIRA","PEDIDOS","Nome_Fornecedor",2,1,.F.)
+If cEmpAnt $ cFilCust
+	oExcel:AddColumn("PC PENDÊNCIA FINANCEIRA","PEDIDOS","Pendencia",2,1,.F.)
+End
 oExcel:AddColumn("PC PENDÊNCIA FINANCEIRA","PEDIDOS","Produto",2,1,.F.)
 oExcel:AddColumn("PC PENDÊNCIA FINANCEIRA","PEDIDOS","Desc_Produto",2,1,.F.)
 oExcel:AddColumn("PC PENDÊNCIA FINANCEIRA","PEDIDOS","Qtde",2,1,.F.)
@@ -148,20 +159,38 @@ DbSelectArea("QRPC")
 If Select("QRPC") > 0
 	QRPC->(DBGotop())
 	While QRPC->(!Eof())
-		oExcel:AddRow("PC PENDÊNCIA FINANCEIRA","PEDIDOS" ,{	QRPC->C7_NUM,;
-		QRPC->C7_ITEM														,;
-		QRPC->C7_FORNECE													,;
-		QRPC->A2_NREDUZ														,;
-		QRPC->C7_PRODUTO													,;
-		QRPC->C7_DESCRI														,;
-		QRPC->C7_QUANT														,;
-		QRPC->C7_QUJE														,;
-		QRPC->RETFOR														,;
-		QRPC->C7_EMISSAO													,;
-		QRPC->PRAZO															,;
-		QRPC->C7_NUMSC														,;
-		QRPC->C7_OBS})
-		QRPC->(dbSkip())
+		If cEmpAnt $ cFilCust
+			oExcel:AddRow("PC PENDÊNCIA FINANCEIRA","PEDIDOS" ,{	QRPC->C7_NUM,;
+			QRPC->C7_ITEM														,;
+			QRPC->C7_FORNECE													,;
+			QRPC->A2_NREDUZ														,;
+			QRPC->PEND_FIN														,;
+			QRPC->C7_PRODUTO													,;
+			QRPC->C7_DESCRI														,;
+			QRPC->C7_QUANT														,;
+			QRPC->C7_QUJE														,;
+			QRPC->RETFOR														,;
+			QRPC->C7_EMISSAO													,;
+			QRPC->PRAZO															,;
+			QRPC->C7_NUMSC														,;
+			QRPC->C7_OBS})
+			QRPC->(dbSkip())
+		Else 
+			oExcel:AddRow("PC PENDÊNCIA FINANCEIRA","PEDIDOS" ,{	QRPC->C7_NUM,;
+			QRPC->C7_ITEM														,;
+			QRPC->C7_FORNECE													,;
+			QRPC->A2_NREDUZ														,;
+			QRPC->C7_PRODUTO													,;
+			QRPC->C7_DESCRI														,;
+			QRPC->C7_QUANT														,;
+			QRPC->C7_QUJE														,;
+			QRPC->RETFOR														,;
+			QRPC->C7_EMISSAO													,;
+			QRPC->PRAZO															,;
+			QRPC->C7_NUMSC														,;
+			QRPC->C7_OBS})
+			QRPC->(dbSkip())
+		EndIf 
 	End
 EndIf
 
@@ -204,6 +233,9 @@ oExcel:AddColumn("PC PENDÊNCIAS GERAIS","PEDIDOS","Pedido"		 ,2,1,.F.)
 oExcel:AddColumn("PC PENDÊNCIAS GERAIS","PEDIDOS","Item_PC"	 ,2,1,.F.)
 oExcel:AddColumn("PC PENDÊNCIAS GERAIS","PEDIDOS","Cod_Fornec",2,1,.F.)
 oExcel:AddColumn("PC PENDÊNCIAS GERAIS","PEDIDOS","Nome_Fornecedor",2,1,.F.)
+If cEmpAnt $ cFilCust
+	oExcel:AddColumn("PC PENDÊNCIAS GERAIS","PEDIDOS","Pendencia",2,1,.F.)
+End
 oExcel:AddColumn("PC PENDÊNCIAS GERAIS","PEDIDOS","Produto",2,1,.F.)
 oExcel:AddColumn("PC PENDÊNCIAS GERAIS","PEDIDOS","Desc_Produto",2,1,.F.)
 oExcel:AddColumn("PC PENDÊNCIAS GERAIS","PEDIDOS","Qtde",2,1,.F.)
@@ -220,22 +252,42 @@ DbSelectArea("QRPC")
 If Select("QRPC") > 0
 	QRPC->(DBGotop())
 	While QRPC->(!Eof())
-		oExcel:AddRow("PC PENDÊNCIAS GERAIS","PEDIDOS" ,{	QRPC->C7_NUM,;
-		QRPC->C7_ITEM														,;
-		QRPC->C7_FORNECE													,;
-		QRPC->A2_NREDUZ														,;
-		QRPC->C7_PRODUTO													,;
-		QRPC->C7_DESCRI														,;
-		QRPC->C7_QUANT														,;
-		QRPC->SALDO															,;
-		QRPC->C7_PRECO														,;
-		QRPC->C7_TOTAL														,;
-		QRPC->RETFOR														,;
-		QRPC->C7_EMISSAO													,;
-		QRPC->PRAZO															,;
-		QRPC->C7_NUMSC														,;
-		QRPC->C7_OBS})
-		QRPC->(dbSkip())
+		If  cEmpAnt $ cFilCust
+			oExcel:AddRow("PC PENDÊNCIAS GERAIS","PEDIDOS" ,{	QRPC->C7_NUM,;
+			QRPC->C7_ITEM														,;
+			QRPC->C7_FORNECE													,;
+			QRPC->A2_NREDUZ														,;
+			QRPC->PEND_FIN														,;
+			QRPC->C7_PRODUTO													,;
+			QRPC->C7_DESCRI														,;
+			QRPC->C7_QUANT														,;
+			QRPC->SALDO															,;
+			QRPC->C7_PRECO														,;
+			QRPC->C7_TOTAL														,;
+			QRPC->RETFOR														,;
+			QRPC->C7_EMISSAO													,;
+			QRPC->PRAZO															,;
+			QRPC->C7_NUMSC														,;
+			QRPC->C7_OBS})
+			QRPC->(dbSkip())
+		Else 
+			oExcel:AddRow("PC PENDÊNCIAS GERAIS","PEDIDOS" ,{	QRPC->C7_NUM,;
+			QRPC->C7_ITEM														,;
+			QRPC->C7_FORNECE													,;
+			QRPC->A2_NREDUZ														,;
+			QRPC->C7_PRODUTO													,;
+			QRPC->C7_DESCRI														,;
+			QRPC->C7_QUANT														,;
+			QRPC->SALDO															,;
+			QRPC->C7_PRECO														,;
+			QRPC->C7_TOTAL														,;
+			QRPC->RETFOR														,;
+			QRPC->C7_EMISSAO													,;
+			QRPC->PRAZO															,;
+			QRPC->C7_NUMSC														,;
+			QRPC->C7_OBS})
+			QRPC->(dbSkip())
+		EndIf 
 	End
 EndIf
 
