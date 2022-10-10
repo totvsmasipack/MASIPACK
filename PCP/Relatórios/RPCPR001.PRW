@@ -1397,8 +1397,12 @@ Do While TRB->(!Eof())
 				cUsr := SCP->CP_SOLICIT 
 				PswOrder(2) // Pesquisa por usuario
                 PswSeek(cUsr,.T.)
-				aUser := PswRet(1)
-				cIDUsr := aUser[1][1] // ID do usuario.
+				aUser := PswRet()
+				If Len(aUser) > 0
+					cIDUsr := aUser[1][1] // ID do usuario.
+				Else 
+					cIDUsr := ""
+				EndIf 
 				EXT->EMITENTE:= Alltrim(UsrFullName(cIDUsr))  //SCP->CP_SOLICIT
 				EXT->MSREUNI := CTOD("")
 				MsUnlock()

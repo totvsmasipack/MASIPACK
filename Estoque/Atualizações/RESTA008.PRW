@@ -172,6 +172,8 @@ RETURN(RET)
 Static Function _fResop()
 
 LOCAL wregistro
+LOCAL cEmailMasi  := SUPERGETMV("ES_REST8MS",,"pcp@masipack.com.br")
+LOCAL cEmailFabri := SUPERGETMV("ES_REST8FB",,"admilson.carvalho@fabrima.com.br")
 PRIVATE wentregue
 cOpSai		:= ""
 cProSai		:= ""
@@ -287,13 +289,14 @@ DO WHILE sd4->d4_msrefer == wrefer .AND. !sd4->(EOF())
 						If SubStr(cNumEmp,1,2) == "01"
 							oMail:= EnvMail():NEW(.F.)
 							If oMail:ConnMail()
-								oMail:SendMail("Lista de separacao adiantada - Masipack","pcp@masipack.com.br","pcp@masipack.com.br",,cCorpoEmail)
+								oMail:SendMail("Lista de separacao adiantada - Masipack",cEmailMasi,cEmailMasi,,cCorpoEmail)
 							EndIf
 							oMail:DConnMail()
+						
 						Elseif SubStr(cNumEmp,1,2) == "10"
 							oMail:= EnvMail():NEW(.F.)
 							If oMail:ConnMail()
-								oMail:SendMail("Lista de separacao adiantada - Fabrima","luciana.souza@fabrima.com.br;fernando.franqui@fabrima.com.br",,,cCorpoEmail)
+								oMail:SendMail("Lista de separacao adiantada - Fabrima",cEmailFabri,,,cCorpoEmail)
 							EndIf
 							oMail:DConnMail()
 						Endif
