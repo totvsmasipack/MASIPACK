@@ -18,7 +18,6 @@ Local oReport
     
 Return
 
-
 /*/{Protheus.doc} ReportDef(cPerg)
 Definição do layout do relatório
 @type  Static Function
@@ -46,10 +45,9 @@ Local oSection
     TRCell():New(oSection,"B1_UM"       ,""      ,RetTitle("B1_UM")          ,PesqPict("SB1","B1_UM")            ,TamSX3("B1_UM")[1]     )
     TRCell():New(oSection,"B1_LOCPAD"   ,""      ,"Armazém"                  ,PesqPict("SB1","B1_LOCPAD")        ,TamSX3("B1_LOCPAD")[1] )
     TRCell():New(oSection,"B2_QATU"     ,""      ,RetTitle("B2_QATU")        ,PesqPict("SB2","B2_QATU")          ,TamSX3("B2_QATU")[1]   )
+	TRCell():New(oSection,"B2_QEMP"     ,""      ,RetTitle("B2_QEMP")        ,PesqPict("SB2","B2_QEMP")          ,TamSX3("B2_QEMP")[1]   )
 
 Return oReport
-
-
 
 /*/{Protheus.doc} PrintReport
 Impressão dos dados no relatório
@@ -64,6 +62,7 @@ Local lContinua	:= .F.
 Local lNoSB2	:= .F.
 Local nSaldo	:= 0
 Local nQtdReg	:= 0
+Local nSaldoEmp := 0
 Local oSection  := oReport:Section(1)
 
 Default MV_PAR01 := ''              // Produto de
@@ -73,21 +72,7 @@ Default MV_PAR04 := 'ZZ'            // Tipo de Produto até
 Default MV_PAR05 := ''              // Local de
 Default MV_PAR06 := 'ZZZZZZ'        // Local até
 Default MV_PAR07 := 2				// Lista Produto sem Saldo? 1=Sim; 2=Não
-/*
-    cFilter := "SB1->B1_COD >= '" + MV_PAR01 + "' .AND. SB1->B1_COD <= '" + MV_PAR02 + "' "
-    cFilter += ".AND. SB1->B1_TIPO >= '" + MV_PAR03 + "' .AND. SB1->B1_TIPO <= '" + MV_PAR04 + "' "
-    cFilter += ".AND. SB1->B1_LOCAL >= '" + MV_PAR05 + "' .AND. SB1->B1_LOCAL <= '" + MV_PAR06 + "' "
-    cFilter += IIF(MV_PAR07 == 2, ".AND. !EMPTY(MV_PAR07) ", "")
-    
 
-    dbSelectArea('SB1')
-    SB1->(dbOrderNickName("MASSB1LOC"))
-    SB1->(dbSetFilter({|| &(cFilter) }, cFilter))
-    SB1->(dbGoTop())
-
-	dbSelectArea('SB2')
-    SB2->(dbSetOrder(1))
-*/
 	lNoSB2	:= MV_PAR07 == 1
 
 	BEGINSQL ALIAS cTMP
@@ -109,6 +94,7 @@ Default MV_PAR07 := 2				// Lista Produto sem Saldo? 1=Sim; 2=Não
         oSection:Cell("B1_UM"):Disable()
         oSection:Cell("B1_LOCPAD"):Disable()
         oSection:Cell("B2_QATU"):Disable()
+		oSection:Cell("B2_QEMP"):Disable()
 
         oReport:PrintText( "Não há dados, verifique os parametros informados" )
         oSection:Finish() 	
@@ -135,6 +121,7 @@ Default MV_PAR07 := 2				// Lista Produto sem Saldo? 1=Sim; 2=Não
 			oReport:IncMeter()
 
 			SB2->(dbSeek( FWxFilial("SB2") + (cTMP)->B1_COD + (cTMP)->B1_LOCPAD ))
+			nSaldoEmp := IIF( SB2->(FOUND()), SB2->B2_QEMP, 0 )
 			nSaldo := IIF( SB2->(FOUND()), SaldoSB2(,.F.), 0 )
 
 			lContinua := .T.
@@ -149,6 +136,7 @@ Default MV_PAR07 := 2				// Lista Produto sem Saldo? 1=Sim; 2=Não
 				oSection:Cell("B1_UM"):SetValue( (cTMP)->B1_UM )
 				oSection:Cell("B1_LOCPAD"):SetValue( (cTMP)->B1_LOCPAD )
 				oSection:Cell("B2_QATU"):SetValue( nSaldo )
+				oSection:Cell("B2_QEMP"):SetValue( nSaldoEmp   )
 				oSection:PrintLine()
 			Endif
 
