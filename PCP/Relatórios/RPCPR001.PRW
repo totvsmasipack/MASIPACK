@@ -704,6 +704,7 @@ Local I		  := 0
 Local aCampos := {}
 Local aExtDes := {{".PRI",.T.},{".PRN",.T.},{".PDF",.T.},{".PLT",.T.}}
 Local aFiles  := {}
+Local cIDUsr  := ""
 
 AADD(aCampos,{ "DOCUM"      ,"C",11,0})
 AADD(aCampos,{ "ITEM"       ,"C",3,0})
@@ -1396,10 +1397,13 @@ Do While TRB->(!Eof())
 				EXT->COTACAO := ""                
 				cUsr := SCP->CP_SOLICIT 
 				PswOrder(2) // Pesquisa por usuario
-                PswSeek(cUsr,.T.)
-				aUser := PswRet()
-				If Len(aUser) > 0
-					cIDUsr := aUser[1][1] // ID do usuario.
+                If PswSeek(cUsr,.T.)
+					aUser := PswRet()
+					If Len(aUser) > 0
+						cIDUsr := aUser[1][1] // ID do usuario.
+					Else 
+						cIDUsr := ""
+					EndIf 
 				Else 
 					cIDUsr := ""
 				EndIf 
