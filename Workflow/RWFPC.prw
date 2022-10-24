@@ -345,9 +345,10 @@ Local oMail, oHtml
 			
 			If lIntComp	// Pedido InterCompany
 				If lTpoMaq	// Produto máquinas
-					oMail:cTo  := Alltrim(GetMv("MS_WFPCMAQ"))
-					oMail:cCC  := Alltrim(GetMv("MS_WFMAQCC"))
-					oMail:cBCC := Alltrim(GetMv("MS_WFMQCCO"))
+					oMail:cTo  := Alltrim(GetMv("MS_WFPCMAQ")) // Cadastro dos emails que receberao os Pedidos de compra intercompany para maquinas 
+					oMail:cCC  := Alltrim(GetMv("MS_WFMAQCC")) + Alltrim(GetMv("MS_WFMA2CC")) // Copia de Workflow para usuarios responsaveis por montagem maquinas receber os pedidos de compra intercompany 
+					oMail:cBCC := Alltrim(GetMv("MS_WFMQCCO")) // Copia oculta de Workflow p/ usuarios responsaveis pelo acompanhamento de fabricacao de compra de maquinas intercompany 
+
 				Else
 					oMail:cTo  := AllTrim(cTo) + Alltrim(GetMv("MS_INTMAIL"))
 					oMail:cCC  := IIF( FWCodEmp() == '01', 'compras@masipack.com.br' , 'pedidos02@fabrima.com.br' )
