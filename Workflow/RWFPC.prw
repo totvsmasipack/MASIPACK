@@ -350,13 +350,13 @@ Local oMail, oHtml
 					oMail:cBCC := Alltrim(GetMv("MS_WFMQCCO")) // Copia oculta de Workflow p/ usuarios responsaveis pelo acompanhamento de fabricacao de compra de maquinas intercompany 
 
 				Else
-					oMail:cTo  := AllTrim(cTo) + Alltrim(GetMv("MS_INTMAIL"))
-					oMail:cCC  := IIF( FWCodEmp() == '01', 'compras@masipack.com.br' , 'pedidos02@fabrima.com.br' )
+					oMail:cTo  := AllTrim(cTo) + ";" + Alltrim(GetMv("MS_INTMAIL"))  + Alltrim(GetMv("MS_WFMA2CC")) 
+					oMail:cCC  := IIF( FWCodEmp() == '01', 'compras@masipack.com.br' + ";" + Alltrim(GetMv("MS_WFMAQCC")), 'pedidos02@fabrima.com.br;' + Alltrim(GetMv("MS_WFMAQCC")))
 				Endif
 			Else
 				oMail:cTo  := AllTrim(cTo)
-				oMail:cCC  := "compras@masipack.com.br;" + SuperGetMV("MS_MAILCC",.F.,"compras@masipack.com.br")
-			Endif
+				oMail:cCC  := "compras@masipack.com.br;" + SuperGetMV("MS_MAILCC",.F.,"compras@masipack.com.br")  + Alltrim(GetMv("MS_WFMA2CC"))   + Alltrim(GetMv("MS_WFMAQCC"))
+			Endif 
 
 			oMail:bReturn := ""
 			//Fim do método do e-mail
