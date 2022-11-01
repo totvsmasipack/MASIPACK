@@ -33,13 +33,12 @@ IF SUBSTR(cNumEmp,1,2) $ "01_10"
 	DbSetOrder(1)
 	
 	// Pesquisa OP Pai com as informacoes do arquivo temporario do sistema de producao.
-	IF EMPTY(mv_par17)
+	
 //		DbSeek(xFilial("SC2")+Substr(bat->OP,03,11),.T.)                        //linha comentada em 21/02/13 - TGOZOZ consultoria - Bárbara
 //		If (SC2->C2_NUM+SC2->C2_ITEM+SC2->C2_SEQUEN) == Substr(bat->OP,03,11)	//linha comentada em 21/02/13 - TGOZOZ consultoria - Bárbara
 //		DbSeek(xFilial("SC2")+SC2->C2_NUM+SC2->C2_ITEM+SC2->C2_SEQUEN,.T.)   	//linha criada    em 21/02/13 - TGOZOZ consultoria - Bárbara
-			_cProdPai	:= SC2->C2_PRODUTO
+	_cProdPai	:= SC2->C2_PRODUTO
 //		EndIf
-	ENDIF
 	
 	// Se nao encontrou o produto na estrutura do produto pai, retorna falso.
 	If SG1->(DbSeek(xFilial("SG1") + _cProdPai + aCols[Paramixb,1]))
@@ -48,12 +47,12 @@ IF SUBSTR(cNumEmp,1,2) $ "01_10"
     	If Alltrim(SB1->B1_GRUPO) == "0090"    // Produtos de Terceiros (Maklaser)
 			_cRet := .T.
 		Else
-			IF SB1->B1_UM == "CJ" // .OR. (SUBSTR(SB1->B1_LOCAL,1,1) $ "U" .AND. EMPTY(SB1->B1_LM + SB1->B1_LE + SB1->B1_ESTSEG))
+			IF Alltrim(SB1->B1_UM) $ "CJ" // .OR. (SUBSTR(SB1->B1_LOCAL,1,1) $ "U" .AND. EMPTY(SB1->B1_LM + SB1->B1_LE + SB1->B1_ESTSEG))
 				//	        If SC2->C2_EMISSAO > SC2->C2_DATPRI
 				//	        EndIf
-				_cRet := .t.
+				_cRet := .T.
 			ELSE
-				_cRet := .f.
+				_cRet := .F.
 			ENDIF
 		EndIf
 	EndIf 

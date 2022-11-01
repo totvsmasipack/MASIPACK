@@ -48,14 +48,14 @@ IF cEmpAnt $ '01|10'
 		RestArea(_aAreaC2)
 		RecLock("SC2",.f.)
 		SC2->C2_MSPED 	:= _cMsPed
-		SC2->C2_MSLISTA 	:= iif(SC2->C2_UM == "CJ",_cMsLista,"N")
+		SC2->C2_MSLISTA 	:= iif(Alltrim(SC2->C2_UM) $ "CJ",_cMsLista,"N")
 		SC2->C2_OBS       := _cMsObs
 		SC2->C2_MSREDUZ   := _cMsReduz
 		SC2->C2_MSCI      := _cMsCI
 		SC2->C2_MSDTCI    := _cMsDtCI
 		SC2->C2_MSUSER    := _cMsUser
-		IF EMPTY(sc2->c2_mslista)
-			sc2->c2_mslista := "S"
+		IF EMPTY(SC2->C2_MSLISTA)
+			SC2->C2_MSLISTA := "S"
 		ENDIF
 		IF EMPTY(SC2->C2_MSPED)
 			//       IF SC2->C2_MSLISTA == "S"
