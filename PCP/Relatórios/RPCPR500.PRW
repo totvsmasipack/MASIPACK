@@ -721,9 +721,9 @@ AADD(aCampos,{ "DESCR"      ,"C",30,0})
 AADD(aCampos,{ "QUANT"      ,"N",12,3})
 AADD(aCampos,{ "MOVIM"      ,"C",1,0})
 AADD(aCampos,{ "PESSOA"     ,"C",15,0})
-AADD(aCampos,{ "ENTREGA"    ,"D",8})
+AADD(aCampos,{ "ENTREGA"    ,"D",8,0})
 AADD(aCampos,{ "PV"         ,"C",6,0})
-AADD(aCampos,{ "ENTPV"      ,"D",8})
+AADD(aCampos,{ "ENTPV"      ,"D",8,0})
 AADD(aCampos,{ "COTACAO"    ,"C",6,0})
 AADD(aCampos,{ "FALTA"      ,"C",2,0})
 AADD(aCampos,{ "APROP"      ,"C",50,0})
@@ -737,24 +737,24 @@ AADD(aCampos,{ "RETFOR"     ,"C",1,0})
 AADD(aCampos,{ "QDE_ERRO"   ,"N",10,3})
 AADD(aCampos,{ "EMITENTE"   ,"C",14,0})
 AADD(aCampos,{ "REFER"      ,"C",6,0})
-AADD(aCampos,{ "DATA_PCP"   ,"D",8})
-AADD(aCampos,{ "DATA_CI"    ,"D",8})
-AADD(aCampos,{ "CI"         ,"C",12})
-AADD(aCampos,{ "PRE_NOTA"   ,"C",2})
-AADD(aCampos,{ "INICIO"     ,"D",8})
-AADD(aCampos,{ "FIM   "     ,"D",8})
-AADD(aCampos,{ "IMPRES"     ,"D",8})
-AADD(aCampos,{ "EMISSAO"    ,"D",8})
-AADD(aCampos,{ "GRPMASI"    ,"C",20})
+AADD(aCampos,{ "DATA_PCP"   ,"D",8,0})
+AADD(aCampos,{ "DATA_CI"    ,"D",8,0})
+AADD(aCampos,{ "CI"         ,"C",12,0})
+AADD(aCampos,{ "PRE_NOTA"   ,"C",2,0})
+AADD(aCampos,{ "INICIO"     ,"D",8,0})
+AADD(aCampos,{ "FIM   "     ,"D",8,0})
+AADD(aCampos,{ "IMPRES"     ,"D",8,0})
+AADD(aCampos,{ "EMISSAO"    ,"D",8,0})
+AADD(aCampos,{ "GRPMASI"    ,"C",20,0})
 AADD(aCampos,{ "RESERVA"    ,"N",12,3})
-AADD(aCampos,{ "ITEMSEP"    ,"C",1})
-AADD(aCampos,{ "MSREUNI"    ,"D",8})
-AADD(aCampos,{ "BLOQUEIO"   ,"C",4})
-AADD(aCampos,{ "CATEG"      ,"C",1})
+AADD(aCampos,{ "ITEMSEP"    ,"C",1,0})
+AADD(aCampos,{ "MSREUNI"    ,"D",8,0})
+AADD(aCampos,{ "BLOQUEIO"   ,"C",4,0})
+AADD(aCampos,{ "CATEG"      ,"C",1,0})
 //Ivandro Santos - 18/08/17
 //Ticket#2017062837000141 � Novos campos no SC7 para aparecer no Necessidades
-AADD(aCampos,{ "PAGAM"      ,"C",1})
-AADD(aCampos,{ "DATA_PAG"   ,"D",8})
+AADD(aCampos,{ "PAGAM"      ,"C",1,0})
+AADD(aCampos,{ "DATA_PAG"   ,"D",8,0})
 //Ticket#2017062837000141 � Fim da altera��o
 
 // Cria arquivo de Trabalho - Extrato das necessidades
@@ -764,7 +764,7 @@ If Select("EXT") > 0
 EndIf
 
 oTable := FWTemporaryTable():New("EXT",aCampos)
-oTable:AddIndex( "IND1", {'DTOS(ENTREGA)','MOVIM'} )
+oTable:AddIndex( "IND1", {'ENTREGA','MOVIM'} )
 oTable:Create()
 
 ProcRegua(RecCount())           // Total de Elementos da Regua
@@ -2094,7 +2094,7 @@ Else
 EndIf
 
 cRegTxt += Space(1) + SubStr(EXT->DESCR,1,21)
-cAux :=  Transform(EXT->QUANT,IIF(SB1->B1_UM <> "PC","@E 999,999.999","@E 9,999,999"))
+cAux :=  Transform(EXT->QUANT,IIF(Alltrim(SB1->B1_UM) <> "PC","@E 999,999.999","@E 9,999,999"))
 cRegTxt += Space(4) + cAux	//2
 cRegTxt += Space(1) + Substr(EXT->PESSOA,1,15)
 If !Empty(EXT->PV)
