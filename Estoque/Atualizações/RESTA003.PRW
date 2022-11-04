@@ -659,7 +659,7 @@ Static Function ValidaQtde()
 		//³APONTAMENTO, SENDO QUE DEVE SER RATEADO POR       ³
 		//³IGUAL ENTRE A QUANTIDADE PRODUZIDA                ³
 		//ÀÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÙ
-		If (Alltrim(SC2->C2_MSLISTA) == 'S' .OR. Alltrim(B1->B1_UM) == 'CJ') .AND. SC2->C2_QUANT <> nQtde
+		If (Alltrim(SC2->C2_MSLISTA) == 'S' .OR. Alltrim(SB1->B1_UM) == 'CJ') .AND. SC2->C2_QUANT <> nQtde
 			Alert("Não é permitido apontamento com a quantidade diferente da OP para Listas e produtos tipo 'CJ'")
 			fRet := .F.
 		EndIf	
@@ -907,6 +907,7 @@ Static Function AtualizaOP()
 				EndIf
 
 				nEstoque := 0
+				DbSelectArea("SB1")
 				SB1->(dbSetOrder(1))
 				If SB1->(DbSeek(xFilial("SB1")+Alltrim(SD4->D4_COD)))
 					IF SB1->B1_MSBLQL <> "1"   // LINHA INCLUIDA PARA VERIFICAR SE O PORDUTO ESTÁ BLOQUEADO NO SB1 - LIZANDRA 15/03/12
@@ -1158,6 +1159,8 @@ Static Function AtualizaOP()
 //			SX5->(dbGoTop())
 //			SX5->(dbSeek(xFilial("SX5")+"ZC"+cUsuarioSX5))
 			aSX5ZC := FWGetSX5('ZC',SUBSTR(cUsuarioSX5,1,6))
+			DbSelectArea("SB1")
+			SB1->(DbSetOrder(1))
 			SB1->(DbSeek(xFilial("SB1")+SC2->C2_PRODUTO))
 			If Len(aSX5ZC) > 0
 				aSX5ZC[1,4] := SPACE(2) + aSX5ZC[1,4]
