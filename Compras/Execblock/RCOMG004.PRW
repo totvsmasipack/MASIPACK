@@ -40,7 +40,7 @@ If !(Acols[n,nPosDel])
    If !Empty(Acols[n,nPosPed])
       SC7->(dbSetOrder(14))
       If MsSeek(xFilial("SC7")+Acols[n,nPosPed]+Acols[n,nPosItem])
-         IF Acols[n,nPosQtde] <> SC7->C7_QUANT .AND. SC7->C7_UM <> "KG" .AND. SC7->C7_UM <> "M " .AND. ( posicione("SB1",1,xFilial("SB1")+Acols[n,nPosProd],"B1_GRUPO") <> "0190" )
+         IF Acols[n,nPosQtde] <> SC7->C7_QUANT .AND. Alltrim(SC7->C7_UM) <> "KG" .AND. ALLTRIM(SC7->C7_UM) <> "M" .AND. ( AllTrim(posicione("SB1",1,xFilial("SB1")+Acols[n,nPosProd],"B1_GRUPO")) <> "0190" )
             apmsgAlert("QUANTIDADE DIFERENTE DO PEDIDO, VERIFIQUE COM O DEPARTAMENTO DE COMPRAS!!!")
             _lRet := .F.
          ENDIF   

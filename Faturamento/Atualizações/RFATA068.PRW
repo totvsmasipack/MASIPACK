@@ -358,7 +358,7 @@ For nI := 1 to len (aItensProd)
 	aItemPV :={	{"C6_ITEM"   	,Strzero(nI,2,0)															,Nil},;	//Item do pedido
 				{"C6_FILIAL"	,FWxFilial("SC6")															,Nil},;	//Filial da empresa
 				{"C6_PRODUTO"	,Alltrim(aItensProd[nI][1])													,Nil},;	//Produto
-				{"C6_UM" 		,aItensProd[nI][2]															,Nil},;	//Unidade de medida
+				{"C6_UM" 		,Alltrim(aItensProd[nI][2])													,Nil},;	//Unidade de medida
 				{"C6_QTDVEN" 	,aItensProd[nI][6]															,Nil},;	//Quantidade Vendida
 				{"C6_PRUNIT" 	,aItensProd[nI][8]															,Nil},;	//Preço Unitário
 				{"C6_PRCVEN" 	,aItensProd[nI][8]															,Nil},;	//Preço de Venda
@@ -569,7 +569,7 @@ While !(QRPC->(EOF()))
 	Else
 		//aaDD(aProd,{CODIGOPROD,B1_UM,SB1->B1_MSGRPMA,_nNCM,_dData,SB1->B1_TS,_nPreco,SB1->B1_GRTRIB,SB1->B1_PROCED,_cGrVen,_Desc})
 		aProd[01] := QRPC->C6_PRODUTO
-		aProd[02] := QRPC->B1_UM
+		aProd[02] := Alltrim(QRPC->B1_UM)
 		aProd[03] := QRPC->B1_MSGRPMA
 		aProd[04] := QRPC->B1_POSIPI
 		aProd[05] := QRPC->C5_MSDTENT

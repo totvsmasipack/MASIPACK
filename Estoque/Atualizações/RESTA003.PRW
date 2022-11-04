@@ -477,7 +477,7 @@ Static Function ValidaOP()
 							SG2->(dbGoTo(_nRecG2))
 						Else
 							//MONTAGEM
-							If SUBSTR(SHB->HB_COD,1,3) == '201' .AND. SB1->B1_UM == 'CJ'
+							If SUBSTR(SHB->HB_COD,1,3) == '201' .AND. Alltrim(SB1->B1_UM) == 'CJ'
 								_cQuery := "SELECT COUNT(*) OPERACAO "
 								_cQuery += "FROM " + RetSqlName("SG2") + " SG2 "
 								_cQuery += "WHERE SG2.D_E_L_E_T_ = '' AND SG2.G2_PRODUTO = '" + SC2->C2_PRODUTO + "' AND SG2.G2_OPERAC = '01'"
@@ -504,7 +504,7 @@ Static Function ValidaOP()
 								TOPR->(dbCloseArea())
 								EndIf
 							//ALMOXARIFADO
-							ElseIf SUBSTR(_cDeptoUsu,1,3) == "205" .AND. SUBSTR(SHB->HB_COD,1,3) == "205" .AND. SB1->B1_UM <> 'CJ'
+							ElseIf SUBSTR(_cDeptoUsu,1,3) == "205" .AND. SUBSTR(SHB->HB_COD,1,3) == "205" .AND. Alltrim(SB1->B1_UM) == 'CJ'
 								_cQuery := "SELECT COUNT(*) OPERACAO "
 								_cQuery += "FROM " + RetSqlName("SG2") + " SG2 "
 								_cQuery += "WHERE SG2.D_E_L_E_T_ = '' AND SG2.G2_PRODUTO = '" + SC2->C2_PRODUTO + "' AND SG2.G2_OPERAC = '99'"
@@ -659,7 +659,7 @@ Static Function ValidaQtde()
 		//³APONTAMENTO, SENDO QUE DEVE SER RATEADO POR       ³
 		//³IGUAL ENTRE A QUANTIDADE PRODUZIDA                ³
 		//ÀÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÙ
-		If (SC2->C2_MSLISTA == 'S' .OR. SB1->B1_UM == 'CJ') .AND. SC2->C2_QUANT <> nQtde
+		If (Alltrim(SC2->C2_MSLISTA) == 'S' .OR. Alltrim(B1->B1_UM) == 'CJ') .AND. SC2->C2_QUANT <> nQtde
 			Alert("Não é permitido apontamento com a quantidade diferente da OP para Listas e produtos tipo 'CJ'")
 			fRet := .F.
 		EndIf	
@@ -1458,7 +1458,7 @@ STATIC FUNCTION GRAVASD3()
 		CASE LBXCOMP	== .T.
 		CTIPOSD3    := '602'
 		CPRODSD3	:= SD4->D4_COD
-		CUNMSD3		:= SB1->B1_UM
+		CUNMSD3		:= Alltrim(SB1->B1_UM)
 		NQTDSD3		:= NQTD1
 		CNOPSD3		:= SD4->D4_OP
 		CLOCSD3		:= SB1->B1_LOCPAD
@@ -1472,7 +1472,7 @@ STATIC FUNCTION GRAVASD3()
 		CASE LFIMOP == .T.
 		CTIPOSD3    := '002'
 		CPRODSD3	:= SC2->C2_PRODUTO
-		CUNMSD3		:= SB1->B1_UM
+		CUNMSD3		:= Alltrim(SB1->B1_UM)
 		NQTDSD3		:= NQTD2
 		CNOPSD3		:= _CNUMOP
 		CLOCSD3		:= SB1->B1_LOCPAD
@@ -1486,7 +1486,7 @@ STATIC FUNCTION GRAVASD3()
 		CASE LBXFALTA == .T.
 		CTIPOSD3    := '602'
 		CPRODSD3	:= SD4->D4_COD
-		CUNMSD3		:= SB1->B1_UM
+		CUNMSD3		:= Alltrim(SB1->B1_UM)
 		NQTDSD3		:= NQTD3
 		CNOPSD3		:= SD4->D4_OP
 		CLOCSD3		:= SB1->B1_LOCPAD

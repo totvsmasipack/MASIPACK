@@ -119,7 +119,7 @@ AADD(aCampos,{ "TB_SEQUEN"	  ,"C",03,0 } )
 AADD(aCampos,{ "TB_PRODUTO"   ,"C",15,0 } )
 AADD(aCampos,{ "TB_REVATU"    ,"C",03,0 } )
 AADD(aCampos,{ "TB_DESC"      ,"C",35,0 } )
-AADD(aCampos,{ "TB_UM"	      ,"C",02,0 } )
+AADD(aCampos,{ "TB_UM"	      ,"C",03,0 } )
 AADD(aCampos,{ "TB_MSQUANT"	  ,"N",12,3 } )
 AADD(aCampos,{ "TB_MSEMPEN"	  ,"N",12,3 } )
 AADD(aCampos,{ "TB_QUANT"	  ,"N",12,2 } )
@@ -562,7 +562,7 @@ DO WHILE !QR1->(EOF())
 		TRB->TB_VATU1	:= QR1->C2_VATU1
 		TRB->TB_REVATU	:= ALLTRIM(QR1->B1_REVATU)
 		TRB->TB_DESC	:= QR1->B1_DESC
-		TRB->TB_UM		:= QR1->B1_UM
+		TRB->TB_UM		:= Alltrim(QR1->B1_UM)
 		TRB->TB_MSQUANT	:= QR1->B2_QATU
 		TRB->TB_LOCAL	:= QR1->B1_LOCAL
 		TRB->TB_IMP		:= QR1->C2_MSIMPR

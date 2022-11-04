@@ -48,7 +48,7 @@ Return(_cRet)
 Static Function _fFiltro()
 
 If cCombo == "S"
-	_cRet := 'SC2->C2_UM <> "CJ"'
+	_cRet := 'Alltrim(SC2->C2_UM) <> "CJ"'
 EndIf
 
 _oDlg1:End()

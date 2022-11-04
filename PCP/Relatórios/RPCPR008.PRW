@@ -193,7 +193,7 @@ Do While QR1->(!EOF())
 		nQuant  := QR1->G1_QUANT
 	EndIf
 	
-	If QR1->B1_FANTASM == "S" .And. QR1->B1_UM == "CJ"
+	If QR1->B1_FANTASM == "S" .And. Alltrim(QR1->B1_UM) == "CJ"
 		cCod     := QR1->G1_COD
 		cComp    := QR1->G1_COMP
 		dDtIni   := QR1->G1_MSDTINI
@@ -346,7 +346,7 @@ Do While ! TRB->(EOF())
 	
 	If TRB->COD <> cCodAnt
 		SB1->(DbSeek(xFilial("SB1")+TRB->COD))
-		If SB1->B1_UM == "CJ"
+		If Alltrim(SB1->B1_UM) == "CJ"
 			TRB->(DbSkip())
 			Loop
 		EndIf

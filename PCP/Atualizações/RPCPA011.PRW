@@ -122,7 +122,7 @@ If mv_par05 == 1
 	If !Empty(Alltrim(_cFiltro))
 		_cFiltro += ' .And. '
 	EndIf
-	_cFiltro += '(Alltrim(SZU->ZU_GRUPO) <> "0090" .And. SZU->ZU_UM <> "CJ")'
+	_cFiltro += '(Alltrim(SZU->ZU_GRUPO) <> "0090" .And. Alltrim(SZU->ZU_UM) <> "CJ")'
 EndIf
 
 //Alert (_cFiltro)
@@ -285,7 +285,7 @@ If _lRet
 			EndIf
 			_cObs := ""
 			If SB1->(DbSeek(xFilial("SB1")+QR9->ZU_PRODUTO))
-				If SB1->B1_UM == "CJ"
+				If Alltrim(SB1->B1_UM) == "CJ"
 					_cStatus := "R"
 					_cObs    := "CJ - Unidade do Produto - Conjunto"
 					_AtuSZU()

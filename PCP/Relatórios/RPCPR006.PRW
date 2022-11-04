@@ -547,7 +547,7 @@ Do WHILE &cCondicao
 						nPosic := At("(",ALLTRIM(SC2->C2_MSPOSIC)) + 1
 						cCCusto := substr(SC2->C2_MSPOSIC,nPosic,3)
 					Else
-						If cUnid == 'CJ'
+						If Alltrim(cUnid) == 'CJ'
 							cCCusto := "(201) -ANÁLISE DA MONTAGEM"						
 						Else
 							cCCusto := "(207) -ANÁLISE NO PCP"

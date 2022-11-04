@@ -391,7 +391,7 @@ ElseIf SB1->(dbSeek(xFilial("SB1")+Alltrim(CODIGOPROD)))
 	Else
 		//aaDD(aProd,{CODIGOPROD,B1_UM,SB1->B1_MSGRPMA,_nNCM,_dData,SB1->B1_TS,_nPreco,SB1->B1_GRTRIB,SB1->B1_PROCED,_cGrVen,_Desc})
 		aProd[01] := CODIGOPROD
-		aProd[02] := B1_UM
+		aProd[02] := Alltrim(B1_UM)
 		aProd[03] := SB1->B1_MSGRPMA
 		aProd[04] := _nNCM
 		aProd[05] := _dData

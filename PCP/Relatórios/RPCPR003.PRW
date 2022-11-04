@@ -128,7 +128,7 @@ STATIC FUNCTION _FIMPRIME(LEND,WNREL,CSTRING)
    	AADD(aCampos,{ "TB_CLIENTE"  ,"C",60,0 } )
    	AADD(aCampos,{ "TB_LOCAL"    ,"C",08,0 } )
    	AADD(aCampos,{ "TB_REFER"    ,"C",10,0}  )
-   	AADD(aCampos,{ "TB_UM"       ,"C",02,0 } )
+   	AADD(aCampos,{ "TB_UM"       ,"C",03,0 } )
    //	AADD(aCampos,{ "TB_EST"    ,"C",02,0 } )
    //  	AADD(aCampos,{ "TB_DESC"   ,"C",35,0 } )
    //  	AADD(aCampos,{ "TB_PROCED" ,"C",02,0 } )
@@ -370,7 +370,7 @@ STATIC FUNCTION _FIMPRIME(LEND,WNREL,CSTRING)
 				TRB->TB_CLIENTE := (ALIAS)->C2_MSREDUZ   
 				TRB->TB_LOCAL   := (ALIAS)->B1_LOCAL
 				TRB->TB_REFER   := (ALIAS)->D4_MSREFER
-				TRB->TB_UM      := (ALIAS)->B1_UM
+				TRB->TB_UM      := Alltrim((ALIAS)->B1_UM)
 				TRB->(MSUnlock())		
 			EndIf			
             ///////////////////////////////////////////

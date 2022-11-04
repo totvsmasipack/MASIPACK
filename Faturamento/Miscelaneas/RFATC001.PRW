@@ -256,7 +256,7 @@ ELSEIF MV_PAR02 == 3 .OR. MV_PAR02 == 5
 		TRB->B1_REVATU	:= QR1->B1_REVATU
 		TRB->B1_DESC	:= QR1->B1_DESC
 		TRB->B5_CEME	:= QR1->B5_CEME		//TRB->B1_DESCP	:= QR1->B1_DESCP                           
-		TRB->B1_UM		:= QR1->B1_UM
+		TRB->B1_UM		:= Alltrim(QR1->B1_UM)
 		TRB->B1_PROCED	:= QR1->B1_PROCED
 		TRB->B1_LOCAL 	:= QR1->B1_LOCAL
 		TRB->B2_QATU	:= QR1->B2_QATU
@@ -312,7 +312,7 @@ IF MV_PAR02 == 3 .OR. MV_PAR02 == 5
 	AAdd( aHead, { "Revisao"       , {|| TRB->B1_REVATU },"C", 03 , 0, "" } )
 	AAdd( aHead, { "Descrição"     , {|| TRB->B1_DESC }  ,"C", 35 , 0, "" } )
 	AAdd( aHead, { "Nome.Cientifico", {|| TRB->B5_CEME }  ,"C", 200, 0, "" } )
-	AAdd( aHead, { "UM"            , {|| TRB->B1_UM }    ,"C", 02 , 0, "" } )
+	AAdd( aHead, { "UM"            , {|| TRB->B1_UM }    ,"C", 03 , 0, "" } )
 	AAdd( aHead, { "Procedencia"   , {|| TRB->B1_PROCED },"C", 02 , 0, "" } )
 	AAdd( aHead, { "Local"   	   , {|| TRB->B1_LOCAL  },"C", 05 , 0, "" } )
 	AAdd( aHead, { "Estoque"	   , {|| TRB->B2_QATU 	},"N", 05 , 0, "@E 999,999,999.99" } )

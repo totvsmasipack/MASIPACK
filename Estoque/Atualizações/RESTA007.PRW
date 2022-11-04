@@ -88,7 +88,7 @@ Static Function VerLocal()
                ApMsgAlert("Produto já está no Local informado")
                fRet := .F.
             Else
-               If SB1->B1_UM == "CJ" .And. !(SubStr(cLocal,1,1) == "M" .Or. SubStr(cLocal,1,1) == "D")
+               If Alltrim(SB1->B1_UM) == "CJ" .And. !(SubStr(cLocal,1,1) == "M" .Or. SubStr(cLocal,1,1) == "D")
                   ApMsgAlert("Local Invalido para Conjunto (M ou D)")
                   fRet := .F.
                EndIf

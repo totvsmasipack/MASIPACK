@@ -17,7 +17,7 @@ User Function Ma270TOk()
 			M->B7_QTSEGUM := M->B7_QUANT
 			IF SubStr(M->B7_COD,1,2) == "MP"
 				SB1->(dbSeek(xFilial("SB1") + M->B7_COD))
-				IF SB1->(FOUND()) .And. SB1->B1_UM == "KG"
+				IF SB1->(FOUND()) .And. Alltrim(SB1->B1_UM) == "KG"
 					M->B7_QTSEGUM	:= ROUND(M->B7_QUANT * M->B7_MSFATR1 * M->B7_MSFATR2,2)
 					M->B7_QUANT		:= ROUND(M->B7_QUANT * M->B7_MSFATR1 * M->B7_MSFATR2,2)
 				ENDIF
@@ -27,7 +27,7 @@ User Function Ma270TOk()
 		IF ALTERA .AND. SUBSTR(M->B7_COD,1,2) == "MP"
 			SB1->(DBSETORDER(1))
 			SB1->(dbSeek(xFilial("SB1") + M->B7_COD))
-			IF SB1->(FOUND()) .And. SB1->B1_UM == "KG"
+			IF SB1->(FOUND()) .And. Alltrim(SB1->B1_UM) == "KG"
 				IF !(M->B7_QUANT == M->B7_QTSEGUM)
 					M->B7_QUANT := ROUND(M->B7_QTSEGUM,2)
 				ENDIF

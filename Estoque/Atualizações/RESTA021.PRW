@@ -49,7 +49,7 @@ User Function ESTA021B()
 _cDoc		:="DEV"+SZP->ZP_NUM
 _cTM		:= "001"
 _cCOD		:= SZP->ZP_PRODUTO
-_cUM		:= SZP->ZP_UM
+_cUM		:= Alltrim(SZP->ZP_UM)
 _cLOCALMS	:= SZP->ZP_LOCAL
 _cDESCRI	:= SZP->ZP_DESCRI
 _nQUANT 	:= SZP->ZP_QUANT

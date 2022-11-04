@@ -317,7 +317,7 @@ Do While TRB->(!EOF())
 	   ENDIF    
 	   */
 	   If _nOpc == 6
-	      If mv_par02 == 1 .And. SB1->B1_UM == "CJ"
+	      If mv_par02 == 1 .And. Alltrim(SB1->B1_UM) == "CJ"
 	         TRB->(DbSkip())
 	         Loop
 	      EndIf

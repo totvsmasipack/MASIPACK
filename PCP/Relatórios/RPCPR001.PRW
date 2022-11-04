@@ -919,7 +919,7 @@ Do While TRB->(!Eof())
 		Loop
 	EndIf
 	
-	If (mv_par09 == "1" .And. _nQuant >= nEmpenho) .Or. (mv_par09 == "3" .And. (_nQuant > 0 .Or. SB1->B1_UM == "CJ"))
+	If (mv_par09 == "1" .And. _nQuant >= nEmpenho) .Or. (mv_par09 == "3" .And. (_nQuant > 0 .Or. Alltrim(SB1->B1_UM) == "CJ"))
 		TRB->(DbSkip())
 		Loop
 	EndIf
@@ -1579,7 +1579,7 @@ Do While TRB->(!Eof())
 				SZU->ZU_ROTEIRO := "X"
 			EndIf
 			SZU->ZU_PROCED  := SB1->B1_PROCED
-			SZU->ZU_UM      := SB1->B1_UM
+			SZU->ZU_UM      := Alltrim(SB1->B1_UM)
 			SZU->ZU_GRUPO   := SB1->B1_GRUPO
 			SZU->ZU_LOTEECO := SB1->B1_LE
 			SZU->ZU_LOTEMIN := SB1->B1_LM
@@ -2100,7 +2100,7 @@ Else
 EndIf
 
 cRegTxt += Space(1) + SubStr(EXT->DESCR,1,21)
-cAux :=  Transform(EXT->QUANT,IIF(SB1->B1_UM <> "PC","@E 999,999.999","@E 9,999,999"))
+cAux :=  Transform(EXT->QUANT,IIF(Alltrim(SB1->B1_UM) <> "PC","@E 999,999.999","@E 9,999,999"))
 cRegTxt += Space(4) + cAux	//2
 cRegTxt += Space(1) + Substr(EXT->PESSOA,1,15)
 If !Empty(EXT->PV)

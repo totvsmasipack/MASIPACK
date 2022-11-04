@@ -24,7 +24,7 @@ aPerIPI := getAdvFVal("SYD",{"YD_PER_IPI","YD_ICMS_RE","YD_BICMS"}, FWxFilial("S
 AADD( aProduto, { "B1_COD"    , "XM" + subs(ZN0->ZN0_FORNEC,3,4) + PADL( RIGHT( alltrim( clProdFor),9),9,"0"), nil } )
 AADD( aProduto, { "B1_DESC"   , subs( cDescProd, 1, tamSX3("B1_DESC")[1] ), nil } )
 AADD( aProduto, { "B1_TIPO"   , getMv( "ES_TPRDGEN",,"MC" ), nil } )
-AADD( aProduto, { "B1_UM"     , iif( cUM == "MI", "MH", cUM ), nil } )
+AADD( aProduto, { "B1_UM"     , iif( Alltrim(cUM) == "MI", "MH", cUM ), nil } )
 AADD( aProduto, { "B1_CC"     , getMv( "ES_CCPRDGE",,"101" ), nil } )
 AADD( aProduto, { "B1_POSIPI" , cNCM, nil } )
 AADD( aProduto, { "B1_FILIAL" , FWxFilial("SB1"), nil } )

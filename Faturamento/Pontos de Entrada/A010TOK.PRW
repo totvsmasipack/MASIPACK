@@ -302,7 +302,7 @@ Private _aArea 	  	:= GetArea()
 					
 					SB2->(DbSetOrder(1))
 					SB2->(DbSeek(xFilial("SB2")+SB1->B1_COD+"01"))
-					If Len(_aOPs) > 0 .Or. SB2->B2_QATU > 0 .Or. SB1->B1_UM == "CJ" .OR. Len(_aSC1) > 0 .OR. Len(_aSC7) > 0
+					If Len(_aOPs) > 0 .Or. SB2->B2_QATU > 0 .Or. Alltrim(SB1->B1_UM) == "CJ" .OR. Len(_aSC1) > 0 .OR. Len(_aSC7) > 0
 						If SubStr(cNumEmp,1,2) == "01"
 							_cDestino := "doc.tec@masipack.com.br"
 						EndIf
@@ -315,7 +315,7 @@ Private _aArea 	  	:= GetArea()
 							_cMsg += "Nome do usuário: " + PswRet()[1][4] + CRLF+CRLF
 						EndIf
 						
-						If SB1->B1_UM == "CJ"
+						If Alltrim(SB1->B1_UM) == "CJ"
 							_cMsg1 := _cMsg + CRLF + CRLF + "Documentaçao Técnica - Verifique o manual deste Conjunto" + CRLF
 							oMail:= EnvMail():NEW(.F.)
 							If oMail:ConnMail()

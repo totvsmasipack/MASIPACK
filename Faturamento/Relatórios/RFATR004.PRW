@@ -1304,7 +1304,7 @@ Local aItemTmp	:= {}
 	AADD(aCampos,{ "PRIORI"   ,"C",08,0 } )  // INCLUIDO POR LIZANDRA 09/05/12
 	AADD(aCampos,{ "MSPAGO"   ,"C",01,0 } )  // INCLUIDO POR LIZANDRA 25/09/12
 	AADD(aCampos,{ "DTCONCL"  ,"D",08,0 } )
-	AADD(aCampos,{ "UM"       ,"C",02,0 } )
+	AADD(aCampos,{ "UM"       ,"C",03,0 } )
 	AADD(aCampos,{ "POSPED"   ,"C",50,0 } )
 
 	aTam:=TamSX3("C5_MSPEND")
@@ -1680,7 +1680,7 @@ Local aItemTmp	:= {}
 				TRB->QTDEMP   := QR1->C6_QTDEMP 
 				TRB->QTDENT   := QR1->C6_QTDENT
 				TRB->ESTOQUE  := QR1->B2_QATU   
-				TRB->UM  	  := QR1->B1_UM
+				TRB->UM  	  := Alltrim(QR1->B1_UM)
 				TRB->VALOR    := QR1->C6_VALOR
 				TRB->PEDCLI   := QR1->C5_PC
 				//			TRB->PRIORI   := QR1->C5_MSPRIOR

@@ -276,7 +276,7 @@ Local nItem := 0
        SC7->c7_produto := cProd
        SB1->(DbSetOrder(1))
        SB1->(DbSeek(xFilial("SB1")+cProd))
-       SC7->c7_um      := sb1->b1_um
+       SC7->c7_um      := Alltrim(sb1->b1_um)
        SC7->c7_quant   := nQtde
        SC7->c7_datprf  := DATE() + 1
        SC7->c7_local   := sb1->b1_locpad

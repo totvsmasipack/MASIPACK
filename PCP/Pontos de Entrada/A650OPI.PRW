@@ -47,7 +47,7 @@ IF SUBSTR(cNumEmp,1,2) $ "01_10"
     	If Alltrim(SB1->B1_GRUPO) == "0090"    // Produtos de Terceiros (Maklaser)
 			_cRet := .T.
 		Else
-			IF Alltrim(SB1->B1_UM) $ "CJ" // .OR. (SUBSTR(SB1->B1_LOCAL,1,1) $ "U" .AND. EMPTY(SB1->B1_LM + SB1->B1_LE + SB1->B1_ESTSEG))
+			IF Alltrim(SB1->B1_UM) == "CJ" // .OR. (SUBSTR(SB1->B1_LOCAL,1,1) $ "U" .AND. EMPTY(SB1->B1_LM + SB1->B1_LE + SB1->B1_ESTSEG))
 				//	        If SC2->C2_EMISSAO > SC2->C2_DATPRI
 				//	        EndIf
 				_cRet := .T.

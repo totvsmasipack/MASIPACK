@@ -947,7 +947,7 @@ Do While TRB->(!Eof())
 		Loop
 	EndIf
 	
-	If (mv_par09 == "1" .And. _nQuant >= nEmpenho) .Or. (mv_par09 == "3" .And. (_nQuant > 0 .Or. SB1->B1_UM == "CJ"))
+	If (mv_par09 == "1" .And. _nQuant >= nEmpenho) .Or. (mv_par09 == "3" .And. (_nQuant > 0 .Or. Alltrim(SB1->B1_UM) == "CJ"))
 		TRB->(DbSkip())
 		Loop
 	EndIf
@@ -1580,7 +1580,7 @@ Do While TRB->(!Eof())
 				SZU->ZU_ROTEIRO := "X"
 			EndIf
 			SZU->ZU_PROCED  := SB1->B1_PROCED
-			SZU->ZU_UM      := SB1->B1_UM
+			SZU->ZU_UM      := Alltrim(SB1->B1_UM)
 			SZU->ZU_GRUPO   := SB1->B1_GRUPO
 			SZU->ZU_LOTEECO := SB1->B1_LE
 			SZU->ZU_LOTEMIN := SB1->B1_LM
