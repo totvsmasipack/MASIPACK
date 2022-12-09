@@ -153,7 +153,7 @@ Local oTable   := Nil
    AADD(aCampos,{ "DTENTR"  ,"D",8 ,0 } ) 
    AADD(aCampos,{ "PONTOS"  ,"N",3 ,0 } )
    AADD(aCampos,{ "RISCO"   ,"C",3 ,0 } )
-   AADD(aCampos,{ "MSPONTI" ,"N",3 ,0 } )
+   AADD(aCampos,{ "MSPONT" ,"N",3 ,0 } )
    AADD(aCampos,{ "NATUREZ" ,"C",10,0 } )
    AADD(aCampos,{ "DESCRI"  ,"C",35,0 } )
 
@@ -184,7 +184,7 @@ Local oTable   := Nil
    ENDIF  
    _cQuery := " SELECT 'E' AS TIPO, SD1.D1_DOC AS NOTAS, SD1.D1_PEDIDO AS PEDIDO, F1_RECBMTO AS EMISSAO, SD1.D1_FORNECE AS CODFOR,"
    _cQuery += " SA2.A2_NREDUZ AS NOMFOR, SD1.D1_COD AS PROD, SB1.B1_DESC AS DESCRI, SD1.D1_QUANT AS QTDE , SD1.D1_UM AS UNID,SD1.D1_LOJA AS LOJA,"
-   _cQuery += " D1_ITEM AS ITEM, D1_ITEMPC AS ITEMP,A2_NATUREZ,A2_RISCO,A2_MSPONTI"
+   _cQuery += " D1_ITEM AS ITEM, D1_ITEMPC AS ITEMP,A2_NATUREZ,A2_RISCO,A2_MSPONT"
    _cQuery += " FROM "+RetSqlName("SD1")+" SD1" 
    _cQuery += " INNER JOIN "+RetSqlName("SF1")+" SF1 ON SF1.F1_DOC = SD1.D1_DOC AND SD1.D1_FORNECE = SF1.F1_FORNECE"
    _cQuery += " INNER JOIN "+RetSqlName("SA2")+" SA2 ON SA2.A2_COD = SD1.D1_FORNECE"
@@ -211,7 +211,7 @@ Local oTable   := Nil
 
    _cQuery += " SELECT 'S' AS TIPO, SD2.D2_DOC AS NOTAS, SD2.D2_PEDIDO AS PEDIDO, SD2.D2_EMISSAO AS EMISSAO, SD2.D2_CLIENTE AS CODFOR,"
    _cQuery += " SA2.A2_NREDUZ AS NOMFOR, SD2.D2_COD AS PROD, SB1.B1_DESC AS DESCRI, SD2.D2_QUANT AS QTDE , SD2.D2_UM AS UNID,SD2.D2_LOJA AS LOJA,"
-   _cQuery += " D2_ITEM AS ITEM, D2_ITEMPV AS ITEMP,A2_NATUREZ,A2_RISCO,A2_MSPONTI"
+   _cQuery += " D2_ITEM AS ITEM, D2_ITEMPV AS ITEMP,A2_NATUREZ,A2_RISCO,A2_MSPONT"
    _cQuery += " FROM "+RetSqlName("SD2")+" SD2"
    _cQuery += " INNER JOIN "+RetSqlName("SA2")+" SA2 ON SA2.A2_COD = SD2.D2_CLIENTE"
    _cQuery += " INNER JOIN "+RetSqlName("SB1")+" SB1 ON SB1.B1_COD = SD2.D2_COD"
@@ -259,7 +259,7 @@ Local oTable   := Nil
       TRB->QTDE      := QR1->QTDE
       TRB->NATUREZ   := Alltrim(QR1->A2_NATUREZ)
       TRB->RISCO     := Alltrim(QR1->A2_RISCO)
-      TRB->MSPONTI   := QR1->A2_MSPONTI
+      TRB->MSPONT   := QR1->A2_MSPONT
       TRB->DESCRI    := QR1->DESCRI 
       
       If QR1->TIPO == "E" 
@@ -322,7 +322,7 @@ Do While ! TRB->(EOF())
       cNomeRdz 	:= TRB->NREDUZ
       cNat     	:= TRB->NATUREZ
       cRisco   	:= TRB->RISCO
-      nPontos  	:= TRB->MSPONTI
+      nPontos  	:= TRB->MSPONT
      
       Li++
       If Li > 65
