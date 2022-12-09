@@ -37,6 +37,7 @@ Private _lMarkAll := .T.
 	_cTitle		:= 'TOTVS | Alteração da Data de Entrega'
 	_cAlias		:= DefQuery(_aField)
 
+	If _cAlias <> "" //Quando clicar em cancelar na dialog dos parametros
 		_oDlg		:= CreateModal()
 		_oModal		:= _oDlg:GetPanelMain()
 
@@ -85,6 +86,7 @@ Private _lMarkAll := .T.
 		_oBrowse:Activate()
 
 		_oDlg:Activate()
+	EndIf
 
 	For _nX := 1 To Len( _aMvPar )
 		&( "mv_par" + StrZero( _nX, 2, 0 ) ) := _aMvPar[ _nX ]
@@ -189,7 +191,11 @@ Local _oTable	:= Nil
 
 	Endif
 
-	(_cTRB)->(DbCloseArea())
+	If Select(_cTRB) > 0
+		(_cTRB)->(DbCloseArea())
+	else
+		Return _cRet //Retornara caractere ""
+	EndIf
 
 Return _cRet
 
