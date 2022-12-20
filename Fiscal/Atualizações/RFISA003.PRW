@@ -126,12 +126,22 @@ IF SYD->(DbSeek(xFilial("SYD")+_cNCM))
 			SB1->B1_GRTRIB:= _cGRT
 			SB1->B1_MSNCM := "SIM"
 			SB1->(MsUnLock())
+
+			RecLock("SB5",.F.)
+			SB5->B5_INSPAT := SYD->YD_MSPORTA
+			SB5->B5_CODATIV:= SYD->YD_MSCATIV
+			SB1->(MsUnLock())
 		ELSE
 			RecLock("SB1",.F.)
 			SB1->B1_IPI   := nPercIPI
 			SB1->B1_PICM  := nPercICM
 			SB1->B1_POSIPI:= _cNCM
 			SB1->B1_GRTRIB:= _cGRT
+			SB1->(MsUnLock())
+
+			RecLock("SB5",.F.)
+			SB5->B5_INSPAT := SYD->YD_MSPORTA
+			SB5->B5_CODATIV:= SYD->YD_MSCATIV
 			SB1->(MsUnLock())
 		ENDIF
 	ELSE
