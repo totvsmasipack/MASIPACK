@@ -53,11 +53,13 @@ Local _aPosLin	:= Array(8)
 	If _aPosLin[8] > 0 .and. _aPosLin[4] > 0 
 		aCols[N][_aPosLin[8]] := aCols[N][_aPosLin[4]]
 	EndIf 
-	
+	//Retirado refresh pois após atualização de 23/01 do padrão ele passou a apagar os dados do campo quantidade.
 	//Força o refresh na lista e grade.
+	/*
 	Eval(bListRefresh)
 	Eval(bGDRefresh)
-	
+	*/
+
 	AEval(_aArea,{|x| RestArea(x) })
 
 
