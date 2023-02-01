@@ -44,6 +44,7 @@ Private _c
 Private cPerg          := "PCPA11" + Space(4)        // Parametros para gerar as OPs automaticamente
 Private _cPerg         := "RPCPA011A "   // ROTEIRO DE OPERAÇÕES
 Private _cTipo := ""
+Private cGrupoGer := SuperGetMV("MS_A650OPI",,'0090|0010')
 // mv_par01 -> Status
 // mv_par02 -> Data do Arquivo
 // mv_par03 -> Usuario
@@ -167,6 +168,7 @@ Return
 
 Static Function AtuOPs()
 
+
 If Empty(_dDataIni) .Or. Empty(_cHoraIni) .Or. Empty(_cUsuario) .Or. Empty(_cOP)
 	apmsgStop("Data Inicial, Hora Inicial, Usuario ou Numero Inicial da OP não podem estar em Brancos - Verifique")
 	_lRet := .F.
@@ -285,41 +287,45 @@ If _lRet
 			EndIf
 			_cObs := ""
 			If SB1->(DbSeek(xFilial("SB1")+QR9->ZU_PRODUTO))
-				If Alltrim(SB1->B1_UM) == "CJ"
+				If Alltrim(SB1->B1_UM) == "CJ" .and. !(Alltrim(SB1->B1_GRUPO) $ cGrupoGer) //Regirada a rejeição das ops dos grupos 0090 e 0010 conforme solicitado no projeto Custom MRP em 10/12/2022
 					_cStatus := "R"
 					_cObs    := "CJ - Unidade do Produto - Conjunto"
 					_AtuSZU()
 					QR9->(DbSkip())
 					Loop
 				Else
-					If Alltrim(SB1->B1_GRUPO) == "0090"
+				/* Retirada a rejeição das ops dos grupos 0090 e 0010 conforme solicitado no projeto Custom MRP em 10/12/2022
+					If Alltrim(SB1->B1_GRUPO) $ cGrupoGer
+				
 						_cStatus := "R"
 						_cObs    := "90 - Grupo do Produto - Terceiros"
 						_AtuSZU()
+				
 						QR9->(DbSkip())
 						Loop
 					Else
-						If SG1->(DbSeek(xFilial("SG1")+QR9->ZU_PRODUTO))
-							//Alert(SZU->ZU_PRODUTO)
-							//aAreaSZU := SZU->(GetArea())
-							MsgRun("Aguarde, Gerando OPs !!!!",, { || GeraOPs() })
-							//RestArea(aAreaSZU)
-							If Alltrim(_cOPs) <> ""
-								_cStatus := "G"
-								_cOPs    := SubStr(_cOPS,1,(Len(Alltrim(_cOps))-1))
-								_cObs    := ""
-							Else
-								_cStatus := "R"
-								_cObs    := "Ocorreu erro na Geração - Verifique Arquivo de Log"
-							EndIf
-							_AtuSZU()
+				*/					
+					If SG1->(DbSeek(xFilial("SG1")+QR9->ZU_PRODUTO))
+						//Alert(SZU->ZU_PRODUTO)
+						//aAreaSZU := SZU->(GetArea())
+						MsgRun("Aguarde, Gerando OPs !!!!",, { || GeraOPs() })
+						//RestArea(aAreaSZU)
+						If Alltrim(_cOPs) <> ""
+							_cStatus := "G"
+							_cOPs    := SubStr(_cOPS,1,(Len(Alltrim(_cOps))-1))
+							_cObs    := ""
 						Else
 							_cStatus := "R"
-							_cObs    := "Produto sem Estrutura"
-							_AtuSZU()
+							_cObs    := "Ocorreu erro na Geração - Verifique Arquivo de Log"
 						EndIf
+						_AtuSZU()
+					Else
+						_cStatus := "R"
+						_cObs    := "Produto sem Estrutura"
+						_AtuSZU()
 					EndIf
 				EndIf
+				//EndIf
 			Else
 				_cStatus := "R"
 				_cObs    := "Produto nao Cadastrado"
