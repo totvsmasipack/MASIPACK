@@ -1464,17 +1464,17 @@ Do While TRB->(!Eof())
 	QR1->(dbCloseArea())
 	/// FIM DA ALTERAÇÃO
 	
-	dDataNec  := CTOD("30/11/29")
-	dDataRem  := CTOD("30/11/29")
+	dDataNec  := CTOD("31/12/23")
+	dDataRem  := CTOD("31/12/23")
 	cLF       := ""
 	
 	ImpNecessidade()
 	
-	If DTOC(dDataRem) == "30/11/29" .Or. dDataRem >= dDataNec
+	If DTOC(dDataRem) == "31/12/23" .Or. dDataRem >= dDataNec
 		dDataRem := CTOD(Space(8))
 	EndIf
 	
-	If DTOC(dDataNec) == "30/11/29"
+	If DTOC(dDataNec) == "31/12/23"
 		dDataNec := CTOD(Space(8))
 	Else
 		dDataNec := dDataNec - 3
@@ -2039,8 +2039,8 @@ If EXT->(RecCount()) > 0
 		FWrite(cArqTxt,cRegCab+chr(13)+chr(10))
 		Li+=3
 	EndIf
-	dDataNec := CTOD("30/11/29")
-	dDataRem := CTOD("30/11/29")
+	dDataNec := CTOD("31/12/23")
+	dDataRem := CTOD("31/12/23")
 	cLF      := ""
 	Do While ! EXT->(EOF())                             
 		ImpExtrato()
@@ -2124,7 +2124,7 @@ If EXT->MOVIM <> "X"
 		EndIf
 	Else
 		If EXT->ENTREGA > dDataNec
-			dDataNec := CTOD("30/11/29")
+			dDataNec := CTOD("31/12/23")
 		EndIf
 	EndIf
 EndIf
