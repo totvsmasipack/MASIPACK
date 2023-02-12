@@ -95,12 +95,569 @@ If SubStr(cNumEmp,1,2) $ "10"  //FABRIMA
 
 	RptStatus({|| RptDetFAB()})
 	
-Else
+ElseIf  SubStr(cNumEmp,1,2) $ "01"  //MASIPACK
 	RptStatus({|| RptDetMAS()})
+
+ElseIf SubStr(cNumEmp,1,2) $ "15"  //MASITUBOS
+	RptStatus({|| RptDetHEL()})
+
+Else 
+	Alert("O relatório RFATR026 foi customizado apenas para as empresas Masipack, Fabrima e Masitubos.")
 	
 EndIf	
 
 Return(.T.)
+
+
+
+//**********************************
+Static Function RptDetHEL()
+//**********************************
+
+Local cAliICM	 := ''
+Local nLig1      := 0
+Local nColEmp    := 550
+Local nLig       := 2900
+Local lPagPrint, X
+
+Private cOrc	 := ""					//Parâmetros criados para imprimir... 
+Private cPed	 := ""               //o PEDIDO no título do Relatorio caso...
+Private cTitulo := ""               //o CJ_STATUS seja 'B' (Efetivado)
+Private nColPed := 0					   //
+Private nLig    := 0
+
+Private oFont05
+Private oFont06
+Private oFont07
+Private oFont08
+Private oFont09
+Private oFont10
+Private oFont10n
+Private oFont11
+Private oFont12
+Private oFont15
+Private oFont20
+
+Private nPag     := 1
+Private nItem    := 0
+Private oQPrint
+Private lFirst   := .T.
+Private lInicial := .F.
+Private aCausas  := {}
+Private aFichas  := {}
+Private aEtapas  := {}
+Private cFileLogo  := ""
+Private cFilOld    := cFilAnt
+Private cNomFilial := ""
+Private lTMKPMS    := If(GetMv("MV_QTMKPMS",.F.,1) == 1,.F.,.T.)//Integracao do QNC com TMK e PMS: 1-Sem integracao,2-TMKxQNC,3-QNCxPMS,4-TMKxQNCxPMS ³
+
+oFont05	:= TFont():New("Courier New",05,05,,.T.,,,,.T.,.F.)
+oFont06	:= TFont():New("Courier New",06,06,,.T.,,,,.T.,.F.)
+oFont07	:= TFont():New("Courier New",07,07,,.T.,,,,.T.,.F.)
+oFont08	:= TFont():New("Courier New",08,08,,.T.,,,,.T.,.F.)
+//oFont08 := TFont():New("Courier New",08,08,,.F.,,,,,.F.)
+oFont09 := TFont():New("Courier New",09,09,,.F.,,,,,.F.)
+oFont10	:= TFont():New("Courier New",10,10,,.F.,,,,.T.,.F.)
+oFont10n:= TFont():New("Courier New",10,10,,.T.,,,,.T.,.F.)
+oFont11 := TFont():New("Courier New",11,11,,.F.,,,,.T.,.F.)
+oFont12 := TFont():New("Courier New",12,12,,.T.,,,,,.F.)
+oFont15	:= TFont():New("Courier New",15,15,,.T.,,,,.T.,.F.)
+oFont20	:= TFont():New("Courier New",20,20,,.T.,,,,.T.,.F.)
+// 5o. Bold
+// 9o. Italico
+//10o. Underline
+
+//ÚÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄ¿
+//³ Carrega o conteudo do X3_CBOX no array                       ³
+//ÀÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÙ
+
+cFileLogo  := "LGRL"+SM0->M0_CODIGO
+If (FWModeAccess("QI2") == "C")
+	cFileLogo += Alltrim(FWCodFil())+".BMP"
+Else
+	cFileLogo += Alltrim(QI2->QI2_FILIAL)+".BMP"
+Endif
+
+If !File( cFileLogo )
+	cFileLogo := "LGRL"+SM0->M0_CODIGO+".BMP" // Empresa
+Endif
+
+//³Inicializacao do objeto grafico             ³
+oQPrint:= TMSPrinter():New("RFATR026")
+oQPrint:SetPortrait()
+oQPrint:StartPage()
+
+cOrcam := SCJ->CJ_NUM
+
+dbSelectArea("SM0")
+dbSetOrder(1)   // forca o indice na ordem certa
+//nRegistro := Recno()
+//If dbSeek(SUBS(cNumEmp,1,2)+SC7->C7_FILENT)
+If dbSeek(SUBS(cNumEmp,1,2))	
+	cNomFor  := SM0->M0_NOMECOM
+	cEndFor  := SM0->M0_ENDENT
+	cBairFor := SM0->M0_BAIRENT
+	cCidFor  := SM0->M0_CIDENT
+	cEstFor  := SM0->M0_ESTENT
+	cCepFor  := SM0->M0_CEPENT
+	cTelFor  := SM0->M0_TEL
+	cFaxFor  := SM0->M0_FAX
+	cInscFor := SM0->M0_INSC
+	cCGCFor  := SM0->M0_CGC
+EndIf
+
+cQry1 := "SELECT SUM(SCK.CK_PRUNIT*SCK.CK_QTDVEN) AS UNITARIO, SUM(SCK.CK_VALOR) AS VENDA "
+cQry1 += "FROM "+RetSqlName("SCJ")+" SCJ "
+cQry1 += "INNER JOIN "+RetSqlName("SCK")+" SCK ON SCK.CK_FILIAL = '"+xFilial("SCK")+"' AND SCK.CK_NUM = SCJ.CJ_NUM AND SCK.D_E_L_E_T_ = ' ' "
+cQry1 += "WHERE SCK.CK_NUM = '"+SCJ->CJ_NUM+"' " 
+cQry1 += "  AND SCK.CK_FILIAL = '"+xFilial("SCK")+"' AND SCJ.D_E_L_E_T_ = ' ' "
+cQry1 += "GROUP BY SCJ.CJ_NUM "
+cQry1 += "ORDER BY SCJ.CJ_NUM "
+
+TcQuery cQry1 New Alias "TMP1"
+
+dbSelectArea("TMP1")
+dbGoTop()
+
+nPrcUnit := TMP1->UNITARIO
+nPrcVend := TMP1->VENDA
+
+TMP1->(DbCloseArea())                       
+
+cQuery := "SELECT  SCJ.CJ_NUM,     SCJ.CJ_ORCAM,   SCJ.CJ_EMISSAO, SCJ.CJ_MSVEND,  SCJ.CJ_CONDPAG, SCJ.CJ_FRETE,   SCJ.CJ_CLIENTE, SCJ.CJ_LOJA, "
+cQuery += "        SCJ.CJ_STATUS,  SCJ.CJ_VALIDA,  SCJ.CJ_MSPRZEN, SCJ.CJ_MSTRANS, SCJ.CJ_MSCTATO, SCJ.CJ_MSEMAIL, " 
+cQuery += "        SCK.CK_NUM,     SCK.CK_ITEM,    SCK.CK_PRODUTO, SCK.CK_ENTREG,  SCK.CK_UM,      SCK.CK_QTDVEN,  SCK.CK_PRCVEN,  SCK.CK_VALOR,  " 
+cQuery += "        SCK.CK_VALDESC, SCK.CK_TES,     SCK.CK_PRUNIT,  SCK.CK_VALOR,   SCK.CK_MSMATCL, SCK.CK_MSCL,    SCK.CK_MSDOBRA, SCK.CK_MSPINT, "  
+cQuery += "        SCK.CK_MSSOLDA, SCK.CK_MSUSINA, SCK.CK_MSPE," 
+cQuery += "        SA1.A1_NOME,    SA1.A1_END,     SA1.A1_BAIRRO,  SA1.A1_CEP,     SA1.A1_MUN,     SA1.A1_EST,     SA1.A1_CGC,     SA1.A1_INSCR,  "
+//Ivandro Santos - 19/07/17
+////Ticket#2017071837000096 — ADICIONAR NO ORÇAMENTO INFORMAÇÕES DE ICMS REDUZIDO - MASIPACK E FABRIMA
+//Ivandro Santos - 26/10/16
+//Ticket#2016102137000031 — INCLUSÃO DE INFORMAÇÃO NO ORÇAMENTO
+//cQuery += "        SA1.A1_TEL,     SA1.A1_FAX,     SA1.A1_CONTATO, SA1.A1_EMAIL,   " 
+cQuery += "        SA1.A1_TEL,     SA1.A1_FAX,     SA1.A1_CONTATO, SA1.A1_EMAIL,   SA1.A1_TIPO,   	SB1.B1_GRTRIB, " 
+//Ivandro Santos - 04/04/17 - Início alteração
+//Ticket#2017040437000055 — RELATÓRIO DE ALTERAÇÃO DE ESTRUTURA
+//cQuery += "        CASE WHEN RTRIM(LTRIM(SB1.B1_DESCP)) = '' THEN SB1.B1_DESC ELSE SB1.B1_DESCP END 'B1_DESC',   " 
+cQuery += "        CASE WHEN RTRIM(LTRIM(SB5.B5_CEME)) = '' THEN SB1.B1_DESC ELSE SB5.B5_CEME END 'B1_DESC',   " 
+//Ticket#2017040437000055 — Fim da alteração
+cQuery += "        SB1.B1_POSIPI,  SB1.B1_GRUPO,   SB1.B1_PICM,    SB1.B1_IPI, 		ISNULL(SYD.YD_BICMS,0) [YD_BICMS],	SA3.A3_NOME,    SA3.A3_EMAIL,   SE4.E4_DESCRI   " 
+//Ticket#2016102137000031 — Fim da alteração
+cQuery += "FROM "+RetSqlName("SCJ")+" SCJ " 
+cQuery += "INNER JOIN "+RetSqlName("SCK")+" SCK ON SCK.CK_FILIAL = '"+xFilial("SCK")+"' AND SCK.CK_NUM = SCJ.CJ_NUM AND SCK.D_E_L_E_T_ = ' ' " 
+cQuery += "INNER JOIN "+RetSqlName("SA1")+" SA1 ON SA1.A1_FILIAL = '"+xFilial("SA1")+"' AND SA1.A1_COD = SCJ.CJ_CLIENTE AND SA1.A1_LOJA = SCJ.CJ_LOJA AND SA1.D_E_L_E_T_ = ' ' " 
+cQuery += "INNER JOIN "+RetSqlName("SB1")+" SB1 ON SB1.B1_FILIAL = '"+xFilial("SB1")+"' AND SB1.B1_COD = SCK.CK_PRODUTO AND SB1.D_E_L_E_T_ = ' ' " 
+cQuery += "LEFT JOIN  "+RetSqlName("SYD")+" SYD ON SYD.YD_FILIAL = '"+xFilial("SYD")+"' AND SB1.B1_POSIPI = SYD.YD_TEC AND SYD.D_E_L_E_T_ = ' ' " 
+//Ivandro Santos - 04/04/17 - início da alteração
+//Ticket#2017040437000055 — RELATÓRIO DE ALTERAÇÃO DE ESTRUTURA 
+////Ticket#2017071837000096 — Fim da alteração
+cQuery += "LEFT  JOIN "+RetSqlName("SB5")+" SB5 ON SB5.B5_FILIAL = '"+xFilial("SB5")+"' AND SB5.B5_COD = SCK.CK_PRODUTO AND SB5.D_E_L_E_T_ = ' ' " 
+//Ticket#2017040437000055 — Fim da alteração
+cQuery += "INNER JOIN "+RetSqlName("SA3")+" SA3 ON SA3.A3_FILIAL = '"+xFilial("SA3")+"' AND SA3.A3_COD = SCJ.CJ_MSVEND AND SA3.D_E_L_E_T_ = ' ' " 
+cQuery += "INNER JOIN "+RetSqlName("SE4")+" SE4 ON SE4.E4_FILIAL = '"+xFilial("SE4")+"' AND SE4.E4_CODIGO = SCJ.CJ_CONDPAG AND SE4.D_E_L_E_T_ = ' '  " 
+cQuery += "WHERE SCJ.CJ_FILIAL = '"+xFilial("SCJ")+"' AND SCJ.D_E_L_E_T_ = ' ' "
+cQuery += "  AND SCJ.CJ_NUM = '"+cOrcam+"' " 
+cQuery += "ORDER BY SCJ.CJ_NUM, SCK.CK_MSITEM " 
+
+TcQuery cQuery New Alias "TMP"
+
+TcSetField("TMP","CJ_EMISSAO","D",08,00)
+TcSetField("TMP","CK_ENTREG","D",08,00)
+TcSetField("TMP","CJ_VALIDA","D",08,00)
+
+dbSelectArea("SCJ")
+dbSetOrder(1)
+//cPedido := SCJ->CJ_NUM   
+cMSNotas  := SCJ->CJ_MSNOTAS
+
+dbSelectArea("SC5")
+//dbSetOrder(1)
+If dbSeek(xFilial("SC5")+TMP->CJ_ORCAM)
+	cPedido := SC5->C5_NUM
+Else
+    cPedido := " "
+EndIf
+
+dbSelectArea("SA4")
+dbSetOrder(1)
+If dbSeek(xFilial("SA4")+TMP->CJ_MSTRANS )
+	cTransp := SA4->A4_NOME
+Else
+    cTransp := " "
+EndIf
+
+cCondi    := TMP->CJ_CONDPAG
+cDescCond := TMP->E4_DESCRI
+cVendedor := TMP->CJ_MSVEND                 
+cCotacao  := TMP->CJ_ORCAM
+cNomVend  := TMP->A3_NOME
+cEmailVd  := TMP->A3_EMAIL
+cNomCli   := TMP->A1_NOME
+cEndCli   := TMP->A1_END
+cBairCli  := TMP->A1_BAIRRO
+cCepCli   := TMP->A1_CEP
+cCidCli   := TMP->A1_MUN
+cEstCli   := TMP->A1_EST
+cCGCCli   := TMP->A1_CGC
+cInscCli  := TMP->A1_INSCR
+cTelCli   := TMP->A1_TEL
+cFaxCli   := TMP->A1_FAX
+cContCli  := TMP->CJ_MSCTATO
+cEmailCli := TMP->CJ_MSEMAIL
+DtValida  := TMP->CJ_VALIDA
+DtEmissao := TMP->CJ_EMISSAO
+DtEntrega := TMP->CK_ENTREG
+cEntrega  := TMP->CJ_MSPRZEN
+nFrete    := TMP->CJ_FRETE
+
+If !lInicial
+	lInicial := .T.
+	oQPrint:= TMSPrinter():New( Titulo )
+	oQPrint:SetPortrait()
+	nLig := 2900
+Endif
+
+lFirst := .T.
+
+ImpCabec1()
+
+ImpItem1()	
+nTotGer := 0
+TMP->(DbGoTop())
+Do While !TMP->(EOF())      
+	//Ivandro Santos - 
+	//Ticket#2016102137000031 — INCLUSÃO DE INFORMAÇÃO NO ORÇAMENTO
+	aRefImp := MAFISRELIMP("MT100",{"SCK"})
+	MaFisIni(TMP->CJ_CLIENTE,;		// 1-Codigo Cliente/Fornecedor
+		TMP->CJ_LOJA,;				// 2-Loja do Cliente/Fornecedor
+		"C",;						// 3-C:Cliente , F:Fornecedor
+		"N",;						// 4-Tipo da NF
+		TMP->A1_TIPO,;	    		// 5-Tipo do Cliente/Fornecedor
+			aRefImp,;				// 6-Relacao de Impostos que suportados no arquivo
+			,;						// 7-Tipo de complemento
+			,;						// 8-Permite Incluir Impostos no Rodape .T./.F.
+			"SB1",;					// 9-Alias do Cadastro de Produtos - ("SBI" P/ Front Loja)
+			"MTR700")				// 10-Nome da rotina que esta utilizando a funcao
+
+	//Victor Dessunte - Ticket#2016102837000054
+	//ANTIGO - (TMP->CK_PRCVEN+TMP->CK_VALDESC)
+	//NOVO   - (TMP->CK_VALOR+TMP->CK_VALDESC)
+
+	MaFisAdd(TMP->CK_PRODUTO,; 	  	  // 1-Codigo do Produto ( Obrigatorio )
+		TMP->CK_TES,;			  // 2-Codigo do TES ( Opcional )
+		TMP->CK_QTDVEN,;		  // 3-Quantidade ( Obrigatorio )
+		TMP->CK_PRCVEN,;		  // 4-Preco Unitario ( Obrigatorio )
+		TMP->CK_VALDESC,;       			      // 5-Valor do Desconto ( Opcional )
+		,;		                  // 6-Numero da NF Original ( Devolucao/Benef )
+		,;		                  // 7-Serie da NF Original ( Devolucao/Benef )
+		,;			          		// 8-RecNo da NF Original no arq SD1/SD2
+		0,;							  		// 9-Valor do Frete do Item ( Opcional )
+		0,;							  		// 10-Valor da Despesa do item ( Opcional )
+		0,;            				  		// 11-Valor do Seguro do item ( Opcional )
+		0,;							  		// 12-Valor do Frete Autonomo ( Opcional )
+		(TMP->CK_VALOR+TMP->CK_VALDESC),;	// 13-Valor da Mercadoria ( Obrigatorio )
+		0,;							  		// 14-Valor da Embalagem ( Opiconal )
+		0,;		     				 		 // 15-RecNo do SB1
+		0) 							 		 // 16-RecNo do SF4
+	nVlrPFrt := MaFisRet(,"NF_FRETE")
+	nValIpi := MaFisRet(1,"IT_VALIPI")
+	nTotItem := MaFisRet(1,"IT_TOTAL")
+	nValSol := MaFisRet(1,"IT_VALSOL") // obtém o valor total do item calculado pela matxfis com a incidência dos impostos 
+	MaFisEnd() // FINALIZA A OPERAÇÃO E LIMPA TODOS OS ARRAYS INTERNOS DA MATXFIS	
+	nTotIpi += nValIpi
+	nTotGer += nTotItem
+	//Fecha a query antes de validar se o item tem grupo tributario
+	If Select("TMF7") > 0 
+		DbSelectArea("TMF7")
+		DbCloseArea()
+	EndIf
+
+	IF !EMPTY(TMP->B1_GRTRIB) .And. Alltrim(TMP->B1_GRTRIB) $ "001_002_007" //.AND. TMP->YD_BICMS = "S"
+		_cQryF7 := "Select F7_BASEICM, F7_ALIQINT From "+RetSQLName("SF7")+" Where F7_GRTRIB = '"+TMP->B1_GRTRIB+"' 
+		_cQryF7 += " And F7_EST = '"+TMP->A1_EST+"' And F7_FILIAL = '"+xFilial("SF7")+"' And D_E_L_E_T_ = '' "
+		
+		TcQuery _cQryF7 New Alias "TMF7"
+
+		TcSetField("TMF7","F7_BASEICM","N",05,02)
+		TcSetField("TMF7","F7_ALIQINT","N",05,02)
+		dbSelectArea("TMF7")
+		TMF7->(DbGoTop())
+		nPerRed := TMF7->F7_BASEICM
+		nIcm    := TMF7->F7_ALIQINT
+	Else
+		nPerRed := 0
+	Endif
+	//Ticket#2016102137000031 — Fim da alteração
+	////Ticket#2017071837000096 — Fim da alteração
+	nItem += 1
+	If nLin > 2070 
+		oQPrint:EndPage()
+		nPag++
+		ImpCabec1()
+		ImpItem1()
+		lFirst := .F.
+	EndIf 
+	nLin2 := nLin
+	DtEntrega := Date()
+   	DEntrega  := TMP->CK_ENTREG
+    
+	oQPrint:Say(nLin,0032,TMP->CK_ITEM,oFont08)           		            //Item
+	
+	////Ticket#2017071837000096 — ADICIONAR NO ORÇAMENTO INFORMAÇÕES DE ICMS REDUZIDO - MASIPACK E FABRIMA
+   	If SB1->(DbSeek(xFilial("SB1")+TMP->CK_PRODUTO))    
+   	
+		oQPrint:Say(nLin,0080,SUBSTR(TMP->B1_DESC,1,25),oFont08)            //Descrição    
+		
+		If !EMPTY(SUBSTR(TMP->B1_DESC,25)) 
+			nLin2 += 40
+			oQPrint:Say(nLin2,0080,SUBSTR(TMP->B1_DESC,26,25),oFont08)      //Descrição 
+		EndIf 
+		If !EMPTY(SUBSTR(TMP->B1_DESC,50)) 
+			nLin2 += 40
+			oQPrint:Say(nLin2,0080,SUBSTR(TMP->B1_DESC,51,25),oFont08)      //Descrição 
+		EndIf 
+		If !EMPTY(SUBSTR(TMP->B1_DESC,75)) 
+			nLin2 += 40
+			oQPrint:Say(nLin2,0080,SUBSTR(TMP->B1_DESC,76,25),oFont08)      //Descrição 
+		EndIf		
+	   
+	EndIf   
+	//Ivandro Santos - 26/10/16
+	//Ticket#2016102137000031 — INCLUSÃO DE INFORMAÇÃO NO ORÇAMENTO
+	oQPrint:Say(nLin,0540,TMP->CK_PRODUTO,oFont08)  //oQPrint:Say(nLin,0690,TMP->CK_PRODUTO,oFont08)           		          //Codigo
+         		          //Codigo    
+	If SB1->(DbSeek(xFilial("SB1")+TMP->CK_PRODUTO))
+		oQPrint:Say(nLin,0780,TMP->B1_POSIPI,oFont08)  //oQPrint:Say(nLin,0910,TMP->B1_POSIPI,oFont07)                                   //Classif.Fiscal
+    EndIf
+	oQPrint:Say(nLin,0940,TMP->CK_UM,oFont08)  	//oQPrint:Say(nLin,1060,TMP->CK_UM,oFont08)  //oQPrint:Say(nLin,1010,TMP->CK_UM,oFont07) //U.M.
+	oQPrint:Say(nLin,1005,Transform(TMP->CK_QTDVEN,"@E 9,999,999.99"),oFont08) 	//oQPrint:Say(nLin,1100,Transform(TMP->CK_QTDVEN,"@E 9,999.99"),oFont08) //oQPrint:Say(nLin,1150,Transform(TMP->CK_QTDVEN,"@E 9,999.99"),oFont07)             //Qtde
+	oQPrint:Say(nLin,1205,"R$ " + Alltrim(Transform(TMP->CK_PRCVEN,"@E 999,999.99")),oFont08) //	oQPrint:Say(nLin,1275,Transform(TMP->CK_PRCVEN,"@E 999,999.99"),oFont08) //oQPrint:Say(nLin,1360,Transform(TMP->CK_PRCVEN,"@E 999,999.99"),oFont07)           //V.Unitario
+	oQPrint:Say(nLin,1385,"R$ " + Alltrim(Transform(TMP->CK_VALOR,"@E 9,999,999.99")),oFont08) //	oQPrint:Say(nLin,1490,Transform(TMP->CK_VALOR,"@E 9,999,999.99"),oFont08) //oQPrint:Say(nLin,1580,Transform(TMP->CK_VALOR,"@E 9,999,999.99"),oFont07)          //Vlr.Parcial
+    nTotal  := nTotal + TMP->CK_VALOR
+    //Ticket#2016102137000031 — Fim da alteração
+	nTotDesc:= nTotDesc + ((TMP->CK_QTDVEN*TMP->CK_PRUNIT)-TMP->CK_VALOR)
+//	nTotDesc:= nTotDesc + (TMP->CK_PRUNIT-TMP->CK_PRCVEN)
+//   nTotDesc:= nTotDesc + TMP->CK_VALDESC  
+  
+	//******************************** IPI / ICMS ******************************************* 
+	nIPI := 0
+	nICM := 0
+   _cGrupo := ""
+	If SubStr(cNumEmp,1,2) <> "05"
+      SB1->(DbSetOrder(1))
+	   If SB1->(dbSeek(xFilial("SB1") + Alltrim(TMP->CK_PRODUTO)))
+	      _cGrupo := Alltrim(TMP->B1_GRUPO)   
+   	Else
+	      Alert("Produto não cadastrado: " + TMP->CK_PRODUTO)      
+ 	   EndIf     
+  	EndIf   
+
+	SF4->(DbSetOrder(1))
+	If SF4->(dbSeek(xFILIAL("SF4") + Alltrim(TMP->CK_TES)))
+	   If SF4->F4_ICM == "S" 
+	    	If cEstCli == "SP" .And. Select("TMF7") > 0
+				nICM := IIF( TMF7->F7_ALIQINT > 0, TMF7->F7_ALIQINT, SB1->B1_PICM )
+	    	ElseIf nICM == 0
+				cAliICM := GetMV('MS_ALINICM')
+				If !Empty(cAliICM)
+					nICM := Val(Substr(cAliICM,At(cEstCli,cAliICM)+2,2))
+				Endif
+			Else
+				nICM := SB1->B1_PICM
+			EndIf
+			
+		EndIf   
+   	Else
+		Alert("TES não cadastrada: " + TMP->CK_TES)
+	EndIf
+
+   	If SF4->F4_IPI == "S"
+		nIPI := SB1->B1_IPI
+	EndIf
+
+	//***************************************************************************************
+  	//Ivandro Santos - 26/10/16
+  	//Ticket#2016102137000031 — INCLUSÃO DE INFORMAÇÃO NO ORÇAMENTO
+  	oQPrint:Say(nLin,1630,Transform(nIPI,"@E 99.99"),oFont08) //  	oQPrint:Say(nLin,1750,Transform(nIPI,"@E 99.99"),oFont08) //oQPrint:Say(nLin,1860,Transform(nIPI,"@E 99.99"),oFont07)           			   	//% IPI
+    /*
+	If SF4->F4_IPI == "S"
+		  
+		If TMP->CK_PRUNIT > TMP->CK_PRCVEN
+			nTotItem := (TMP->CK_PRUNIT * TMP->CK_QTDVEN)
+			nVlrPFrt := (( nTotItem / nPrcUnit) * TMP->CJ_FRETE)
+			nValIPI := (nTotItem + nVlrPFrt) * nIPI/100
+		Else
+			nTotItem := TMP->CK_VALOR
+			nVlrPFrt := ((nTotItem / nPrcVend) * TMP->CJ_FRETE)
+			nValIPI := (nTotItem + nVlrPFrt) * nIPI/100
+		EndIf
+		
+		//nTotItem := TMP->CK_VALOR                                         
+		//nVlrPFrt := ((nTotItem / nPrcVend) * TMP->CJ_FRETE)
+		//nValIPI := (nTotItem + nVlrPFrt) * nIPI/100
+	
+		nTotIpi := nTotIpi + nValIpi
+	Else
+		nValIPI := 0
+	Endif */
+	//Ticket#2016102137000031 — Fim da alteração	 
+   nPE := TMP->CK_MSPE
+	
+	//VICTOR DESSUNTE - 09/09/2016
+	//INICIO - TICKET: 2016090937000075
+	//	oQPrint:Say(nLin,1870,Transform(nValIpi,"@E 999,999.99"),oFont08)  //oQPrint:Say(nLin,1995,Transform(nValIpi,"@E 9,999.99"),oFont07)                  	//Vlr.IPI
+	//FIM - TICKET: 2016090937000075
+	//Ivandro Santos - 26/10/16
+	//Ticket#2016102137000031 — INCLUSÃO DE INFORMAÇÃO NO ORÇAMENTO
+	oQPrint:Say(nLin,1720,"R$ " + Alltrim(Transform(nValIpi,"@E 999,999.99")),oFont08)  //oQPrint:Say(nLin,1870,Transform(nValIpi,"@E 999,999.99"),oFont08)  //oQPrint:Say(nLin,1995,Transform(nValIpi,"@E 9,999.99"),oFont07)                  	//Vlr.IPI
+	oQPrint:Say(nLin,1940,Transform(nICM,"@E 99.99"),oFont08) //	oQPrint:Say(nLin,2130,Transform(nICM,"@E 99.99"),oFont08) //oQPrint:Say(nLin,2185,Transform(nICM,"@E 99.99"),oFont07)			               	//% Icms
+	oQPrint:Say(nLin,2070,Transform(IIF(nPerRed>0,nPerRed,0),"@E 99.99"),oFont08) 
+	oQPrint:Say(nLin,2190,"R$ " + Alltrim(Transform(nValSol,"@E 99.99")),oFont08) //oQPrint:Say(nLin,2185,Transform(nICM,"@E 99.99"),oFont07)			               	//% Icms
+//   oQPrint:Say(nLin,2185,Transform(nPE,"@E 999"),oFont08)
+	//Ticket#2016102137000031 — Fim da alteração
+	////Ticket#2017071837000096 — Fim da alteração
+	_cOperacao := ""
+	If _cGrupo == "0090"
+	   _lTerc  := .T.
+		If TMP->CK_MSMATCLI == "S"
+			_cOperacao := "MP do Cliente"
+		Else
+			_cOperacao := "Nossa MP"
+		EndIf
+		If TMP->CK_MSCL == "S"
+			_cOperacao := _cOperacao + ", Corte Laser"
+		EndIf
+		If TMP->CK_MSDOBRA == "S"
+			_cOperacao := _cOperacao + ", Dobra"
+		EndIf
+		If TMP->CK_MSPINT == "S"
+			_cOperacao := _cOperacao + ", Pintura"
+		EndIf
+		If TMP->CK_MSSOLDA == "S"
+			_cOperacao := _cOperacao + ", Solda"
+		EndIf
+		If TMP->CK_MSUSINA == "S"
+			_cOperacao := _cOperacao + ", Usinagem"
+		EndIf
+		nLin+=30   				          
+		oQPrint:Say(nLin,0430,_cOperacao,oFont06)
+	EndIf
+   
+	dbSelectArea("SCL")
+	dbSetOrder(1)
+	dbSeek(xFilial("SCL")+TMP->CK_NUM+TMP->CK_ITEM,.T.)
+
+	If (SCL->CL_NUM == TMP->CK_NUM) .And. (SCL->CL_ITEMORC == TMP->CK_ITEM)
+
+		nQtd := SCL->CL_QUANT*TMP->CK_QTDVEN
+
+		oQPrint:Say(nLin,0020,"* ----->",oFont06)                        
+		oQPrint:Say(nLin,0100,SCL->CL_PRODUTO,oFont06)             				          
+		oQPrint:Say(nLin,0250,SubStr(SCL->CL_DESCRI,1,30),oFont08)                        			
+		oQPrint:Say(nLin,0350,Transform(nQtd,"@E 9,999,999.99"),oFont08)                    			
+
+	EndIf
+
+	dbSelectArea("SA7")
+	dbSetOrder(1)
+	IF dbSeek(xFilial("SA7")+TMP->CJ_CLIENTE+TMP->CJ_LOJA+TMP->CK_PRODUTO) 
+		cProdCli := SA7->A7_CODCLI
+	ENDIF	
+    nLin := nLin2
+	If !Empty(Alltrim(cProdCli))
+ 		nLin := nLin + 60
+		oQPrint:Say(nLin,080,"Cod.Cliente: "+SUBSTR(cProdCli,1,15),oFont08)      //Cod.Produto Cliente
+	EndIf
+	
+	nLin := nLin + 50
+	If nLin > 3000
+		oQPrint:EndPage()
+		//lFirst := .T.
+		nPag++
+   	ImpCabec1()
+   	ImpItem1()
+ 	EndIf   
+
+	If nLin > 2070  //.and. nPag = 1
+		nLin := 2130
+		oQPrint:Say(nLin,0040,"Continuacao...",oFont08)
+		nLin +=120 //2550
+		nLin+=70   //2750 normal - 3200 terceiro
+		oQPrint:Say(nLin,0020,Alltrim(cNomVend)+" - VENDAS",oFont11)
+		
+		nLin+=100
+		oQPrint:Say(nLin,0020,"O B S E R V A C O E S: ",oFont10)
+		
+		nLin += 80
+		oQPrint:Say (nLin,0020,"VALIDADE DO ORCAMENTO: "+DTOC(DtValida), oFont10) 
+		nLin += 60
+		oQPrint:Say (nLin,0020,"PRAZO DE ENTREGA: "+cEntrega, oFont10)   
+		nLin += 60
+		
+		//cNotas := Alltrim(TMP->CJ_MSNOTAS) 
+		cNotas := Alltrim(cMSNotas) 
+		If !Empty(cNotas)
+			nLin+=60
+			For X := 1 TO MLCOUNT(cNotas,150)
+			If nLin > 3000
+				oQPrint:EndPage()
+				lFirst := .T.
+				nPag++
+				ImpCabec1()
+		 	EndIf   
+		   	oQPrint:Say (nLin,0020, MEMOLINE(cNotas,150,X), oFont08)   
+			nLin += 60
+		    Next
+		EndIf
+	EndIf
+
+	TMP->(dbSkip())
+
+EndDo			
+
+nLin := 2130
+oQPrint:Say(nLin,0040,"Total Mercad.: R$ " + Alltrim(Transform(nTotal,"@E 999,999,999.99")),oFont07)
+oQPrint:Say(nLin,0550,"Valor do IPI.: R$ "+ Alltrim(Transform(nTotIpi,"@E 999,999.99")),oFont07)
+//Ivandro Santos - 26/10/16
+//Ticket#2016102137000031 — INCLUSÃO DE INFORMAÇÃO NO ORÇAMENTO
+//nTotGer := nTotal+nTotIpi+nFrete                             
+//Ticket#2016102137000031 — Fim da alteração
+oQPrint:Say(nLin,1450,"Total.: R$: "+Alltrim(Transform( nTotGer+nFrete,"@E 99 999,999,999.99")),oFont07)
+oQPrint:Say(nLin,1800,"Descontos aplicados.: R$: "+Alltrim(Transform(nTotDesc,"@E 999,999.99")),oFont07)
+oQPrint:Say(nLin,1000,"Valor do Frete.:  R$: "+Alltrim(Transform(nFrete,"@E 999,999.99")),oFont07)
+
+nLin += 120 //2550
+
+nLin+=70   //2750 normal - 3200 terceiro
+oQPrint:Say(nLin,0020,Alltrim(cNomVend)+" - VENDAS",oFont11)	
+
+ImpVenc2()
+
+Set Device to Screen
+Set Printer To
+dbCommitAll()
+
+DbSelectArea("SCJ")
+DbSetOrder(1)
+DbSelectArea("SC5")
+DbSetOrder(1)
+DbSelectArea("SA4")
+DbSetOrder(1)
+DbSelectArea("SCL")
+DbSetOrder(1)
+DbSelectArea("SA7")
+DbSetOrder(1)
+
+oQPrint:EndPage() 
+oQPrint:Setup() 
+oQPrint:Preview()
+oQPrint:End()
+
+TMP->(DbCloseArea())                                           
+
+MS_FLUSH()
+
+Return()
 
 //**********************************
 	Static Function RptDetFAB()
@@ -1473,8 +2030,13 @@ oQPrint:Say(320,1220,cNomFor,oFont12)
 
 nLin := 400
 oQPrint:Say(nLin,50,Alltrim(cEndCli)+" - "+Alltrim(cBairCli),oFont09)
-oQPrint:Say(nLin,1220,Alltrim(cEndFor)+" - "+Alltrim(cBairFor),oFont09)
-
+If SubStr(cNumEmp,1,2) $ "15"  //MASITUBOS
+	oQPrint:Say(nLin,1220,Alltrim(cEndFor)+" - ",oFont09)
+	nLin +=50  
+	oQPrint:Say(nLin,1220,Alltrim(cBairFor),oFont09)
+Else 
+	oQPrint:Say(nLin,1220,Alltrim(cEndFor)+" - "+Alltrim(cBairFor),oFont09)
+EndIf 
 nLin +=50  //350
 oQPrint:Say(nLin,50,+"Cidade: "+Alltrim(cCidCli)+" - "+Alltrim(cEstCli)+" - CEP: "+Transform(cCepCli,"@R 99999-999"),oFont09)
 oQPrint:Say(nLin,1220,+"Cidade: "+Alltrim(cCidFor)+" - "+Alltrim(cEstFor)+" - CEP: "+Transform(cCepFor,"@R 99999-999"),oFont09)
@@ -1503,8 +2065,11 @@ Else
    oQPrint:Say(nLin,1220,"CNPJ: "+SubStr(cCGCFor,1,2)+"."+SubStr(cCGCFor,3,3)+"."+SubStr(cCGCFor,6,3)+"/"+SubStr(cCGCFor,9,4)+"-"+SubStr(cCGCFor,13,2),oFont09)
 EndIf
 
-nLin +=100 //600
-
+If SubStr(cNumEmp,1,2) $ "15"  //MASITUBOS
+	nLin +=50 //600
+Else
+	nLin +=100 //600
+EndIf 
 If cNomVend <> " "
 	If cCotacao <> " "
 		oQPrint:Say(nLin,   50,"Contato: "+Alltrim(cContCli)+" - S/Pedido: "+Alltrim(cCotacao),oFont09)
@@ -1740,6 +2305,159 @@ Else
 	//Ticket#2016102137000031 — Fim da alteração
 	oQPrint:Say (nLin,0020,"Confirmacao de Compra: Em caso de aprovacao, favor informar o(s) numero(s) do(s) orcamento(s) aprovados(s).",oFont10)    
 	nLin+=70 
+EndIf
+			
+Return
+
+
+
+/**************************************************/
+Static Function ImpVenc2()  //Orçamento MASITUBOS
+/**************************************************/
+
+Local X
+If _lTerc
+   nLin+=60   //2740
+   
+	If nLin > 3000
+		oQPrint:EndPage()
+		lFirst := .T.
+		nPag++
+		ImpCabec1()
+	EndIf   
+   
+   oQPrint:Say(nLin,0020,"* A matéria-prima, quando fornecida pelo cliente, deverá ter no máximo 2m X 4m;",oFont09)
+   nLin+=30
+   oQPrint:Say(nLin,0020,"* No caso de chapa em aço carbono, quando fornecida pelo cliente, deverá ser",oFont09)
+   nLin+=30
+   oQPrint:Say(nLin,0020,"  decapada e oleada;",oFont09)
+   nLin+=30
+   oQPrint:Say(nLin,0020,"* Furos escareados, roscados, laterais chanfradas ou com inclinações angulares",oFont09)
+   nLin+=30
+   oQPrint:Say(nLin,0020,"  no sentido da chapa, não são executados pelo processo de corte a laser;",oFont09)
+   nLin+=30
+   oQPrint:Say(nLin,0020,"* Os diâmetros dos furos devem ter no mínimo a medida da espessura da chapa",oFont09)
+   nLin+=30
+   oQPrint:Say(nLin,0020,"  para que possam ser executados, caso contrário, os mesmos só serão marcados;",oFont09)
+   nLin+=30
+   oQPrint:Say(nLin,0020,"* Tolerância de corte: +/- 0,1mm. As tolerâncias não atendidas pelo processo",oFont09)
+   nLin+=30
+   oQPrint:Say(nLin,0020,"  a laser serão cortadas com sobre-metal;",oFont09)
+   nLin+=30
+   oQPrint:Say(nLin,0020,"* O cliente deverá enviar o desenho em padrão DXF, desenvolvidos quando houver",oFont09)
+   nLin+=30
+   oQPrint:Say(nLin,0020,"  dobra, caso contrário, será cobrado o desenvolvimento do desenho.",oFont09)
+   nLin+=60
+   oQPrint:Say(nLin,0020,"* Não aceitaremos pedidos com valor inferior à R$ 500,00 (Quinhentos reais)",oFont09) 
+   nLin+=30
+EndIf   
+    
+nLin+=100
+oQPrint:Say(nLin,0020,"O B S E R V A C O E S: ",oFont10)
+//Ivandro Santos - 26/10/16
+//Ticket#2016102137000031 — INCLUSÃO DE INFORMAÇÃO NO ORÇAMENTO
+oQPrint:Say(nLin,0850,"*",oFont12)
+nLin-=8
+oQPrint:Say(nLin,0870,Replicate("-",52),oFont12)
+nLin+=8
+oQPrint:Say(nLin,2220,"*",oFont12)
+nLin+=50
+oQPrint:Say(nLin,0850,"|",oFont12)
+oQPrint:Say(nLin,0870,"  D E F I N I R   T R A N S P O R T A D O R   N A",oFont12)
+oQPrint:Say(nLin,2220,"|" ,oFont12)
+nLin+=50             
+oQPrint:Say(nLin,0850,"|",oFont12)
+oQPrint:Say(nLin,0870,"    C O N F I R M A Ç Ã O   D O   P E D I D O",oFont12)
+oQPrint:Say(nLin,2220,"|",oFont12)
+nLin+=50
+oQPrint:Say(nLin,0850,"*",oFont12)
+oQPrint:Say(nLin,0870,Replicate("-",52),oFont12)
+oQPrint:Say(nLin,2220,"*",oFont12)
+nLin -= 70                     
+oQPrint:Say (nLin,0020,"VALIDADE DO ORCAMENTO: "+DTOC(DtValida), oFont10) 
+nLin+=60
+oQPrint:Say (nLin,0020,"PRAZO DE ENTREGA: "+cEntrega, oFont10)
+//nLin+=80
+//Ticket#2016102137000031 — Fim da alteração
+//cNotas := Alltrim(TMP->CJ_MSNOTAS) 
+cNotas := Alltrim(cMSNotas) 
+If !Empty(cNotas)
+	nLin+=60
+	For X := 1 TO MLCOUNT(cNotas,150)
+	If nLin > 3000
+		oQPrint:EndPage()
+		lFirst := .T.
+		nPag++
+		ImpCabec1()
+ 	EndIf   
+   	oQPrint:Say (nLin,0020, MEMOLINE(cNotas,150,X), oFont08)   
+	nLin += 60
+    Next
+EndIf
+ 
+If nLin > 3000
+	oQPrint:EndPage()
+	lFirst := .T.
+	nPag++
+	ImpCabec1()
+    
+	nLin := 1000 
+	oQPrint:Say (nLin,0020,"Sr. Cliente, segue abaixo nossas políticas de venda e entrega:", oFont08)  
+	nLin+=80
+	oQPrint:Say (nLin,0020,"1. Prazo de entrega: 20 dias do pedido ou conforme combinado com o cliente, passível de",oFont08)
+	nLin+=45 
+	oQPrint:Say (nLin,0020,"antecipação, dependendo da capacidade produtiva no período de em questão.",oFont08)
+	nLin+=45 
+	oQPrint:Say (nLin,0020,"2. Validade: O Orçamento é válido 20 dias a contar da data de emissão. ",oFont08)  
+	nLin+=45 
+	oQPrint:Say (nLin,0020,"3. Valores e condição de pagamento: Os valores são válidos para o fechamento total deste orçamento. Em caso de ",oFont08) 
+	nLin+=45 
+	oQPrint:Say (nLin,0020,"aprovação parcial ou alteração na(s) quantidade(s), valor e a condição de pagamento estão sujeitos a alterações.",oFont08)
+	nLin+=45 
+	oQPrint:Say (nLin,0020,"4. APROVAÇÃO: PARA DAR ANDAMENTO NO PROCESSO É INDISPENSÁVEL QUE O CLIENTE FAÇA",oFont08)    
+	nLin+=45 
+	oQPrint:Say (nLin,0020,"A APROVAÇÃO FORMAL DO ORÇAMENTO (PEDIDO DE COMPRA; E-MAIL; CONTRATO).",oFont08)    
+	nLin+=45 
+	oQPrint:Say (nLin,0020,"5. Valor mínimo de faturamento: R$ 300,00 (Trezentos Reais). Para valores abaixo o pagamento deverá ser realizado à vista.",oFont08)    
+	nLin+=45 
+	oQPrint:Say (nLin,0020,"6. Classificação Fiscal: Necessário cliente confirmar classificações apresentadas para não",oFont08)    
+	nLin+=45 
+	oQPrint:Say (nLin,0020,"ocorrer divergências na emissão da nota fiscal.",oFont08)    
+	nLin+=45 
+	oQPrint:Say (nLin,0020,"7. Horário para realização de coleta/retirada: Segunda a sexta das 7:30 as 16:30 (pausa almoço das 12:00 as 13:00).",oFont08)    
+	nLin+=45 
+	oQPrint:Say (nLin,0020,"8. DEVOLUÇÃO DE MERCADORIAS: SOMENTE MEDIANTE AUTORIZAÇÃO FORMAL DE NOSSA PARTE, DO CONTRÁRIO O CLIENTE ",oFont08)    
+	nLin+=45 
+	oQPrint:Say (nLin,0020,"TEM CIENCIA QUE SERÁ RESPONSABILIDADE E COBRADO POR QUAISQUER CUSTOS/DESPESAS ENVOLVIDOS.",oFont08)    
+Else
+	nLin += 100
+	oQPrint:Say (nLin,0020,"Sr. Cliente, segue abaixo nossas políticas de venda e entrega:", oFont08)  
+	nLin+=80
+	oQPrint:Say (nLin,0020,"1. Prazo de entrega: 20 dias do pedido ou conforme combinado com o cliente, passível de",oFont08)
+	nLin+=45 
+	oQPrint:Say (nLin,0020,"antecipação, dependendo da capacidade produtiva no período de em questão.",oFont08)
+	nLin+=45 
+	oQPrint:Say (nLin,0020,"2. Validade: O Orçamento é válido 20 dias a contar da data de emissão. ",oFont08)  
+	nLin+=45 
+	oQPrint:Say (nLin,0020,"3. Valores e condição de pagamento: Os valores são válidos para o fechamento total deste orçamento. Em caso de ",oFont08) 
+	nLin+=45 
+	oQPrint:Say (nLin,0020,"aprovação parcial ou alteração na(s) quantidade(s), valor e a condição de pagamento estão sujeitos a alterações.",oFont08)
+	nLin+=45 
+	oQPrint:Say (nLin,0020,"4. APROVAÇÃO: PARA DAR ANDAMENTO NO PROCESSO É INDISPENSÁVEL QUE O CLIENTE FAÇA",oFont08)    
+	nLin+=45 
+	oQPrint:Say (nLin,0020,"A APROVAÇÃO FORMAL DO ORÇAMENTO (PEDIDO DE COMPRA; E-MAIL; CONTRATO).",oFont08)    
+	nLin+=45 
+	oQPrint:Say (nLin,0020,"5. Valor mínimo de faturamento: R$ 300,00 (Trezentos Reais). Para valores abaixo o pagamento deverá ser realizado à vista.",oFont08)    
+	nLin+=45 
+	oQPrint:Say (nLin,0020,"6. Classificação Fiscal: Necessário cliente confirmar classificações apresentadas para não",oFont08)    
+	nLin+=45 
+	oQPrint:Say (nLin,0020,"ocorrer divergências na emissão da nota fiscal.",oFont08)    
+	nLin+=45 
+	oQPrint:Say (nLin,0020,"7. Horário para realização de coleta/retirada: Segunda a sexta das 7:30 as 16:30 (pausa almoço das 12:00 as 13:00).",oFont08)    
+	nLin+=45 
+	oQPrint:Say (nLin,0020,"8. DEVOLUÇÃO DE MERCADORIAS: SOMENTE MEDIANTE AUTORIZAÇÃO FORMAL DE NOSSA PARTE, DO CONTRÁRIO O CLIENTE ",oFont08)    
+	nLin+=45 
+	oQPrint:Say (nLin,0020,"TEM CIENCIA QUE SERÁ RESPONSABILIDADE E COBRADO POR QUAISQUER CUSTOS/DESPESAS ENVOLVIDOS.",oFont08)    
 EndIf
 			
 Return
