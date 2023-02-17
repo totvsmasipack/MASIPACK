@@ -61,6 +61,7 @@ Local nDias     := 3
 Local cAssunto  := "PEDLIB"
 Local _cTitulo	:= ""
 Local _cDestino	:= ""
+Local _cComCopia := ""
 Local _cEmail	:= ""
 Local _chtml	:= ""
 Local oMail
@@ -177,13 +178,15 @@ Default dDataBase	:= DATE()
 	_cEmail := ""
 	If cEmpAnt == "01"
 		_cTitulo  := "Conclusao de Pedido pela Montagem (MASIPACK)"
-		_cDestino := Alltrim(GetMV("MS_CMQ01")) + Alltrim(GetMV("MS_CMQ02")) + Alltrim(GetMV("MS_CMQ03"))
+		_cDestino := Alltrim(GetMV("MS_CMQ01"))
+		_cComCopia := Alltrim(GetMV("MS_CMQ02")) + Alltrim(GetMV("MS_CMQ03"))
 		IF Alltrim(SA1->A1_NREDUZ) == "FABRIMA"
-			_cDestino +=	Alltrim(GetMV("MS_CMQ04")) + Alltrim(GetMV("MS_CMQ05"))
+			_cComCopia +=	Alltrim(GetMV("MS_CMQ04")) + Alltrim(GetMV("MS_CMQ05")) 
 		ENDIF                                                                                                                                   
 	ElseIf cEmpAnt == "10"
 		_cTitulo  := "Conclusao de Pedido pela Montagem (FABRIMA)"
-		_cDestino := Alltrim(GetMV("MS_CMQ01")) + Alltrim(GetMV("MS_CMQ02")) + Alltrim(GetMV("MS_CMQ03")) + Alltrim(GetMV("MS_CMQ04"))
+		_cDestino := Alltrim(GetMV("MS_CMQ01"))
+		_cComCopia := Alltrim(GetMV("MS_CMQ02")) + Alltrim(GetMV("MS_CMQ03")) + Alltrim(GetMV("MS_CMQ04")) + Alltrim(GetMV("MS_CMQ05"))
 	EndIf
 
 	If Alltrim(SA1->A1_EST) == "EX"
@@ -223,7 +226,7 @@ Default dDataBase	:= DATE()
 
 	oMail := EnvMail():NEW(.F.)
 	If oMail:ConnMail()
-		If oMail:SendMail(_cTitulo,_cDestino,,,_chtml)
+		If oMail:SendMail(_cTitulo,_cDestino,_cComCopia,,_chtml)
 			IncProc()
 			SC5->(DbSetOrder(1))
 			If SC5->(DbSeek(xFilial("SC5") + MV_PAR01))	
