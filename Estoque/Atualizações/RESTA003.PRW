@@ -194,20 +194,19 @@ User Function RESTA003()
 		oGet02 := TGet():New(015,045,{|u| If(PCount() > 0, cCodSet := u, cCodSet) },_oDlg1,030,008,"@!",{|| NAOVAZIO() .AND. ExistCpo('SHB',cCodSet,1) .AND. ValidaSetor() },CLR_BLACK,CLR_WHITE,,.F.,,.T.,,.F.,,.F.,.F.,{|| .T. },.F.,.F.,,'cCodSet',,,,.T.,,,)
         oGet02:cF3 := 'SHB_1'
 
-		@ 015,080 Get 	  		cSetor 		WHEN .F.								 															Size 100,008
-		@ 030,045 Get			cRecurso		WHEN .F.																							Size 135,008
+		@ 015,080 Get 	  		cSetor 		WHEN .F.								 														Size 100,008
+		@ 030,045 Get			cRecurso		WHEN .F.																					Size 135,008
 		@ 045,075 ComboBox 	cCaminho		Items aCaminho								  						  							Size 105,008 OBJECT oCaminho
-		@ 060,075 Get 	  		cProg 		Valid ValidaProg()	Picture "@!"			 						  					Size 045,008 OBJECT oProg
-		@ 075,075 ComboBox 	_cPrat 		Items _aPrat														  							Size 045,008 OBJECT oPrat
+		@ 060,075 Get 	  		cProg 		Valid ValidaProg()	Picture "@!"			 						  							Size 045,008 OBJECT oProg
+		@ 075,075 ComboBox 	_cPrat 		Items _aPrat														  								Size 045,008 OBJECT oPrat
 		@ 090,075 Get 	 		_cPosic												   							 							Size 045,008 OBJECT oPosic
 		@ 120,075 Get 	 		_cNumOP		Valid ValidaOP()						 							  				  			Size 055,008 OBJECT oOP
-		@ 135,075 Get 	 		nQtde 		Valid ValidaQtde()	Picture "@E 9999" 		 					  					Size 035,008
-		@ 150,075 Get			_cCod			WHEN .F.																							Size 050,008 OBJECT _oCod
-		@ 165,075 Get			_cDescric	WHEN .F.																							Size 110,008 OBJECT _oDescr
-		@ 180,075 Get 	 		cTE 						 				Picture "@!" 			When ("TRAT.EXTERNO" $ cSetor .OR. "AGUARD MP" $ cSetor )	Size 070,008
-		@ 195,075 Get 			_dtIni		Valid ValidaDI() 						 			When _lAltDt			  	  			Size 045,008 OBJECT oDini
-		@ 210,075 Get 			_dtFim		Valid ValidaDF() 						 			When _lAltDt				 			Size 045,008 OBJECT oDfim
-
+		@ 135,075 Get 	 		nQtde 		Valid ValidaQtde()	Picture "@E 9999" 		 					  								Size 035,008
+		@ 150,075 Get			_cCod			WHEN .F.																					Size 050,008 OBJECT _oCod
+		@ 165,075 Get			_cDescric	WHEN .F.																						Size 110,008 OBJECT _oDescr
+		@ 180,075 Get 	 		cTE 						 	Picture "@!"                    When ("TRAT.EXTERNO" $ cSetor .OR. "AGUARD MP" $ cSetor .OR. (_cUsuario $ SuperGetMv("MS_ALTTRAT",,"")))	Size 070,008 // CAMPO TRATAMENTO EXTERNO
+		@ 195,075 Get 			_dtIni		Valid ValidaDI() 						 			When _lAltDt			  	  		   		Size 045,008 OBJECT oDini
+		@ 210,075 Get 			_dtFim		Valid ValidaDF() 						 			When _lAltDt				 				Size 045,008 OBJECT oDfim
 		@ 225,075 MsGet _cSetup PICTURE _cPict	When _lAltTem	Size 045,008 PIXEL OF _oDlg1 VALID RTA03B(_cSetup)
 		@ 240,075 MsGet _cTempo PICTURE _cPict	When _lAltTem	Size 045,008 PIXEL OF _oDlg1 VALID RTA03B(_cTempo)
 		@ 255,075 MsGet _nMao   PICTURE "99"	When _lAltMao	Size 045,008 PIXEL OF _oDlg1
