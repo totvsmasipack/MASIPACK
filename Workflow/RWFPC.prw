@@ -329,18 +329,23 @@ Local oMail, oHtml
 			If Substr(cEmpAnt,1,2) == "01"
 				oMail:NewTask( "PEDCOM01", "\WORKFLOW\MODELOS\PC\PCEnvio.htm" )
 				oMail:cSubject := "MASIPACK - Pedido de Compras Nr. " + SC7->C7_NUM + IF(MV_PAR07 == 2,' - EM ATRASO','')
+				oMail:cFromName := "Protheus Masipack"
 			ElseIf Substr(cEmpAnt,1,2) $ "10|11"
 				oMail:NewTask( "PEDCOM01", "\WORKFLOW\MODELOS\PC\PC_Fabrima.htm" )
 				oMail:cSubject := "FABRIMA - Pedido de Compras Nr. " + SC7->C7_NUM + IF(MV_PAR07 == 2,' - EM ATRASO','')
+			    oMail:cFromName := "Protheus Fabrima"
 			ElseIf Substr(cEmpAnt,1,2) == "15"
 				oMail:NewTask( "PEDCOM01", "\WORKFLOW\MODELOS\PC\PCHelsim.html" )
 				oMail:cSubject := "MASITUBOS - Pedido de Compras Nr. " + SC7->C7_NUM + IF(MV_PAR07 == 2,' - EM ATRASO','')
+			    oMail:cFromName := "Protheus Masitubos"
 			ElseIf Substr(cEmpAnt,1,2) == "40"
 				oMail:NewTask( "PEDCOM01", "\WORKFLOW\MODELOS\PC\PCLabortub.htm" )
 				oMail:cSubject := "LABORTUBE - Pedido de Compras Nr. " + SC7->C7_NUM
+			    oMail:cFromName := "Protheus Labortube"
 			ElseIf Substr(cEmpAnt,1,2) == "45"
 				oMail:NewTask( "PEDCOM01", "\WORKFLOW\MODELOS\PC\PCMemb.htm" )
 				oMail:cSubject := "MEMB - Pedido de Compras Nr. " + SC7->C7_NUM
+			    oMail:cFromName := "Protheus MEMB"
 			Endif
 			
 			If lIntComp	// Pedido InterCompany
