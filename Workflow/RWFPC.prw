@@ -436,8 +436,7 @@ Local oMail, oHtml
 					
 					AADD( (oHtml:ValByName( "T1.4"	))	,SC7->C7_UM)
 					AADD( (oHtml:ValByName( "T1.5"	))	,Transform(Round(SC7->(C7_QUANT - C7_QUJE),2),"@E 999,999,999.99"))
-					AADD( (oHtml:ValByName( "T1.6"	))	,cMoeda + Transform(Round(SC7->C7_PRECO,2),"@E 9,999,999.999999"))
-					
+					AADD( (oHtml:ValByName( "T1.6"	))	,cMoeda + Transform(Round(SC7->C7_PRECO,4),"@E 9,999,999.999999"))
 					AADD( (oHtml:ValByName( "T1.7"	))	,Transform(SC7->C7_IPI,"@E 999.99"))
 					AADD( (oHtml:ValByName( "T1.8"	))	,cMoeda + Transform(SC7->(((((C7_QUANT - C7_QUJE) * C7_PRECO) + C7_VALFRE) * C7_IPI) / 100),"@E 999,999,999.99"))
 					AADD( (oHtml:ValByName( "T1.9"	))	,cMoeda + Transform(SC7->(((C7_QUANT - C7_QUJE) * C7_PRECO)),"@E 999,999,999.99"))
