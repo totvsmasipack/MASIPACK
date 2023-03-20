@@ -430,7 +430,7 @@ Do While !TMP->(EOF())
 		oQPrint:Say(nLin,0780,TMP->B1_POSIPI,oFont08)  //oQPrint:Say(nLin,0910,TMP->B1_POSIPI,oFont07)                                   //Classif.Fiscal
     EndIf
 	oQPrint:Say(nLin,0940,TMP->CK_UM,oFont08)  	//oQPrint:Say(nLin,1060,TMP->CK_UM,oFont08)  //oQPrint:Say(nLin,1010,TMP->CK_UM,oFont07) //U.M.
-	oQPrint:Say(nLin,1005,Transform(TMP->CK_QTDVEN,"@E 9,999,999.99"),oFont08) 	//oQPrint:Say(nLin,1100,Transform(TMP->CK_QTDVEN,"@E 9,999.99"),oFont08) //oQPrint:Say(nLin,1150,Transform(TMP->CK_QTDVEN,"@E 9,999.99"),oFont07)             //Qtde
+	oQPrint:Say(nLin,985,Transform(TMP->CK_QTDVEN,"@E 9,999,999.99"),oFont08) 	//oQPrint:Say(nLin,1100,Transform(TMP->CK_QTDVEN,"@E 9,999.99"),oFont08) //oQPrint:Say(nLin,1150,Transform(TMP->CK_QTDVEN,"@E 9,999.99"),oFont07)             //Qtde
 	oQPrint:Say(nLin,1205,"R$ " + Alltrim(Transform(TMP->CK_PRCVEN,"@E 999,999.99")),oFont08) //	oQPrint:Say(nLin,1275,Transform(TMP->CK_PRCVEN,"@E 999,999.99"),oFont08) //oQPrint:Say(nLin,1360,Transform(TMP->CK_PRCVEN,"@E 999,999.99"),oFont07)           //V.Unitario
 	oQPrint:Say(nLin,1385,"R$ " + Alltrim(Transform(TMP->CK_VALOR,"@E 9,999,999.99")),oFont08) //	oQPrint:Say(nLin,1490,Transform(TMP->CK_VALOR,"@E 9,999,999.99"),oFont08) //oQPrint:Say(nLin,1580,Transform(TMP->CK_VALOR,"@E 9,999,999.99"),oFont07)          //Vlr.Parcial
     nTotal  := nTotal + TMP->CK_VALOR
@@ -478,7 +478,7 @@ Do While !TMP->(EOF())
 	//***************************************************************************************
   	//Ivandro Santos - 26/10/16
   	//Ticket#2016102137000031 — INCLUSÃO DE INFORMAÇÃO NO ORÇAMENTO
-  	oQPrint:Say(nLin,1630,Transform(nIPI,"@E 99.99"),oFont08) //  	oQPrint:Say(nLin,1750,Transform(nIPI,"@E 99.99"),oFont08) //oQPrint:Say(nLin,1860,Transform(nIPI,"@E 99.99"),oFont07)           			   	//% IPI
+  	oQPrint:Say(nLin,1620,Transform(nIPI,"@E 99.99"),oFont08) //  	oQPrint:Say(nLin,1750,Transform(nIPI,"@E 99.99"),oFont08) //oQPrint:Say(nLin,1860,Transform(nIPI,"@E 99.99"),oFont07)           			   	//% IPI
     /*
 	If SF4->F4_IPI == "S"
 		  
@@ -512,7 +512,7 @@ Do While !TMP->(EOF())
 	oQPrint:Say(nLin,1720,"R$ " + Alltrim(Transform(nValIpi,"@E 999,999.99")),oFont08)  //oQPrint:Say(nLin,1870,Transform(nValIpi,"@E 999,999.99"),oFont08)  //oQPrint:Say(nLin,1995,Transform(nValIpi,"@E 9,999.99"),oFont07)                  	//Vlr.IPI
 	oQPrint:Say(nLin,1940,Transform(nICM,"@E 99.99"),oFont08) //	oQPrint:Say(nLin,2130,Transform(nICM,"@E 99.99"),oFont08) //oQPrint:Say(nLin,2185,Transform(nICM,"@E 99.99"),oFont07)			               	//% Icms
 	oQPrint:Say(nLin,2070,Transform(IIF(nPerRed>0,nPerRed,0),"@E 99.99"),oFont08) 
-	oQPrint:Say(nLin,2190,"R$ " + Alltrim(Transform(nValSol,"@E 99.99")),oFont08) //oQPrint:Say(nLin,2185,Transform(nICM,"@E 99.99"),oFont07)			               	//% Icms
+	oQPrint:Say(nLin,2180,"R$ " + Alltrim(Transform(nValSol,"@E 99.99")),oFont08) //oQPrint:Say(nLin,2185,Transform(nICM,"@E 99.99"),oFont07)			               	//% Icms
 //   oQPrint:Say(nLin,2185,Transform(nPE,"@E 999"),oFont08)
 	//Ticket#2016102137000031 — Fim da alteração
 	////Ticket#2017071837000096 — Fim da alteração
