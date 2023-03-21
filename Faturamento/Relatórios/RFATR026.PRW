@@ -435,9 +435,9 @@ Do While !TMP->(EOF())
 	oQPrint:Say(nLin,1385,"R$ " + Alltrim(Transform(TMP->CK_VALOR,"@E 9,999,999.99")),oFont08) //	oQPrint:Say(nLin,1490,Transform(TMP->CK_VALOR,"@E 9,999,999.99"),oFont08) //oQPrint:Say(nLin,1580,Transform(TMP->CK_VALOR,"@E 9,999,999.99"),oFont07)          //Vlr.Parcial
     nTotal  := nTotal + TMP->CK_VALOR
     //Ticket#2016102137000031 — Fim da alteração
-	nTotDesc:= nTotDesc + ((TMP->CK_QTDVEN*TMP->CK_PRUNIT)-TMP->CK_VALOR)
+//	nTotDesc:= nTotDesc + ((TMP->CK_QTDVEN*TMP->CK_PRUNIT)-TMP->CK_VALOR)
 //	nTotDesc:= nTotDesc + (TMP->CK_PRUNIT-TMP->CK_PRCVEN)
-//   nTotDesc:= nTotDesc + TMP->CK_VALDESC  
+    nTotDesc:= nTotDesc + TMP->CK_VALDESC  
   
 	//******************************** IPI / ICMS ******************************************* 
 	nIPI := 0
