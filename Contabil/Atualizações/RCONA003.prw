@@ -146,7 +146,7 @@ Private lSubLote    := .T.
 							{'CT2_VALOR'  , Iif(Alltrim(aDataImp[2]) == "4", 0, nValor)                         , NIL},;
 							{'CT2_ORIGEM' ,"RCONA003 - " + cUserName                                            , NIL},;
 							{'CT2_HP'     ,''                                                                   , NIL},;
-							{'CT2_CONVER' ,'11'                                                                 , NIL},;
+							{'CT2_CONVER' ,'1'                                                                 , NIL},;
 							{'CT2_HIST'   ,Alltrim(aDataImp[6])                                                 , NIL} })
 						
 						IncProc("Analisando registro " + cLinha + " de " + cValToChar(FT_FLastRec()) + "...")
@@ -169,7 +169,7 @@ Private lSubLote    := .T.
 			For nAux := 1 To Len(aLogAuto)
 				cLogTxt += aLogAuto[nAux] +CRLF
 			Next
-			MEMOWRITE( cArquivo, cLogTxt )
+			
             lMsErroAuto := .F.
             MostraErro()
         Else
