@@ -165,13 +165,12 @@ Private lSubLote    := .T.
 		MSExecAuto({|x, y,z| CTBA102(x,y,z)}, aCab ,aItens, 3)
 
 		If lMsErroAuto
+			MostraErro()
 			aLogAuto := GetAutoGRLog()
 			For nAux := 1 To Len(aLogAuto)
 				cLogTxt += aLogAuto[nAux] +CRLF
 			Next
-			
-            lMsErroAuto := .F.
-            MostraErro()
+			lMsErroAuto := .F.
         Else
 			MsgInfo("Importação finalizada com "+cLinha+" Lancamentos","Fim")
 		EndIf
