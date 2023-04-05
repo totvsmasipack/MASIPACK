@@ -415,19 +415,15 @@ Local oMail, oHtml
 					AADD( (oHtml:ValByName( "T1.2" 	))	,SC7->C7_PRODUTO)
 
 					SB1->(DbSeek( FWxFilial("SB1") + PadR(SC7->C7_PRODUTO, TamSX3('B1_COD')[1]) ))
-					If ! (FwCodEmp() == "15")
+					SB5->(DbSeek( FWxFilial("SB5") + PadR(SC7->C7_PRODUTO, TamSX3('B5_COD')[1]) ))
+					
+					cDesc	:= IIF( SB5->(FOUND()) .AND. !Empty(SB5->B5_CEME), ALLTRIM(SB5->B5_CEME), ALLTRIM(SB1->B1_DESC) )
 						
-						SB5->(DbSeek( FWxFilial("SB5") + PadR(SC7->C7_PRODUTO, TamSX3('B5_COD')[1]) ))
-						cDesc	:= IIF( SB5->(FOUND()) .AND. !Empty(SB5->B5_CEME), ALLTRIM(SB5->B5_CEME), ALLTRIM(SB1->B1_DESC) )
 						If SB5->(FOUND()) .AND. !Empty(SB5->B5_MSOBS)
 							For nBegin := 1 To MLCount(SB5->B5_MSOBS,100)
 								cDesc += "<br>" + OemToAnsi(MemoLine(SB5->B5_MSOBS,100,nBegin))
 							Next nBegin
 						Endif
-
-					Else
-						cDesc	:=  ALLTRIM(SB1->B1_DESC)
-					Endif
 					
 					AADD( (oHtml:ValByName( "T1.3"	))	,cDesc)
 					
