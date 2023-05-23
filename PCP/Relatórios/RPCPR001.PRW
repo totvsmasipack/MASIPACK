@@ -1094,6 +1094,10 @@ Do While TRB->(!Eof())
 			If MV_PAR29 == 1 .And. SubStr(cNumEmp,1,2) $ "01_40_45"
 				If SubStr(SB1->B1_COD,1,2) == "CL"
 					cPasta := SubStr(SB1->B1_COD,3,2)
+				ElseIf SubStr(SB1->B1_COD,1,2) == 'HC'
+					cPasta := 'HC'
+				ElseIf SubStr(SB1->B1_COD,1,2) == 'HM'
+					cPasta := 'HM'
 				ElseIf SubStr(SB1->B1_COD,1,1) == 'H' .Or. SubStr(SB1->B1_COD,1,2) == 'MD'
 					cPasta := 'MD'
 				Else
