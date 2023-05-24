@@ -336,8 +336,8 @@ Local oMail, oHtml
 			    oMail:cFromName := "Protheus Fabrima"
 			ElseIf Substr(cEmpAnt,1,2) == "15"
 				oMail:NewTask( "PEDCOM01", "\WORKFLOW\MODELOS\PC\PCHelsim.html" )
-				oMail:cSubject := "MASITUBOS - Pedido de Compras Nr. " + SC7->C7_NUM + IF(MV_PAR07 == 2,' - EM ATRASO','')
-			    oMail:cFromName := "Protheus Masitubos"
+				oMail:cSubject := "HELSIM - Pedido de Compras Nr. " + SC7->C7_NUM + IF(MV_PAR07 == 2,' - EM ATRASO','')
+			    oMail:cFromName := "Protheus Helsim"
 			ElseIf Substr(cEmpAnt,1,2) == "40"
 				oMail:NewTask( "PEDCOM01", "\WORKFLOW\MODELOS\PC\PCLabortub.htm" )
 				oMail:cSubject := "LABORTUBE - Pedido de Compras Nr. " + SC7->C7_NUM
