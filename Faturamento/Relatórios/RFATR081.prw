@@ -2915,7 +2915,7 @@ DEFINE CELL NAME "FINANC"	OF oSection4 SIZE 16 PICTURE "@E 99,999,999.99" TITLE 
 //DEFINE CELL NAME "OUTROS"	OF oSection4 SIZE 16 PICTURE "@E 99,999,999.99" TITLE 						   STR0028	 //"Outros"
 
 For nlx := 1 To Len( aTodFormPg )
-    DEFINE CELL NAME aTodFormPg[nlx][1]	OF oSection4 SIZE 16 PICTURE "@E 99,999,999.99" TITLE aTodFormPg[nlx][1]
+    DEFINE CELL NAME aTodFormPg[nlx][1]	OF oSection4 SIZE 16 PICTURE "@E 99,999,999.99" TITLE aTodFormPg[nlx][2]
 Next nlx
 
 DEFINE CELL NAME "VLRDEBI"	OF oSection4 SIZE 16 PICTURE "@E 99,999,999.99" TITLE U_XDesCab( "CD"		 , STR0029 ) //"Debito"
@@ -2950,7 +2950,7 @@ oSection4:Cell("VLRDEBI"	):SetHeaderAlign( "RIGHT" )
 
 For nlx := 1 To Len( aTodFormPg )
     oSection4:Cell(aTodFormPg[nlx][1]):SetHeaderAlign( "RIGHT" )
-    oSection4:Cell(aTodFormPg[nlx][1]):Disable()
+    oSection4:Cell(aTodFormPg[nlx][1]):Hide()
 Next nlx
 
 If lL1VLRPGDG
@@ -3799,6 +3799,12 @@ While !Eof()
 						    oSection4:Cell(aFormaImp[nX][2]):SetValue( aEstorno[nX]*(-1) )
                         EndIf
 					Next nX   
+
+                    For nX := 1 To Len(aFormsNF)
+                        oSection4:Cell(aFormsNF[nX][1]):Show()
+                        oSection4:Cell(aFormsNF[nX][1]):SetValue( Round(xMoeda(0,nMoeda,MV_PAR09,TRB->DTEMI,nDecs+1),nDecs) )
+                    Next nX
+
 					oReport:SkipLine(1)
 					oSection4:PrintLine()
 								
@@ -3812,6 +3818,11 @@ While !Eof()
 						    oSection4:Cell(aFormaImp[nX][2]):SetValue( aSangria[nX]*(-1) )
                         EndIf
 					Next nX
+
+                    For nX := 1 To Len(aFormsNF)
+                        oSection4:Cell(aFormsNF[nX][1]):Show()
+                        oSection4:Cell(aFormsNF[nX][1]):SetValue( Round(xMoeda(0,nMoeda,MV_PAR09,TRB->DTEMI,nDecs+1),nDecs) )
+                    Next nX
 					
 					oReport:SkipLine(1)
 					oSection4:PrintLine()
@@ -3840,6 +3851,11 @@ While !Eof()
 					    oSection4:Cell(aFormaImp[nX][2]):SetValue( aTotCx[nX] - aTotCxDev[nX] )
                     EndIf
 				Next nX
+
+                For nX := 1 To Len(aFormsNF)
+                    oSection4:Cell(aFormsNF[nX][1]):Show()
+                    oSection4:Cell(aFormsNF[nX][1]):SetValue( Round(xMoeda(aFormsNF[nX][3],nMoeda,MV_PAR09,TRB->DTEMI,nDecs+1),nDecs) )
+                Next nX
 
 				oSection4:Cell("RETENC"):Show()
 				oSection4:Cell("RETENC"):SetValue(aTotCx[6] - aTotCxDev[6])
@@ -3927,6 +3943,11 @@ While !Eof()
                 EndIf
 			Next nX
 
+            For nX := 1 To Len(aFormsNF)
+                oSection4:Cell(aFormsNF[nX][1]):Show()
+                oSection4:Cell(aFormsNF[nX][1]):SetValue( Round(xMoeda(aFormsNF[nX][3],nMoeda,MV_PAR09,TRB->DTEMI,nDecs+1),nDecs) )
+            Next nX
+
 			oSection4:Cell("RETENC"):Show()
 			oSection4:Cell("RETENC"):SetValue(aTotDt[6] - aTotDtDev[6])
 			oSection4:Cell("DESCON"):Show()
@@ -3994,6 +4015,11 @@ While !Eof()
             EndIf
 		Next nX
 
+        For nX := 1 To Len(aFormsNF)
+            oSection4:Cell(aFormsNF[nX][1]):Show()
+            oSection4:Cell(aFormsNF[nX][1]):SetValue( Round(xMoeda(aFormsNF[nX][3],nMoeda,MV_PAR09,TRB->DTEMI,nDecs+1),nDecs) )
+        Next nX
+
 		oSection4:Cell("RETENC"):Show()
 		oSection4:Cell("RETENC"):SetValue(aTotFi[6] - aTotFiDev[6])
 		oSection4:Cell("DESCON"):Show()
@@ -4046,6 +4072,11 @@ If lDados
             oSection4:Cell(aFormaImp[nX][2]):SetValue( aTotGer[nX] - aTotGerDev[nX] )
         EndIf
 	Next nX
+
+    For nX := 1 To Len(aFormsNF)
+        oSection4:Cell(aFormsNF[nX][1]):Show()
+        oSection4:Cell(aFormsNF[nX][1]):SetValue( Round(xMoeda(aFormsNF[nX][3],nMoeda,MV_PAR09,TRB->DTEMI,nDecs+1),nDecs) )
+    Next nX
 
 	oSection4:Cell("RETENC"):Show()
 	oSection4:Cell("RETENC"):SetValue(aTotGer[6] - aTotGerDev[6])
@@ -4134,6 +4165,9 @@ Return
 ßßßßßßßßßßßßßßßßßßßßßßßßßßßßßßßßßßßßßßßßßßßßßßßßßßßßßßßßßßßßßßßßßßßßßßßßßßßßß
 */
 Static Function LJR075HideAll( oSection4 )
+
+Local nlx
+
 oSection4:Cell("SERIE"):Hide()
 If cPaisLoc == "BRA"
 	oSection4:Cell("VENDED"):Hide()
@@ -4149,6 +4183,12 @@ oSection4:Cell("CONVENIO"):Hide()
 oSection4:Cell("VALES"):Hide()
 oSection4:Cell("FINANC"):Hide()
 //oSection4:Cell("OUTROS"):Hide()
+
+For nlx := 1 To Len( aTodFormPg )
+    oSection4:Cell(aTodFormPg[nlx][1]):Hide()
+    oSection4:Cell(aTodFormPg[nlx][1]):HideHeader()
+Next nlx
+
 oSection4:Cell("VLRDEBI"):Hide()
 
 If lL1VLRPGDG
