@@ -3040,6 +3040,10 @@ Local cTipFor 		:= ""
 Local aFormasPag 	:= {}
 Local lImpItem		:= .T.						// Verifica se a Forma de Pagamento esta configurada "MV_PAR08 -> Formas de Pgto"
 Local aFormsNF      := {}
+Local aSubTotCx     := {}
+Local aSubTotFil    := {}
+Local aSubTotGet    := {}
+Local aSubTotDt     := {}
 
 Private lVlrPisCof	:= SL1->(ColumnPos("L1_ABTOPCC")) > 0	// Define se o campo L1_ABTOPCC existe na SL1
 
@@ -3268,11 +3272,12 @@ dbGotop()
 //ÚÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄ¿
 //³ Processamento do relatorio.                                         ³
 //ÀÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÙ
-While !Eof()
+While TRB->( !Eof() )
 	
 	cFilAtu   := TRB->FILIAL //Quebra por filial
 	lSubTotFil:= .F.
 	nTotTrocFl:= 0
+	aSubTotFil := {}
 	
 	//ÚÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄ¿
 	//³Inicia e imprime o conteudo da Secao1³
@@ -3291,6 +3296,7 @@ While !Eof()
 		uDatAtu   := TRB->DTEMI //Quebra por data de emissao
 		lSubTotDt := .F.
 		nTotTrocDt:= 0
+		aSubTotDt:= {}
 		oSection2:Init()
 		oSection2:Cell("DTEMI"):SetValue( TRB->DTEMI )
 		oSection2:PrintLine()
@@ -3299,7 +3305,7 @@ While !Eof()
 			cCaiAtu   := TRB->CAIXA //Quebra por caixa
 			lSubTotCx := .F.
 			nTotTrocCx:= 0
-            aFormsNF := getFormNF(cFilAtu, TRB->N_FISCAL)
+			aSubTotCx := {}
 			
 			//ÚÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄ¿
 			//³Inicia e imprime o conteudo da Secao2³
@@ -3339,8 +3345,9 @@ While !Eof()
                 EndIf
 			Next nX
 
-            For nX := 1 To Len(aFormsNF)
-                oSection4:Cell(aFormsNF[nX][1]):ShowHeader()
+			For nX := 1 To Len( aTodFormPg )
+				oSection4:Cell(aTodFormPg[nX][1]):ShowHeader()
+				oSection4:Cell(aTodFormPg[nX][2]):SetValue( Round(xMoeda(0,nMoeda,MV_PAR09,TRB->DTEMI,nDecs+1),nDecs) )
 			Next nX
 
 			oSection4:Cell("RETENC"):ShowHeader()
@@ -3350,7 +3357,15 @@ While !Eof()
 			oSection4:Cell("VLRTOT"):ShowHeader()
 
 			While TRB->( !Eof() ) .AND. cFilAtu == TRB->FILIAL .AND. uDatAtu == TRB->DTEMI .AND. cCaiAtu == TRB->CAIXA
-				
+
+				// Zera formas de pagamento customizadas
+				For nX := 1 To Len( aTodFormPg )
+					oSection4:Cell(aTodFormPg[nX][2]):SetValue( Round(xMoeda(0,nMoeda,MV_PAR09,TRB->DTEMI,nDecs+1),nDecs) )
+				Next nX
+
+				// Consulta formas de pagamento customizadas da nota
+				aFormsNF := getFormNF(cFilAtu, TRB->N_FISCAL)
+
 				If cPaisLoc <> "BRA"
 					nMoeda    := TRB->MOEDA
 					If lUsaQuery .AND. mv_par10 == 2  //Nao Imprimir outras moedas
@@ -3487,10 +3502,8 @@ While !Eof()
 						Next nX
 					Endif
 
-                    For nX := 1 To Len(aFormsNF)
-                        oSection4:Cell(aFormsNF[nX][1]):Show()
-                        oSection4:Cell(aFormsNF[nX][1]):SetValue( Round(xMoeda(aFormsNF[nX][3],nMoeda,MV_PAR09,TRB->DTEMI,nDecs+1),nDecs) )
-                    Next nX
+					// Imprime formas de pagamento OUTROS em colunas
+					formCustom(oSection4, aFormsNF, nMoeda, TRB->DTEMI, nDecs, @aSubTotCx)
 					
 					// Verifica se esta usando a nova configuracao para confirmar se o cliente recolhera o iss.
 					If SuperGetMV("MV_LJRECIS",,.F.) .And. SL1->( ColumnPos ( "L1_RECISS" ) ) > 0 
@@ -3800,10 +3813,7 @@ While !Eof()
                         EndIf
 					Next nX   
 
-                    For nX := 1 To Len(aFormsNF)
-                        oSection4:Cell(aFormsNF[nX][1]):Show()
-                        oSection4:Cell(aFormsNF[nX][1]):SetValue( Round(xMoeda(0,nMoeda,MV_PAR09,TRB->DTEMI,nDecs+1),nDecs) )
-                    Next nX
+                    formCustom(oSection4, aFormsNF, nMoeda, TRB->DTEMI, nDecs, @aSubTotCx, .T.)
 
 					oReport:SkipLine(1)
 					oSection4:PrintLine()
@@ -3819,10 +3829,7 @@ While !Eof()
                         EndIf
 					Next nX
 
-                    For nX := 1 To Len(aFormsNF)
-                        oSection4:Cell(aFormsNF[nX][1]):Show()
-                        oSection4:Cell(aFormsNF[nX][1]):SetValue( Round(xMoeda(0,nMoeda,MV_PAR09,TRB->DTEMI,nDecs+1),nDecs) )
-                    Next nX
+                    formCustom(oSection4, aFormsNF, nMoeda, TRB->DTEMI, nDecs, @aSubTotCx, .T.)
 					
 					oReport:SkipLine(1)
 					oSection4:PrintLine()
@@ -3852,10 +3859,8 @@ While !Eof()
                     EndIf
 				Next nX
 
-                For nX := 1 To Len(aFormsNF)
-                    oSection4:Cell(aFormsNF[nX][1]):Show()
-                    oSection4:Cell(aFormsNF[nX][1]):SetValue( Round(xMoeda(aFormsNF[nX][3],nMoeda,MV_PAR09,TRB->DTEMI,nDecs+1),nDecs) )
-                Next nX
+				// Sub Total Caixa Customizado
+				totCustom(oSection4, aSubTotCx, @aSubTotDt)
 
 				oSection4:Cell("RETENC"):Show()
 				oSection4:Cell("RETENC"):SetValue(aTotCx[6] - aTotCxDev[6])
@@ -3897,6 +3902,10 @@ While !Eof()
 			//ÀÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÙ
 			Lj075SomTot(@aTotDt,aTotCxAux,aFormaImp)
 			Lj075SomTot(@aTotDtDev,aTotCxDevAux,aFormaImp)
+
+			// Totaliza total na data da forma de pagamento customizada
+			For nX := 1 To Len( aSubTotCx )
+			aSubTotDt
 			
 			//ÚÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄ¿
 			//³ Limpo os totais para nova concatenacao.                             ³
@@ -3943,10 +3952,8 @@ While !Eof()
                 EndIf
 			Next nX
 
-            For nX := 1 To Len(aFormsNF)
-                oSection4:Cell(aFormsNF[nX][1]):Show()
-                oSection4:Cell(aFormsNF[nX][1]):SetValue( Round(xMoeda(aFormsNF[nX][3],nMoeda,MV_PAR09,TRB->DTEMI,nDecs+1),nDecs) )
-            Next nX
+            // Sub Total na Data Customizado
+			totCustom(oSection4, aSubTotDt, @aSubTotFil)
 
 			oSection4:Cell("RETENC"):Show()
 			oSection4:Cell("RETENC"):SetValue(aTotDt[6] - aTotDtDev[6])
@@ -4015,10 +4022,8 @@ While !Eof()
             EndIf
 		Next nX
 
-        For nX := 1 To Len(aFormsNF)
-            oSection4:Cell(aFormsNF[nX][1]):Show()
-            oSection4:Cell(aFormsNF[nX][1]):SetValue( Round(xMoeda(aFormsNF[nX][3],nMoeda,MV_PAR09,TRB->DTEMI,nDecs+1),nDecs) )
-        Next nX
+       // Sub Total na Data Customizado
+			totCustom(oSection4, aSubTotFil, @aSubTotGer)
 
 		oSection4:Cell("RETENC"):Show()
 		oSection4:Cell("RETENC"):SetValue(aTotFi[6] - aTotFiDev[6])
@@ -4073,10 +4078,7 @@ If lDados
         EndIf
 	Next nX
 
-    For nX := 1 To Len(aFormsNF)
-        oSection4:Cell(aFormsNF[nX][1]):Show()
-        oSection4:Cell(aFormsNF[nX][1]):SetValue( Round(xMoeda(aFormsNF[nX][3],nMoeda,MV_PAR09,TRB->DTEMI,nDecs+1),nDecs) )
-    Next nX
+    totCustom(oSection4, aSubTotGer)
 
 	oSection4:Cell("RETENC"):Show()
 	oSection4:Cell("RETENC"):SetValue(aTotGer[6] - aTotGerDev[6])
@@ -4561,3 +4563,72 @@ Static Function getFormNF(cFil, cNF)
     RestArea( aArea )
     
 Return aFormas
+
+/*/{Protheus.doc} formCustom
+    Funcao generica para impressao das formas de pagamento customizadas (OUTROS)
+    @type  Static Function
+    @author DS2U (SDA)
+    @since 30/05/2023
+    @version 1.0
+    @return aFormas, array, [1] = oSection, objeto, Objeto da sessão de impressão
+                            [2] = aFormsNF, Array, Array das formas de pagamento que serão impressas
+                            [3] = nMoeda, numerico, Moeda a ser passada por parametro para a funcao xMoeda
+							[4] = dDtEmi, Data, Data a ser passada por parametro para a funcao xMoeda
+							[5] = nDecs, numerico, casas decimais a ser passada por parametro para a funcao xMoeda
+							[6] = aTotForm, array, Totais dos das formas de pagamento (passado por referência)
+/*/
+Static Function formCustom(oSection, aFormsNF, nMoeda, dDtEmi, nDecs, aTotForm, lZera)
+
+	Local nX
+	Local nPos
+
+	Default aTotForm := {}
+	Default lZera := .F.
+
+	For nX := 1 To Len(aFormsNF)
+	
+		oSection:Cell(aFormsNF[nX][1]):Show()
+		oSection:Cell(aFormsNF[nX][1]):SetValue( Round(xMoeda( Iif(lZera, 0, aFormsNF[nX][3]),nMoeda,MV_PAR09,dDtEmi,nDecs+1),nDecs) )
+
+		If ( ( nPos := aScan(aTotForm, {|x| x[1] == aFormsNF[nX][1]}) ) == 0 )
+			AADD( aTotForm, { aFormsNF[nX][1], aFormsNF[nX][3] } )
+		Else
+			aTotForm[nPos][2] += aFormsNF[nX][3]
+		EndIf
+
+	Next nX
+
+Return
+
+/*/{Protheus.doc} totCustom
+    Funcao generica para impressao dos totais das formas de pagamento customizadas (OUTROS)
+    @type  Static Function
+    @author DS2U (SDA)
+    @since 30/05/2023
+    @version 1.0
+    @return aFormas, array, [1] = oSection, objeto, Objeto da sessão de impressão
+							[2] = aTotForm, array, Totais dos das formas de pagamento
+							[3] = Totalizador pai do totalizador atual (passado por referência)
+/*/
+Static Function totCustom(oSection, aTotForm, aTotPai)
+
+	Local nX
+	Local nPos
+
+	Default aTotForm := {}
+	Default aTotPai  := {}
+	
+	For nX := 1 To Len(aTotForm)
+		
+		oSection:Cell(aTotForm[nX][1]):Show()
+		oSection:Cell(aTotForm[nX][1]):SetValue( aTotForm[nX][2] )
+
+		If ( ( nPos := aScan(aTotPai, {|x| x[1] == aTotForm[nX][1]}) ) == 0 )
+			AADD( aTotPai, { aTotForm[nX][1], aTotForm[nX][2] } )
+		Else
+			aTotPai[nPos][2] += aTotForm[nX][2]
+		EndIf
+
+	Next nX
+
+Return
