@@ -3813,7 +3813,7 @@ While TRB->( !Eof() )
                         EndIf
 					Next nX   
 
-                    formCustom(oSection4, aFormsNF, nMoeda, TRB->DTEMI, nDecs, @aSubTotCx, .T.)
+                    formCustom(oSection4, aFormsNF, nMoeda, TRB->DTEMI, nDecs,, .T.)
 
 					oReport:SkipLine(1)
 					oSection4:PrintLine()
@@ -3829,7 +3829,7 @@ While TRB->( !Eof() )
                         EndIf
 					Next nX
 
-                    formCustom(oSection4, aFormsNF, nMoeda, TRB->DTEMI, nDecs, @aSubTotCx, .T.)
+                    formCustom(oSection4, aFormsNF, nMoeda, TRB->DTEMI, nDecs,, .T.)
 					
 					oReport:SkipLine(1)
 					oSection4:PrintLine()
