@@ -3042,7 +3042,7 @@ Local lImpItem		:= .T.						// Verifica se a Forma de Pagamento esta configurada
 Local aFormsNF      := {}
 Local aSubTotCx     := {}
 Local aSubTotFil    := {}
-Local aSubTotGet    := {}
+Local aSubTotGer    := {}
 Local aSubTotDt     := {}
 
 Private lVlrPisCof	:= SL1->(ColumnPos("L1_ABTOPCC")) > 0	// Define se o campo L1_ABTOPCC existe na SL1
@@ -3903,10 +3903,6 @@ While TRB->( !Eof() )
 			Lj075SomTot(@aTotDt,aTotCxAux,aFormaImp)
 			Lj075SomTot(@aTotDtDev,aTotCxDevAux,aFormaImp)
 
-			// Totaliza total na data da forma de pagamento customizada
-			For nX := 1 To Len( aSubTotCx )
-			aSubTotDt
-			
 			//ÚÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄ¿
 			//³ Limpo os totais para nova concatenacao.                             ³
 			//ÀÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÙ
@@ -4022,8 +4018,8 @@ While TRB->( !Eof() )
             EndIf
 		Next nX
 
-       // Sub Total na Data Customizado
-			totCustom(oSection4, aSubTotFil, @aSubTotGer)
+		// Sub Total na Data Customizado
+		totCustom(oSection4, aSubTotFil, @aSubTotGer)
 
 		oSection4:Cell("RETENC"):Show()
 		oSection4:Cell("RETENC"):SetValue(aTotFi[6] - aTotFiDev[6])
