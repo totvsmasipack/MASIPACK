@@ -334,7 +334,11 @@ Local oMail, oHtml
 				oMail:NewTask( "PEDCOM01", "\WORKFLOW\MODELOS\PC\PC_Fabrima.htm" )
 				oMail:cSubject := "FABRIMA - Pedido de Compras Nr. " + SC7->C7_NUM + IF(MV_PAR07 == 2,' - EM ATRASO','')
 			    oMail:cFromName := "Protheus Fabrima"
-			ElseIf Substr(cEmpAnt,1,2) == "15"
+			ElseIf Substr(cEmpAnt,1,2) == "15" .and. cFilAnt == "03"
+				oMail:NewTask( "PEDCOM01", "\WORKFLOW\MODELOS\PC\PCHelsim.html" )
+				oMail:cSubject := "HELSIM - Pedido de Compras Nr. " + SC7->C7_NUM + IF(MV_PAR07 == 2,' - EM ATRASO','')
+			    oMail:cFromName := "Protheus Helsim"
+			ElseIf Substr(cEmpAnt,1,2) == "15" .and. cFilAnt == "01"
 				oMail:NewTask( "PEDCOM01", "\WORKFLOW\MODELOS\PC\PCHelsim.html" )
 				oMail:cSubject := "MASITUBOS - Pedido de Compras Nr. " + SC7->C7_NUM + IF(MV_PAR07 == 2,' - EM ATRASO','')
 			    oMail:cFromName := "Protheus Masitubos"
