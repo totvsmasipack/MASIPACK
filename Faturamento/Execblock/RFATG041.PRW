@@ -48,11 +48,13 @@ IF DA1->DA1_MOEDA == 1
 		TMP1->CK_PRCVEN := iif(_nVlrAl==_nPrcV*1.20.Or._nVlrAl==_nPrcV,_nPrcV*1.20,TMP1->CK_PRCVEN)//_nPrcV  * 1.20
 	ELSEIF _nDias == 120	
 		TMP1->CK_PRCVEN := iif(_nVlrAl==_nPrcV*1.25.Or._nVlrAl==_nPrcV,_nPrcV*1.25,TMP1->CK_PRCVEN)//_nPrcV  * 1.25
+	ELSEIF _nDias == 180	
+		TMP1->CK_PRCVEN := iif(_nVlrAl==_nPrcV*1.35.Or._nVlrAl==_nPrcV,_nPrcV*1.35,TMP1->CK_PRCVEN)//_nPrcV  * 1.35
 	ENDIF
 	//Ticket#2016110937000285 — Fim da alteração
 	//Ivandro Santos - 11/11/16 - Início da alteração
 	//Ticket#2016111137000182 — PROBLEMAS P/ EFETIVAR O ORÇAMENTO
-	If _nDias = 45 .Or. _nDias = 60 .Or. _nDias = 70 .Or. _nDias = 90 .Or. _nDias = 120 
+	If _nDias = 45 .Or. _nDias = 60 .Or. _nDias = 70 .Or. _nDias = 90 .Or. _nDias = 120 .Or. _nDias = 180
 		TMP1->CK_PRUNIT := TMP1->CK_PRCVEN
 	Else
 		TMP1->CK_PRUNIT := _nPrcTab

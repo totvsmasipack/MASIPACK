@@ -34,6 +34,9 @@ Local lRet		:= .T.
 
 			ELSEIF POSICIONE("SE4",1,xFilial("SE4")+_cCond,"E4_DIASCOR") == 120
 				MsgInfo("Valor de venda tera um acréscimo de 25%")
+
+			ELSEIF POSICIONE("SE4",1,xFilial("SE4")+_cCond,"E4_DIASCOR") == 180
+				MsgInfo("Valor de venda tera um acréscimo de 35%")
 			
 			ENDIF
 			
