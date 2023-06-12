@@ -2430,13 +2430,13 @@ For nX := 1 to Len( aFormaImp )
 		aTotCx[nX] += Round(xMoeda(TRB->&(aFormaImp[nX][2]),nMoeda,mv_par09,TRB->DTEMI,nDecs+1),nDecs)
 	Else
 		If Trim(aFormaImp[nX][1]) == Trim(TRB->HISTOR) .OR. ;  //Valido para CH, CC, CD, FI, VA, etc
-			(Trim(aFormaImp[nX][1])=="$$" .AND. IsMoney(TRB->HISTOR))  //Dinheiro
+			((Trim(aFormaImp[nX][1])=="$$" .OR. Trim(aFormaImp[nX][1])=="R$") .AND. IsMoney(TRB->HISTOR))  //Dinheiro
 			aTotCx[nX] += 	Round(xMoeda(TRB->VLRTOT,nMoeda,mv_par09,TRB->DTEMI,nDecs+1),nDecs)
 		Else
 			aTotCx[nX] += Round(xMoeda(TRB->&(aFormaImp[nX][2]),nMoeda,mv_par09,TRB->DTEMI,nDecs+1),nDecs)
 		Endif
 	Endif
-	If (IsMoney(aFormaImp[nX][1]) .OR. Trim(aFormaImp[nX][1])=="$$") .AND. lTroco .AND. nVlrTroco > 0
+	If (IsMoney(aFormaImp[nX][1]) .OR. Trim(aFormaImp[nX][1])=="$$" .OR. Trim(aFormaImp[nX][1])=="R$")  .AND. lTroco .AND. nVlrTroco > 0
 		aTotCx[nX] -= nVlrTroco
 	Endif
 Next nX
@@ -3492,7 +3492,7 @@ While TRB->( !Eof() )
 						For nX := 1 To Len(aFormaImp)
                             If !( aFormaImp[nX][1] == "OU" )
                                 If Trim(aFormaImp[nX][1]) == Trim(TRB->HISTOR) .OR. ;  //Valido para CH, CC, CD, FI, VA, etc
-                                    (Trim(aFormaImp[nX][1])=="$$" .AND. IsMoney(TRB->HISTOR))  //Dinheiro
+                                    ((Trim(aFormaImp[nX][1])=="$$"  .OR. Trim(aFormaImp[nX][1])=="R$") .AND. IsMoney(TRB->HISTOR))  //Dinheiro
                                     oSection4:Cell("VLRTOT"):SetValue( Round(xMoeda(TRB->VLRTOT,nMoeda,MV_PAR09,TRB->DTEMI,nDecs+1),nDecs) )
                                 Else
                                     oSection4:Cell(aFormaImp[nX][2]):Show()
@@ -3730,10 +3730,12 @@ While TRB->( !Eof() )
 					//³Ativa as celulas utilizadas³
 					//ÀÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÙ
 					oSection4:Cell("DINHEIRO"):Show()     
+					oSection4:Cell("N_FISCAL"):Show()
+					oSection4:Cell("N_FISCAL"):SetValue( "Troco:" )
 
 					For nX := 1 To Len(aFormaImp)
                         If !( aFormaImp[nX][1] == "OU" )
-                            If IsMoney(aFormaImp[nX][1]) .OR. Trim(aFormaImp[nX][1])=="$$"
+                            If IsMoney(aFormaImp[nX][1]) .OR. Trim(aFormaImp[nX][1])=="$$" .OR. Trim(aFormaImp[nX][1])=="R$"
                                 oReport:SkipLine(1)							                                                 
                                 oReport:Say(oReport:Row(),10,STR0039 + cCaiAtu)//"T R O C O           ---- > Caixa: "
                                 oSection4:Cell("DINHEIRO"):SetValue( nTotTrocCx )
