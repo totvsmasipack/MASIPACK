@@ -225,13 +225,13 @@ cString += '<xLgr>'+IIF(!lEndFis,ConvType(FisGetEnd(SM0->M0_ENDCOB,SM0->M0_ESTCO
 
 If !lEndFis
 	If FisGetEnd(SM0->M0_ENDCOB,SM0->M0_ESTCOB)[2]<>0
-		cString += '<nro>'+FisGetEnd(SM0->M0_ENDCOB,SM0->M0_ESTCOB)[3]+'</nro>'  
+		cString += '<nro>'+Alltrim(FisGetEnd(SM0->M0_ENDCOB,SM0->M0_ESTCOB)[3])+'</nro>'  
 	Else
 		cString += '<nro>'+"SN"+'</nro>' 
 	EndIf
 Else
 	If FisGetEnd(SM0->M0_ENDENT,SM0->M0_ESTENT)[2]<>0
-		cString += '<nro>'+FisGetEnd(SM0->M0_ENDENT,SM0->M0_ESTENT)[3]+'</nro>' 
+		cString += '<nro>'+Alltrim(FisGetEnd(SM0->M0_ENDENT,SM0->M0_ESTENT)[3])+'</nro>' 
 	Else
 		cString += '<nro>'+"SN"+'</nro>'
 	EndIf
@@ -414,7 +414,7 @@ If !Empty(cVeiculo)
 	dbSetOrder(1)
 
 	For nX := 1 To Len(aVeiSF2)
-		If HasTemplate("DCLEST")	//ExistTemplate("OMSA200P")
+		if existTemplate("TDCVG001")
 			dbSelectArea("SA4")
 			dbSetOrder(1)
 			dbSelectArea("LBW")
@@ -1560,6 +1560,14 @@ static function getInfCont()
 		else
 			cString +=  '<CNPJ>'+ aInfCont[nInfCont][2] + '</CNPJ>'
 		endif	
+		if len(aInfCont[nInfCont]) > 5
+			if !empty(aInfCont[nInfCont][4]) .and. !empty(aInfCont[nInfCont][5])
+				cString += '<infContrato>'
+				cString += NfeTag('<NroContrato>', ConvType(aInfCont[nInfCont][4],20,0))
+				cString += NfeTag('<vContratoGlobal>', ConvType(aInfCont[nInfCont][5],16,2))
+				cString += '</infContrato>'
+			endif
+		endif
 		cString += '</infContratante>'
 	next
 

@@ -16,11 +16,12 @@ Função que monta o XML Unico de envio para NFS-e TSS / TOTVS Colaboracao 2.0
 @param	cClieFor	Cliente/Fornecedor do documento.
 @param	cLoja		Loja do cliente/fornecedor do documento.
 @param	cMotCancela	Motivo do cancelamento do documento.
+@param	cCodcanc	Codigo do cancelamento do documento.
 
 @return	cString		Tag montada em forma de string. 
 /*/
 //-----------------------------------------------------------------------
-User function nfseXMLUni( cCodMun, cTipo, dDtEmiss, cSerie, cNota, cClieFor, cLoja, cMotCancela, aAIDF )
+User function nfseXMLUni( cCodMun, cTipo, dDtEmiss, cSerie, cNota, cClieFor, cLoja, cMotCancela, aAIDF, cCodcanc )
 
 	Local nX		:= 0
 	Local nW		:= 0
@@ -174,6 +175,11 @@ User function nfseXMLUni( cCodMun, cTipo, dDtEmiss, cSerie, cNota, cClieFor, cLo
 	DEFAULT cLoja       := PARAMIXB[7]
 	DEFAULT cMotCancela := PARAMIXB[8]
 //	DEFAULT aAIDF       := PARAMIXB[9]
+	If type("PARAMIXB[10]") <> "U" 
+		DEFAULT cCodCanc	:= IIf ( !Empty(PARAMIXB[10]),PARAMIXB[10], "")
+	Else 
+		DEFAULT cCodCanc	:= ""
+	Endif 
 
 	//ÚÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄ¿
 	//³Preenchimento do Array de UF                                            ³
@@ -1336,7 +1342,7 @@ User function nfseXMLUni( cCodMun, cTipo, dDtEmiss, cSerie, cNota, cClieFor, cLo
 			cString += tomador( aDest )
 			cString += servicos( aProd, aISSQN, aRetido, cNatOper, lNFeDesc, cDiscrNFSe, aCST, aDest[22], SM0->M0_CODMUN, cF4Agreg ,nDescon, aRetSF3 )
 			cString += valores( aISSQN, aRetido, aTotal, aDest, SM0->M0_CODMUN, aDeducao )
-			cString += faturas( aDupl )
+			cString += faturas( aDupl, cCondPag )
 			cString += pagtos( aDupl )
 			cString += deducoes( aISSQN, aDeduz, aDeducao, aConstr )
 			cString += infCompl( cMensCli, cMensFis, lNFeDesc, cDescrNFSe, aConstr )
@@ -1344,7 +1350,7 @@ User function nfseXMLUni( cCodMun, cTipo, dDtEmiss, cSerie, cNota, cClieFor, cLo
 			cString += '</rps>'
 		EndIf
 	ElseIf cTipo == "1" .And. !Empty(cMotCancela)
-		cString := u_nfseXMLCan(cNota,cMotCancela)
+		cString := u_nfseXMLCan(cNota,cMotCancela, cCodCanc) 
 	EndIf
 return { cString, cNota }
 
@@ -2284,9 +2290,11 @@ Função para montar a tag de faturas do XML de envio de NFS-e ao TSS.
 @return	cString		Tag montada em forma de string.
 /*/
 //-----------------------------------------------------------------------
-Static Function faturas( aDupl )
+Static Function faturas( aDupl,cCondPag )
 	Local cString	:= ""
 	Local nX		:= 0
+
+	Default cCondPag	:= ""
 
 	If Len( aDupl ) > 0
 		cString	+= "<faturas>"
@@ -2294,8 +2302,22 @@ Static Function faturas( aDupl )
 			cString += "<fatura>"
 			cString += "<numero>" + allTrim( aDupl[nX][1] ) + "</numero>"
 			cString += "<valor>"  + allTrim( convType( aDupl[nX][3], 15, 2 ) ) + "</valor>"
+
 			//-- Condição/Forma de Pagamento
-			cString += "<condPagamento></condPagamento>"
+			if ("00" == AllTrim(cCondPag))
+				cString += "<condPagamento>1</condPagamento>"
+			elseif (AllTrim(cCondPag)>"00" .And. !("," $ AllTrim(cCondPag)))
+				cString += "<condPagamento>2</condPagamento>"		
+			elseif ("," $ AllTrim(cCondPag)) 
+				cString += "<condPagamento>3</condPagamento>"
+			elseif ("0" $ AllTrim(cCondPag) .Or. "%" $ AllTrim(cCondPag) )	
+				If len( aDupl ) == 1
+					cString += "<condPagamento>1</condPagamento>"
+				ElseIf len( aDupl ) > 1
+					cString += "<condPagamento>3</condPagamento>"
+				EndIf	
+			endif
+
 			//-- Descricação o tipo de vencimento da fatura.
 			cString += "<descFatura></descFatura>"
 			//-- URL para impressão da fatura/ boleto
@@ -2721,9 +2743,20 @@ Função para montar a tag de cancelamento do XML de envio de NFS-e
 /*/
 //-----------------------------------------------------------------------
 
-User Function nfseXMLCan( cNota, cMotCancela )
+User Function nfseXMLCan( cNota, cMotCancela, cCodCanc )
 
 	Local cString := ""
+	Default cCodCanc := ""
+
+	// como só Indaiatuba esta pedindo codigo de cancelamento para o restante nao sera levado esse valor como estava no Legado
+	// caso queira informar só colocar o codibge no if 
+	If  (allTrim( SM0->M0_CODMUN ) $ "3520509-3552205" )
+		If Empty(cCodCanc)
+			cCodCanc := "2"
+		Endif 
+	Else 
+		cCodCanc := ""
+	Endif 
 
 	cString	+= "<rps>"
 	cString	+= "<cancelamento>"
@@ -2732,7 +2765,7 @@ User Function nfseXMLCan( cNota, cMotCancela )
 	cString += "<codmunibge>" + allTrim( SM0->M0_CODMUN ) + "</codmunibge>"
 	cString += "<motcanc>"    + convType(cMotCancela) + "</motcanc>"
 	//-- Existem municipios que fazem varias inscricoes municipais para mesmo CNPJ para controlar cada ramo de atividade.
-	cString += "<codmotcanc>"+ "" + "</codmotcanc>"
+	cString += "<codmotcanc>"+ cCodCanc + "</codmotcanc>"
 	cString += "<inmunprest>" + allTrim( SM0->M0_INSCM ) + "</inmunprest>"
 	cString	+= "</cancelamento>"
 	cString	+= "</rps>"

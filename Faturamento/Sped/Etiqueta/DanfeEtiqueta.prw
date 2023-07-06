@@ -249,10 +249,10 @@ user function ImpDfEtq(cUrl, cIdEnt, lUsaColab)
 	EndIf
 
     aEmit := array(4)
-    aEmit[1] := SM0->M0_NOMECOM
-    aEmit[2] := SM0->M0_CGC
-    aEmit[3] := SM0->M0_INSC
-    aEmit[4] := if(!GetNewPar("MV_SPEDEND",.F.),SM0->M0_ESTCOB,SM0->M0_ESTENT)
+    aEmit[1] := alltrim(SM0->M0_NOMECOM)
+    aEmit[2] := alltrim(SM0->M0_CGC)
+    aEmit[3] := alltrim(SM0->M0_INSC)
+    aEmit[4] := if(!GetNewPar("MV_SPEDEND",.F.),alltrim(SM0->M0_ESTCOB),alltrim(SM0->M0_ESTENT))
 
     SA1->(dbSetOrder(1))
     SA2->(dbSetOrder(1))
@@ -330,7 +330,7 @@ user function ImpDfEtq(cUrl, cIdEnt, lUsaColab)
                 endif
             endif
             
-            if !lSeek .or. !SF3->(dbSeek(xFilial("SF3") + aNotas[nNotas][1] + cCodCliFor + cLoja))
+            if !lSeek .or. !SF3->(dbSeek(xFilial("SF3") + aNotas[nNotas][2] + aNotas[nNotas][3] + cCodCliFor + cLoja))
                 loop
             endif
 
@@ -369,10 +369,10 @@ user function ImpDfEtq(cUrl, cIdEnt, lUsaColab)
                     cUF := SA2->A2_EST
                 endif
             endif
-            aDest[1] := cNome
-            aDest[2] := cCgc
-            aDest[3] := cInscr
-            aDest[4] := cUF
+            aDest[1] := alltrim(cNome)
+            aDest[2] := alltrim(cCgc)
+            aDest[3] := alltrim(cInscr)
+            aDest[4] := alltrim(cUF)
 
             nContDanfe += 1
             if nTipImp == 1 // 1 - Térmica 
@@ -545,7 +545,7 @@ static function DanfeSimp(oPrinter, nPosY, nPosX, oFontTit, oFontInf, aEmit, aNf
     endif
     oPrinter:Say( 244 + nPosY, 35 + nPosX, cIETxt, oFontTit)
     oPrinter:Say( 244 + nPosY, 45 + nPosX, aDest[3], oFontInf)
-    if len(aEmit[2]) == 11
+    if len(aDest[2]) == 11
         oPrinter:Say( 244 + nPosY, 175 + nPosX, cCpf, oFontTit)
         oPrinter:Say( 244 + nPosY, 200 + nPosX, Transform(aDest[2], "@R 999.999.999-99"), oFontInf)
     else
