@@ -1786,7 +1786,7 @@ ImpLinha()
 If SubStr(SB1->B1_PROCED,1,1) > "1"
 	If "FISCAL" $ _cDeptoUsu .Or. "COMPRAS" $ _cDeptoUsu .Or. "CONTABILIDADE" $ _cDeptoUsu .Or. "COMERCIAL" $ _cDeptoUsu ;
 			.Or. "VENDA DE PECAS" $ _cDeptoUsu .Or. "INFORMATICA" $ _cDeptoUsu .Or. "PCP" $ _cDeptoUsu ;
-			.Or. _cNomeUsu = "_DAmancio" .Or. _cNomeUsu == "_ADantas" .Or. _cNomeUsu = "_RSa" .Or. _cNomeUsu = "_BSilva" .Or. _cNomeUsu = "_CBarros" .Or. _cNomeUsu = "_CRabelo" // acrescentado _BSilva a pedido do Gimenes através de e-mail -  22/07/13 - Lizandra
+			.Or. _cNomeUsu = "_DAmancio" .Or. _cNomeUsu== "_FSilva".OR. _cNomeUsu == "_ILima" .OR. _cNomeUsu == "_ADantas" .Or. _cNomeUsu = "_RSa" .Or. _cNomeUsu = "_BSilva" .Or. _cNomeUsu = "_CBarros" .Or. _cNomeUsu = "_CRabelo" // acrescentado _BSilva a pedido do Gimenes através de e-mail -  22/07/13 - Lizandra
 		cRegTxt := "Ult.Compra: " + Dtoc(SB1->B1_UCOM)
 		cAux    :=  Transform(SB1->B1_UPRC,"@E 999,999.99")
 		cRegTxt += "    Valor: R$ "+ cAux + "  Cond. de Pagto: " + SB1->B1_CONDPG
