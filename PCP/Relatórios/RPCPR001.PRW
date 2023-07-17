@@ -704,7 +704,6 @@ Local I		  := 0
 Local aCampos := {}
 Local aExtDes := {{".PRI",.T.},{".PRN",.T.},{".PDF",.T.},{".PLT",.T.}}
 Local aFiles  := {}
-Local cIDUsr  := ""
 
 AADD(aCampos,{ "DOCUM"      ,"C",11,0})
 AADD(aCampos,{ "ITEM"       ,"C",3,0})
@@ -919,7 +918,7 @@ Do While TRB->(!Eof())
 		Loop
 	EndIf
 	
-	If (mv_par09 == "1" .And. _nQuant >= nEmpenho) .Or. (mv_par09 == "3" .And. (_nQuant > 0 .Or. Alltrim(SB1->B1_UM) == "CJ"))
+	If (mv_par09 == "1" .And. _nQuant >= nEmpenho) .Or. (mv_par09 == "3" .And. (_nQuant > 0 .Or. SB1->B1_UM == "CJ"))
 		TRB->(DbSkip())
 		Loop
 	EndIf
@@ -1094,10 +1093,6 @@ Do While TRB->(!Eof())
 			If MV_PAR29 == 1 .And. SubStr(cNumEmp,1,2) $ "01_40_45"
 				If SubStr(SB1->B1_COD,1,2) == "CL"
 					cPasta := SubStr(SB1->B1_COD,3,2)
-				ElseIf SubStr(SB1->B1_COD,1,2) == 'HC'
-					cPasta := 'HC'
-				ElseIf SubStr(SB1->B1_COD,1,2) == 'HM'
-					cPasta := 'HM'
 				ElseIf SubStr(SB1->B1_COD,1,1) == 'H' .Or. SubStr(SB1->B1_COD,1,2) == 'MD'
 					cPasta := 'MD'
 				Else
@@ -1401,16 +1396,9 @@ Do While TRB->(!Eof())
 				EXT->COTACAO := ""                
 				cUsr := SCP->CP_SOLICIT 
 				PswOrder(2) // Pesquisa por usuario
-                If PswSeek(cUsr,.T.)
-					aUser := PswRet()
-					If Len(aUser) > 0
-						cIDUsr := aUser[1][1] // ID do usuario.
-					Else 
-						cIDUsr := ""
-					EndIf 
-				Else 
-					cIDUsr := ""
-				EndIf 
+                PswSeek(cUsr,.T.)
+				aUser := PswRet(1)
+				cIDUsr := aUser[1][1] // ID do usuario.
 				EXT->EMITENTE:= Alltrim(UsrFullName(cIDUsr))  //SCP->CP_SOLICIT
 				EXT->MSREUNI := CTOD("")
 				MsUnlock()
@@ -1468,17 +1456,17 @@ Do While TRB->(!Eof())
 	QR1->(dbCloseArea())
 	/// FIM DA ALTERAÇÃO
 	
-	dDataNec  := CTOD("31/12/23")
-	dDataRem  := CTOD("31/12/23")
+	dDataNec  := CTOD("30/11/29")
+	dDataRem  := CTOD("30/11/29")
 	cLF       := ""
 	
 	ImpNecessidade()
 	
-	If DTOC(dDataRem) == "31/12/23" .Or. dDataRem >= dDataNec
+	If DTOC(dDataRem) == "30/11/29" .Or. dDataRem >= dDataNec
 		dDataRem := CTOD(Space(8))
 	EndIf
 	
-	If DTOC(dDataNec) == "31/12/23"
+	If DTOC(dDataNec) == "30/11/29"
 		dDataNec := CTOD(Space(8))
 	Else
 		dDataNec := dDataNec - 3
@@ -1583,7 +1571,7 @@ Do While TRB->(!Eof())
 				SZU->ZU_ROTEIRO := "X"
 			EndIf
 			SZU->ZU_PROCED  := SB1->B1_PROCED
-			SZU->ZU_UM      := Alltrim(SB1->B1_UM)
+			SZU->ZU_UM      := SB1->B1_UM
 			SZU->ZU_GRUPO   := SB1->B1_GRUPO
 			SZU->ZU_LOTEECO := SB1->B1_LE
 			SZU->ZU_LOTEMIN := SB1->B1_LM
@@ -2043,8 +2031,8 @@ If EXT->(RecCount()) > 0
 		FWrite(cArqTxt,cRegCab+chr(13)+chr(10))
 		Li+=3
 	EndIf
-	dDataNec := CTOD("31/12/23")
-	dDataRem := CTOD("31/12/23")
+	dDataNec := CTOD("30/11/29")
+	dDataRem := CTOD("30/11/29")
 	cLF      := ""
 	Do While ! EXT->(EOF())                             
 		ImpExtrato()
@@ -2104,7 +2092,7 @@ Else
 EndIf
 
 cRegTxt += Space(1) + SubStr(EXT->DESCR,1,21)
-cAux :=  Transform(EXT->QUANT,IIF(Alltrim(SB1->B1_UM) <> "PC","@E 999,999.999","@E 9,999,999"))
+cAux :=  Transform(EXT->QUANT,IIF(SB1->B1_UM <> "PC","@E 999,999.999","@E 9,999,999"))
 cRegTxt += Space(4) + cAux	//2
 cRegTxt += Space(1) + Substr(EXT->PESSOA,1,15)
 If !Empty(EXT->PV)
@@ -2128,7 +2116,7 @@ If EXT->MOVIM <> "X"
 		EndIf
 	Else
 		If EXT->ENTREGA > dDataNec
-			dDataNec := CTOD("31/12/23")
+			dDataNec := CTOD("30/11/29")
 		EndIf
 	EndIf
 EndIf
