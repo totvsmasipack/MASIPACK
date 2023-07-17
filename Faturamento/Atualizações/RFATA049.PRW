@@ -23,15 +23,13 @@ User Function Rfata049()
 				oMaster:loadValue(Substr(cVar,4,10), B1CODAcent(&cVar))
 			ElseIf cVar == "M->B1_DESC"	
 				oMaster:loadValue(Substr(cVar,4,10), B1DSCAcent(&cVar))	
+			ElseIf cVar == "M->C7_OBS"
+				cReturn	:= C7ObsAcent(&cVar)
+			ElseIf cVar == "M->C1_OBS"	
+				cReturn	:= C7ObsAcent(&cVar)
 			EndIf
 		EndIf
-	Else
-		If cVar == "M->C7_OBS"	 
-				cReturn	:= C7ObsAcent(&cVar)
-		ElseIf cVar == "M->C1_OBS"	
-				cReturn	:= C7ObsAcent(&cVar)
-		EndIf
-	EndIF	
+	EndIf
 	
 return cReturn
 
