@@ -2012,7 +2012,19 @@ Return()
 lPagPrint := .T.
 oQPrint:StartPage()
 
-oQPrint:SayBitmap(35,100,cFileLogo,220,170)
+If SubStr(cNumEmp,1,2) $ "15"  //MASITUBOS
+	oQPrint:SayBitmap(35,100,cFileLogo,336,116)
+
+ElseIf SubStr(cNumEmp,1,2) $ "01"  //MASIPACK
+	oQPrint:SayBitmap(35,100,cFileLogo,200,125)
+
+ElseIf SubStr(cNumEmp,1,2) $ "10"  //FABRIMA
+	oQPrint:SayBitmap(35,100,cFileLogo,200,110)
+
+Else
+	oQPrint:SayBitmap(35,100,cFileLogo,200,80)
+EndIf
+
 oQPrint:Say(40,2100,"Pag.:"+Transform(nPag,"@E 99"),oFont11)
 
 oQPrint:Box(230,  30,850,1180 )
