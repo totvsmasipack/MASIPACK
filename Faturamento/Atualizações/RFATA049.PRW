@@ -1,7 +1,7 @@
 #Include "protheus.ch"
 #Include "Topconn.ch"
 
-/*/{Protheus.doc} Rfata049
+/*/{Protheus.doc} RFATA049
 	//TODO Convertido fonte já existente para objeto. 
 	@author Alison Gonçalves
 	@since 05/07/11
@@ -9,25 +9,30 @@
 	@return cTexto
 	@type User function
 /*/
-User Function Rfata049()
+User Function RFATA049()
 	Local cVar		:= ReadVar()
 	local oMdl   := nil 
 	local oMaster:= nil 
 	Local cReturn:=	''
 	
 	oMdl := fwModelActive()
-	If oMdl <> nil
+	If oMdl <> nil // Verifica se e rotina MVC
+
 		oMaster := oMdl:getModel(oMdl:aModelStruct[1][2])
-		if oMaster <> nil 
+
+		if oMaster <> nil // Verifica se e rotina MVC
 			If cVar=="M->B1_COD"
 				oMaster:loadValue(Substr(cVar,4,10), B1CODAcent(&cVar))
 			ElseIf cVar == "M->B1_DESC"	
 				oMaster:loadValue(Substr(cVar,4,10), B1DSCAcent(&cVar))	
-			ElseIf cVar == "M->C7_OBS"
-				cReturn	:= C7ObsAcent(&cVar)
-			ElseIf cVar == "M->C1_OBS"	
+			ElseIf cVar == "M->C1_OBS" // Solicitacao de Compras - MATA110
 				cReturn	:= C7ObsAcent(&cVar)
 			EndIf
+		EndIf
+
+	Else // Rotina comum
+		If cVar == "M->C7_OBS" //Pedido de Compras - MATA121
+			cReturn	:= C7ObsAcent(&cVar)
 		EndIf
 	EndIf
 	
