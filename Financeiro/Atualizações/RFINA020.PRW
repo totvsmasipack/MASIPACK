@@ -23,6 +23,7 @@ Return
 Static Function ProcCob(oSay,aParam)
 
 Local a811Param           :={}   as array
+Local cFiltro             :=""   As Character
 Local cCliD               :=""   as character
 Local cLojD               :=""   as character
 Local cCliAt              :="ZZ" as character
@@ -35,6 +36,8 @@ Private lAutoErrNoFile    := .T. as logical
 
 /*============= LAYOUT 000001 - AVISO 15 DIAS ANTES DO VENCIMENTO ================*/
 cLay := "000001"
+
+cFiltro := "E1_PREFIXO <> 'LJ ' " //Desconsidera titulos gerados pela LOJA
 
 dbSelectArea("FWP")
 FWP->(DbGoTop())
@@ -62,7 +65,7 @@ aAdd( a811Param,  ''                                        )   //"" (tipo carac
 aAdd( a811Param,  cLay                                      )   //Código do layout da carta a ser utilizado (tipo caracter)
 aAdd( a811Param,  '2'                                       )   //A1_MSBLQL
 
-MSExecAuto({|x,y| Fina811(x,y)},0,a811Param)
+MSExecAuto({|x,y| Fina811(x,y)},0,a811Param, NIL, cFiltro)
 
 if lMsErroAuto
     ConOut("Erro !")
@@ -77,6 +80,9 @@ a811Param := {}
 /*============= LAYOUT 000002 - AVISO 1 DIA ANTES DO VENCIMENTO ================*/
 
 cLay := "000002"
+
+cFiltro := "E1_PREFIXO <> 'LJ ' " //Desconsidera titulos gerados pela LOJA
+
 dbSelectArea("FWP")
 FWP->(DbGoTop())
 FWP->(DbSetOrder(1))//FWP_FILIAL, FWP_CODCRT, R_E_C_N_O_, D_E_L_E_T_
@@ -104,7 +110,7 @@ aAdd( a811Param,  ''                                        )   //"" (tipo carac
 aAdd( a811Param,  cLay                                      )   //Código do layout da carta a ser utilizado (tipo caracter)
 aAdd( a811Param,  '2'                                       )   //A1_MSBLQL
 
-MSExecAuto({|x,y| Fina811(x,y)},0,a811Param)
+MSExecAuto({|x,y| Fina811(x,y)},0,a811Param, NIL, cFiltro)
 
 if lMsErroAuto
     ConOut("Erro !")
@@ -119,6 +125,9 @@ a811Param := {}
 /*============= LAYOUT 000003 - AVISO TITULOS VENCIDOS ================*/
 
 cLay := "000003"
+
+cFiltro := "E1_PREFIXO <> 'LJ ' " //Desconsidera titulos gerados pela LOJA
+
 dbSelectArea("FWP")
 FWP->(DbGoTop())
 FWP->(DbSetOrder(1))//FWP_FILIAL, FWP_CODCRT, R_E_C_N_O_, D_E_L_E_T_
@@ -146,7 +155,7 @@ aAdd( a811Param,  ''                                        )   //"" (tipo carac
 aAdd( a811Param,  cLay                                      )   //Código do layout da carta a ser utilizado (tipo caracter)
 aAdd( a811Param,  '2'                                       )   //A1_MSBLQL
 
-MSExecAuto({|x,y| Fina811(x,y)},0,a811Param)
+MSExecAuto({|x,y| Fina811(x,y)},0,a811Param, NIL, cFiltro)
 
 if lMsErroAuto
     ConOut("Erro !")
