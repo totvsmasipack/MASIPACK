@@ -53,8 +53,9 @@ User Function A650OPI()
 		// Se nao encontrou o produto na estrutura do produto pai, retorna falso.
 		If SG1->(DbSeek(xFilial("SG1") + _cProdPai + aCols[Paramixb,nPosComp]))
 			SB1->(DBSEEK(xFilial("SB1") + aCols[Paramixb,1]))
-
-			If Alltrim(SB1->B1_UM) == "CJ" .and. Alltrim(cUMPai) != "CJ" //Elton pediu para retirar o CJ até que o calculo de MRP seja desenvolvido.
+			If Alltrim(SB1->B1_UM) == "CJ" .and. Alltrim(cUMPai) == "CJ"
+                lContinua := .T.
+			ElseIf Alltrim(SB1->B1_UM) == "CJ" .and. Alltrim(cUMPai) != "CJ" //Elton pediu para retirar o CJ até que o calculo de MRP seja desenvolvido.
 				_cRet := .F.
 			ElseIf Alltrim(cUMPai) == "CJ" .and. Alltrim(SB1->B1_UM) != "CJ"
 				_cRet := .F.
@@ -65,12 +66,10 @@ User Function A650OPI()
 		// Restaura as areas correntes.
 		RestArea(_aAreaC2)
 		RestArea(_aArea)    
-
-		
          
 
 	ElseIf 	SUBSTR(cNumEmp,1,2) == "10" //Fabrima
-	/*	_aArea 		:= GetArea()
+		_aArea 		:= GetArea()
 		_cProdPai	:= ""                                                     
 		INKEY(0)
 		DbSelectArea("SC2")
@@ -101,9 +100,7 @@ User Function A650OPI()
 		
 		// Restaura as areas correntes.
 		RestArea(_aAreaC2)
-		RestArea(_aArea)  */
-
-		_cRet 		:= .F.
+		RestArea(_aArea)             
 	ELSE
 		_cRet 		:= .T.
 	ENDIF	
