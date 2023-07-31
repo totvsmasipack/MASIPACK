@@ -70,7 +70,7 @@ User Function A650OPI()
          
 
 	ElseIf 	SUBSTR(cNumEmp,1,2) == "10" //Fabrima
-		_aArea 		:= GetArea()
+	/*	_aArea 		:= GetArea()
 		_cProdPai	:= ""                                                     
 		INKEY(0)
 		DbSelectArea("SC2")
@@ -101,7 +101,9 @@ User Function A650OPI()
 		
 		// Restaura as areas correntes.
 		RestArea(_aAreaC2)
-		RestArea(_aArea)             
+		RestArea(_aArea)  */
+
+		_cRet 		:= .F.
 	ELSE
 		_cRet 		:= .T.
 	ENDIF	
