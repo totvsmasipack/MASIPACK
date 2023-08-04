@@ -14,9 +14,9 @@
     @see (links_or_references)
 /*/
 
-User Function MTA650GEM()
+User Function MTA650GEM(cTipo)
     
-    Local cTipo     := PARAMIXB[1]
+    
     Local aProdI    := {}
     Local nQtdPai   := 0
     Local nPosProd  := 0
@@ -24,6 +24,7 @@ User Function MTA650GEM()
     Local lFim      := .T.
 
     Private cSeq    := ''
+    Default cTipo     := PARAMIXB[1]
 
     IF SUBSTR(cNumEmp,1,2) == "01" //Masipack
         Do Case 

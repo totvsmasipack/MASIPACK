@@ -31,6 +31,7 @@ User Function A650OPI()
 	Local nPosComp  := 0
 	
 	IF SUBSTR(cNumEmp,1,2) == "01" //Masipack
+		
 		_aArea 		:= GetArea()
 		_cProdPai	:= ""                                                     
 		INKEY(0)
@@ -54,7 +55,7 @@ User Function A650OPI()
 		If SG1->(DbSeek(xFilial("SG1") + _cProdPai + aCols[Paramixb,nPosComp]))
 			SB1->(DBSEEK(xFilial("SB1") + aCols[Paramixb,1]))
 			If Alltrim(SB1->B1_UM) == "CJ" .and. Alltrim(cUMPai) == "CJ"
-                lContinua := .T.
+                _cRet := .T.
 			ElseIf Alltrim(SB1->B1_UM) == "CJ" .and. Alltrim(cUMPai) != "CJ" //Elton pediu para retirar o CJ até que o calculo de MRP seja desenvolvido.
 				_cRet := .F.
 			ElseIf Alltrim(cUMPai) == "CJ" .and. Alltrim(SB1->B1_UM) != "CJ"

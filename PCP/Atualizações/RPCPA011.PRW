@@ -434,6 +434,9 @@ For I := 1 to SZU->ZU_QTDEOP
 	cNumOP := Soma1(cNumOP)
 	_nQtdOP++
 Next I
+
+u_MTA650GEM('3')
+
 Return
 
 Static Function _AtuSZU()
