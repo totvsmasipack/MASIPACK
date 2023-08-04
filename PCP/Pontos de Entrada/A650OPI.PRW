@@ -106,4 +106,5 @@ User Function A650OPI()
 		_cRet 		:= .T.
 	ENDIF	
 
+
 Return(_cRet)
