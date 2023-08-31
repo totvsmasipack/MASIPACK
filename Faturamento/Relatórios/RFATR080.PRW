@@ -12,7 +12,7 @@ Relatório de Check-Lista da montagem (Nova Versão)
 /*/
 User Function RFATR080()
 
-Local aOption	:= {"1=Peças/Acessórios", "2=Balança - Montagem", "3=Balança - Teste" , "4=Vertical - Montagem", "5=Vertical - Teste"}
+Local aOption	:= {"1=Peças/Acessórios", "2=Balança - Montagem", "3=Balança - Teste" , "4=Vertical - Montagem", "5=Vertical - Teste", "6=Montagem Horizontal", "7=Horizontal Teste", "10=Eletrica Montagem"}
 Local aParam	:= {}
 
 	AADD(aParam,{1,	"Nº Pedido",		SPACE(TamSX3('C5_NUM')[1]),"","","","",050,	.T.}) 
@@ -63,8 +63,14 @@ Local oWord		:= Nil
 		cDocFile := GetSrvProfString('Startpath','') + 'modelos\pcp\'+FWCodEmp()+'_03_Balanca_Teste.dotm'
 	ElseIf MV_PAR02 == '4'
 		cDocFile := GetSrvProfString('Startpath','') + 'modelos\pcp\'+FWCodEmp()+'_04_Vertical_Montagem.dotm'
-	Else 
+	ElseIf MV_PAR02 == '5'
 		cDocFile := GetSrvProfString('Startpath','') + 'modelos\pcp\'+FWCodEmp()+'_05_Maq_Vertical_Teste.dotm'
+	ElseIf MV_PAR02 == '6'
+		cDocFile := GetSrvProfString('Startpath','') + 'modelos\pcp\'+FWCodEmp()+'_06_Horizontal_Montagem.dotm'
+	ElseIf MV_PAR02 == '7'
+		cDocFile := GetSrvProfString('Startpath','') + 'modelos\pcp\'+FWCodEmp()+'_07_Horizontal_Teste.dotm'
+	Else
+		cDocFile := GetSrvProfString('Startpath','') + 'modelos\pcp\'+FWCodEmp()+'_10_Eletrica_Montagem_2.dotm'
 	Endif
 
 	If !FwIsAdmin() 
