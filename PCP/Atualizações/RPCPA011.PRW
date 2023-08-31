@@ -434,7 +434,7 @@ For I := 1 to SZU->ZU_QTDEOP
 	cNumOP := Soma1(cNumOP)
 	_nQtdOP++
 Next I
-
+//Chamo a rotina que gera as ops intermediarias com calculo customizado de MRP.
 u_MTA650GEM('3')
 
 Return

@@ -95,6 +95,8 @@ User Function A650OPI()
 				_cRet := .F.
 			ElseIf Alltrim(cUMPai) == "CJ" .and. Alltrim(SB1->B1_UM) != "CJ"
 				_cRet := .F.
+			ElseIf Alltrim(SB1->B1_UM) == "PC"
+				_cRet := .F.
 			EndIf 
 
 		EndIf 	

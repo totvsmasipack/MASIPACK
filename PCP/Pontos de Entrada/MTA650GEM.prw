@@ -22,6 +22,7 @@ User Function MTA650GEM(cTipo)
     Local nPosProd  := 0
     Local nx        := 0
     Local lFim      := .T.
+    Local lGera     := .F.
 
     Private cSeq    := ''
     Default cTipo     := PARAMIXB[1]
@@ -65,6 +66,11 @@ User Function MTA650GEM(cTipo)
             //Se retornar .F. √© porque possui um tratamento especial e as ordens n√£o ser√£o geradas neste momento.
 
         Case cTipo == '2'
+            //Chamada via funÁ„o padr„o que gera OP atravÈs do pedido de venda sÛ passa por esse ponto, 
+            //por isso deve gerar a ZZZ aqui.
+            If FWIsInCallStack('A650GeraOp')
+                Return .T.
+            EndIf 
 
             Return .F. //Sempre bloqueio a cria√ß√£o da ordem de produ√ß√£o para criar tudo ao final com os dados da tabela ZZZ.
 
