@@ -614,9 +614,9 @@ While SF2->F2_FILIAL == xFilial("SF2") .And. SF2->F2_DOC <= mv_par02 .And. !Eof(
 		SZO->(DbSetOrder(1))
 		If !SZO->(DbSeek(xFilial("SZO")+SF2->F2_SERIE+SF2->F2_DOC))
 			If SUBSTR(cNumEmp,1,2) = '01' //MASIPACK - Obrigatoriedade de informar exclusão do PIS/COFINS da base do ICMS
-				cMensSZO :="PROCESSO - Nº. 5002468-80.2021.4.03.6114 - Exclusão do ICMS na Base de Cálculo do PIS e COFINS. - "
+				cMensSZO :="PROCESSO - Num. 5002468-80.2021.4.03.6114 - Exclusao do ICMS na Base de Calculo do PIS e COFINS. - "
 			Else //FABRIMA - Obrigatoriedade de informar exclusão do PIS/COFINS da base do ICMS
-				cMensSZO := "PROCESSO - Nº. 0009214-25.2007.4.03.6119 - Exclusão do ICMS na Base de Cálculo do PIS e COFINS. - "
+				cMensSZO := "PROCESSO - Num. 0009214-25.2007.4.03.6119 - Exclusao do ICMS na Base de Calculo do PIS e COFINS. - "
 			EndIf
 
 			If Alltrim(_cPC) <> ""
