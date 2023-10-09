@@ -338,8 +338,8 @@ While SF2->F2_FILIAL == xFilial("SF2") .And. SF2->F2_DOC <= mv_par02 .And. !Eof(
 		IF SUBSTR(cNumEmp,1,2) <> '15'       	   // TIRAR DEPOIS - LIZANDRA
 			If !Empty(SF4->F4_MEN)
 				AADD(aMens,{Alltrim(SF4->F4_MEN),StrZero(nItem,2)})
-			EndIf
 		ENDIF
+			EndIf
 		
 		SB1->(DbSetorder(1))
 		SB1->(DbSeek(xFilial("SB1")+ SD2->D2_COD))
