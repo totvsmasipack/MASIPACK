@@ -1,7 +1,7 @@
 #INCLUDE "PROTHEUS.CH"
 #Include "Rwmake.ch"
 #Include "Topconn.ch"
-#Include "bitmap.ch"
+//#Include "bitmap.ch"
 #define SW_SHOWNORMAL       1 // Normal
 /*
 ÜÜÜÜÜÜÜÜÜÜÜÜÜÜÜÜÜÜÜÜÜÜÜÜÜÜÜÜÜÜÜÜÜÜÜÜÜÜÜÜÜÜÜÜÜÜÜÜÜÜÜÜÜÜÜÜÜÜÜÜÜÜÜÜÜÜÜÜÜÜÜÜÜÜÜÜÜ
@@ -1267,7 +1267,8 @@ Static Function AtualizaOP()
 
 						Do While SD4->(!EOF()) .And. Alltrim(SD4->D4_COD) == Alltrim(SC2->C2_PRODUTO)
 							_aArea := SC2->(GetArea())
-							If SD4->D4_MSLF == "X" .And. SD4->D4_QUANT > 0 .And. SB2->B2_QATU - nEmpVD > 0
+							//JHZ If SD4->D4_MSLF == "X" .And. SD4->D4_QUANT > 0 .And. SB2->B2_QATU - nEmpVD > 0
+							If SD4->D4_MSLF == "X" .And. SD4->D4_QUANT > 0 .And. SB2->B2_QATU - nEmpVD > 0 .And. !Empty(SC2->C2_DATRF) .And. (SC2->C2_QUJE - SC2->C2_QUANT) > 0 
 								If SB2->B2_QATU - nEmpVD >= SD4->D4_QUANT
 									_nQtde := SD4->D4_QUANT
 								Else
