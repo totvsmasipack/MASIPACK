@@ -27,6 +27,8 @@ EndIf
 
 // LIMPA PRIMEIRA POSIÇÃO DO C5_MSLIBPV
 
+ 
+
 
 _aArea 		:= GetArea()
 _aAreaSC5	:= SC5->(GetArea())                       
@@ -36,6 +38,12 @@ IF RecLock("SC5",.F.)
 	SUBSTR(SC5->C5_MSLIBPV,1,1) := " "
 	MsUnlock()
 Endif
+//Chamo rotina de transferência automatica para pedidos da loja.
+If Alltrim(SubStr(cNumEmp,1,2)) == "15"
+   u_HELSP004()
+EndIf 
+
+
 RestArea(_aAreaSC5)
 RestArea(_aArea)
 Return()  

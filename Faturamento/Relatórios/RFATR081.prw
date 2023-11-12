@@ -4579,6 +4579,7 @@ Static Function formCustom(oSection, aFormsNF, nMoeda, dDtEmi, nDecs, aTotForm, 
 
 	Local nX
 	Local nPos
+	Local cTipoRS := "S"
 
 	Default aTotForm := {}
 	Default lZera := .F.
@@ -4594,7 +4595,18 @@ Static Function formCustom(oSection, aFormsNF, nMoeda, dDtEmi, nDecs, aTotForm, 
 			aTotForm[nPos][2] += aFormsNF[nX][3]
 		EndIf
 
+		IF(aFormsNF[nX][1] <> "R$" )
+			cTipoRS := "N"
+		ELSE
+			cTipoRS := "S"
+		ENDIF
+
 	Next nX
+
+	IF ( Len(aFormsNF) == 0 .OR. cTipoRS == "N" )
+		oSection:Cell("R$"):Show()
+		oSection:Cell("R$"):SetValue( Round(xMoeda( 0,nMoeda,MV_PAR09,dDtEmi,nDecs+1),nDecs) )
+	ENDIF
 
 Return
 
