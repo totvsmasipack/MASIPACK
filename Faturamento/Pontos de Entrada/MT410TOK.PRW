@@ -18,6 +18,8 @@ User Function MT410TOK()
 
 Local aUsrInf	:= FWSFALLUSERS({__cUserId},{"USR_DEPTO"})
 Local lRet 		:= .T.
+Local _cConta	:= Posicione('SED',1,xFilial('SED')+M->C5_NATUREZ, 'ED_CONTA')
+Local _nX		:= 0
 
 	//*******************************
 	//* Valida a tabela de preço	*
@@ -50,6 +52,18 @@ Local lRet 		:= .T.
 		lRet := .F.
 		Help(NIL, NIL, "MONTENCER", NIL, "Pedido atendido pela montagem", 1, 0, NIL, NIL, NIL, NIL, NIL, {""})
 	Endif
+
+
+	//***********************************************************************************************************************************
+	//* Valida a Conta Contabil dos itens, Mesmo que o Usuário tenha alterado somente a Natureza do Pedido, sem o  gatilho do Produto	*
+	//***********************************************************************************************************************************
+	If AllTrim(cNumEmp) = "1501"
+		For _nX := 1 to Len(aCols)
+			If AllTrim(aCols[_Nx,106]) <> AllTrim(_cConta)
+				aCols[_Nx,106] := _cConta
+			EndIf
+		Next
+	EndIf
 
 	//*******************************************
 	//* Validação da existencia de pedidos APV	*
