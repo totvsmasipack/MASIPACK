@@ -600,6 +600,7 @@ IF !EMPTY(MV_PAR04)
 				EndIf
 			EndIf
 			
+			
 			//Imprime Empenhos
 			If Li > 61
 				Cabec(Titulo,Cabec1,Cabec2,NomeProg,Tamanho)
