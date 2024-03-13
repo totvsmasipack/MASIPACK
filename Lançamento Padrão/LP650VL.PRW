@@ -64,6 +64,36 @@ If SF4->F4_CONTAB == "1"
          _nValor := 0
       EndIf
    EndIf
+   //Adicionados IF´s abaixo, para manter demais casos sem impacto, somente com validações adicionais para IPI, ICMS, PIS e Cofins
+   //ticket 20240313000036
+
+   //ICMS
+   If _nSeq == 11
+
+      If AllTrim(SF4->F4_CREDICM) = 'N'
+         _nValor := 0
+      EndIf
+
+   EndIf
+
+   //IPI
+   If _nSeq == 12
+
+      If AllTrim(SF4->F4_CREDIPI) = 'N'
+         _nValor := 0
+      EndIf
+
+   EndIf
+
+   //PIS e COFINS
+   If _nSeq == 13 .OR. _nSeq == 14
+
+      If AllTrim(SF4->F4_PISCRED) = 'N'
+         _nValor := 0
+      EndIf
+
+   EndIf
+
 EndIf   
 
 Return(_nValor)
