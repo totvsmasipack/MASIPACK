@@ -325,12 +325,8 @@ Static Function C680Imp(lEnd,WnRel,cString)
 			cRegCSV += "Comercial;EngMC;PCP/Prod;Montagem;IPI;OP(Sim/Não)" // TROCADO DIA 09/05/12 - LIZANDRA   
 			//Ivandro Santos - 21/07/17
 			//Ticket#2017072137000035 — Relatorios de pedido por categoria
-			// 22-02-2024 Alteração solicitada, a partir de hoje Data Entrega irá aparecer em todos os casos, portanto quando for especifico
-				// 207-PCP_205-ALMOXARIFADO - aparecerá titulo diferente 
 			If Upper(cDeptoUsu) $ "207-PCP_205-ALMOXARIFADO" 
 				cRegCSV += ";Entr_ItemPV" 
-			Else
-				cRegCSV += ";Entrega"
 			Endif
 			//Ticket#2017072137000035 — Fim da alteração
 			//Ivandro Santos - 15/12/16
@@ -736,12 +732,11 @@ Static Function C680Imp(lEnd,WnRel,cString)
 					cRegCSV += TRB->COMERC+";"+TRB->ENGMC+";"+TRB->PCP+";"+TRB->MONTAG+";"+TRANSFORM(TRB->TESTES,"@E 99.99")+";"+TRB->NUMOP //  TORCADO DIA 09/05/12 - LIZANDRA
 					//Ivandro Santos - 21/07/17
 					//Ticket#2017072137000035 — Relatorios de pedido por categoria
-// 22-02-2024 Alteração solicitada, a partir de hoje Data Entrega irá aparecer em todos os casos
-//	If Upper(cDeptoUsu) $ "207-PCP_205-ALMOXARIFADO"
+					If Upper(cDeptoUsu) $ "207-PCP_205-ALMOXARIFADO"
 						////Ivandro Santos - 14/09/17 - início da alteração - Ticket#2017091237000031 — prazo de entrega 
-		cRegCSV += +";"+Dtoc(TRB->DTPRENITPV) //cRegCSV += +";"+Dtoc(TRB->DTPRVENT)    
+						cRegCSV += +";"+Dtoc(TRB->DTPRENITPV) //cRegCSV += +";"+Dtoc(TRB->DTPRVENT)    
 						//Ticket#2017091237000031 — fim da alteração
-//Endif
+					Endif
 					//Ticket#2017072137000035 — Fim da alteração
 					//Ivandro Santos - 15/12/16
 					//Ticket#2016121537000128 — Pedidos intercompany
@@ -1701,10 +1696,9 @@ Local aItemTmp	:= {}
 				//Ivandro Santos
 				//Ticket#2017072137000035 — Relatorios de pedido por categoria
 				//Ivandro Santos - 14/09/17 - Ticket#2017091237000031 — prazo de entrega
-// 22-02-2024 Alteração solicitada, a partir de hoje Data Entrega irá aparecer em todos os casos
-//	If Upper(cDeptoUsu) $ "207-PCP_205-ALMOXARIFADO"					
-			TRB->DTPRENITPV:= QR1->C6_ENTREG				//TRB->DTPRVENT:= QR1->C6_ENTREG 
-//  Endif
+				If Upper(cDeptoUsu) $ "207-PCP_205-ALMOXARIFADO"					
+					TRB->DTPRENITPV:= QR1->C6_ENTREG				//TRB->DTPRVENT:= QR1->C6_ENTREG 
+				Endif
 				If SubStr(cNumEmp,1,2) $ "01_10"                    //If !(SubStr(cNumEmp,1,2) $ "01_10")
 					//Ticket#2017072137000035 — Fim da alteração
 					IF !EMPTY(QR1->C5_MSDTPEN)						//IF !EMPTY(SC5->C5_MSDTPEN)
