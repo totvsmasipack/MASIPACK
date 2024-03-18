@@ -937,7 +937,7 @@ Do While TRB->(!Eof())
 	dMSDTCHK   := CTOD('  /  /  ')
 	nMSQTCHK   := 0
 	
-	If mv_par09 == "7" .Or. mv_par09 == "8" .Or. mv_par25 == 1
+	If /*mv_par09 == "7" .Or. */mv_par09 == "8" .Or. mv_par25 == 1
 		// Verifica OP's abertas
 		SC2->(DbSetOrder(2))
 		If SC2->(DbSeek(xFilial("SC2")+TRB->CODIG))
@@ -1010,7 +1010,7 @@ Do While TRB->(!Eof())
 				SC7->(DbSkip())
 			EndDo
 		EndIf
-		
+		/*
 		If mv_par09 == "7"                    
 			IF MV_PAR28 == 1  // ALTERADO 24/05/13 A PEDIDO DO FRANCISCO - CONSIDERAR OU NAO ESTOQUE DE SEGURANÇA - LIZANDRA
 				If _nQuant + nSaldoOP + nSaldoOPP + nSaldoSC + nSaldoPC + nSaldoDV - SB1->B1_ESTSEG >= nEmpenho
@@ -1024,7 +1024,7 @@ Do While TRB->(!Eof())
 				EndIf
 			ENDIF	
 		EndIf
-		
+		*/
 		If mv_par09 == "8"
 			IF MV_PAR28 == 1  // ALTERADO 24/05/13 A PEDIDO DO FRANCISCO - CONSIDERAR OU NAO ESTOQUE DE SEGURANÇA - LIZANDRA
 				If _nQuant + nSaldoOP + nSaldoOPP + nSaldoSC + nSaldoPC + nSaldoDV - SB1->B1_ESTSEG <= nEmpenho
