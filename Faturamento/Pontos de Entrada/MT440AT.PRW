@@ -15,7 +15,7 @@
 
 User Function MT440AT()
 
-Local _lGrp   := IIF(SC5->C5_CLIENTE$GetMv("MS_GRUPO"),.T.,.F.)
+//Local _lGrp   := IIF(SC5->C5_CLIENTE$GetMv("MS_GRUPO"),.T.,.F.)
 
 _aArea 	  := GetArea()
 _cUsuario := RetCodUsr()
@@ -87,7 +87,7 @@ If SubStr(cNumEmp,1,2) <> "15"
 	
 Endif                               
 
-IF SC5->C5_TIPO == "N"	.And. !_lGrp
+/*IF SC5->C5_TIPO == "N"	.And. !_lGrp
 	SA1->(DbSetOrder(1))
 	If SA1->(DbSeek(xFilial("SA1")+SC5->C5_CLIENTE+SC5->C5_LOJACLI))
 		If AllTrim(SA1->A1_RISCO) $ "C_D_E" .and. AllTrim(SA1->A1_MSBLQL)<> "1"
@@ -101,6 +101,7 @@ IF SC5->C5_TIPO == "N"	.And. !_lGrp
 Else
 	_lRet = .T.
 EndIf
+*/
         
 RestArea(_aArea)
 Return(_lRet)

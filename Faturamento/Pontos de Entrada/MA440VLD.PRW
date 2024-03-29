@@ -24,7 +24,7 @@ Local cMessage	:= ""
 Local cTo		:= ""
 
 Local lRet		:= .T.
-Local lGrp		:= IF(SC5->C5_CLIENTE $ GetMV('MS_GRUPO'),.T.,.F.)
+//Local lGrp		:= IF(SC5->C5_CLIENTE $ GetMV('MS_GRUPO'),.T.,.F.)
 
 Local _nEmG		:= 0
 Local _nNat		:= 0
@@ -51,13 +51,14 @@ Default cNumEmp	:= "0101"
 			Endif
 		Next _nEmG
 		
-		SA1->(DbSetOrder(1))
+		/* SA1->(DbSetOrder(1))
 		If SA1->(DbSeek(xFilial("SA1")+SC5->C5_CLIENTE+SC5->C5_LOJACLI)) .And. !lGrp
 			If AllTrim(SA1->A1_RISCO) $ "B|C|D|E"
 				lRet := .F.
 				FwAlertError("Cliente possui restrição financeira. Favor verificar com Depto. Financeiro!!!")
 			EndIf
 		EndIf
+		*/
 	
 	EndIf
 /*	

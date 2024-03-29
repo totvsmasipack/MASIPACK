@@ -44,7 +44,7 @@ Private _lGrp 	:= IIF(SC5->C5_CLIENTE$GetMv("MS_GRUPO"),.T.,.F.)
 			Endif
 		Next _nEmG
 		
-		If _lRet
+		/* If _lRet
 			SA1->(DbSetOrder(1))
 			If SA1->(DbSeek(xFilial("SA1")+SC5->C5_CLIENTE+SC5->C5_LOJACLI)) .And. !_lGrp
 				If SA1->A1_RISCO $ "B|C|D|E" .And. !(SA1->A1_MSBLQL == '1')
@@ -53,6 +53,7 @@ Private _lGrp 	:= IIF(SC5->C5_CLIENTE$GetMv("MS_GRUPO"),.T.,.F.)
 				EndIf
 			EndIf
 		Endif
+		*/
 	EndIf
 /*
 	IF _lRet .And. ExistCpo("SX3","C5_MSAPROV",2)
