@@ -88,7 +88,7 @@ If SubStr(cNumEmp,1,2) <> "15"
 Endif                               
 
 IF SC5->C5_TIPO == "N"	.And. !_lGrp
-/*	SA1->(DbSetOrder(1))
+	SA1->(DbSetOrder(1))
 	If SA1->(DbSeek(xFilial("SA1")+SC5->C5_CLIENTE+SC5->C5_LOJACLI))
 		If AllTrim(SA1->A1_RISCO) $ "C_D_E" .and. AllTrim(SA1->A1_MSBLQL)<> "1"
 			ApMsgAlert("Cliente possui restrição financeira. Favor verificar com Depto. Financeiro!!!")
@@ -98,8 +98,7 @@ IF SC5->C5_TIPO == "N"	.And. !_lGrp
 			Return(_lRet)
 		EndIf
 	EndIf
-Else*/
-
+Else
 	_lRet = .T.
 EndIf
 

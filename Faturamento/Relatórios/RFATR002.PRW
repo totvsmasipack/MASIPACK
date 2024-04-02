@@ -248,7 +248,7 @@ Private nRecnoSD1  := Nil
 	Endif
 #ENDIF
 
-// Validar restricao financeira
+/* Validar restricao financeira
 SA1->(DbSetOrder(1))
 If SA1->(DbSeek(xFilial("SA1")+(cAliasSC5)->C5_CLIENTE+(cAliasSC5)->C5_LOJACLI))
 	If AllTrim(SA1->A1_RISCO) $ "B|C|D|E"
@@ -257,6 +257,7 @@ If SA1->(DbSeek(xFilial("SA1")+(cAliasSC5)->C5_CLIENTE+(cAliasSC5)->C5_LOJACLI))
 		Return
 	EndIf
 EndIf
+*/
 	
 SC9->(DbSetOrder(1))
 SC9->(DbGoTop())
