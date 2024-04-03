@@ -101,6 +101,7 @@ IF SC5->C5_TIPO == "N"	.And. !_lGrp
 Else
 	_lRet = .T.
 EndIf
+
         
 RestArea(_aArea)
 Return(_lRet)

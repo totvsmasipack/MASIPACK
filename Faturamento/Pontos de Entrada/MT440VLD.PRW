@@ -53,6 +53,7 @@ Private _lGrp 	:= IIF(SC5->C5_CLIENTE$GetMv("MS_GRUPO"),.T.,.F.)
 				EndIf
 			EndIf
 		Endif
+		
 	EndIf
 /*
 	IF _lRet .And. ExistCpo("SX3","C5_MSAPROV",2)
