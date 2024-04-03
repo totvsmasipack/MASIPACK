@@ -21,10 +21,74 @@ SF4->(DbSetOrder(1))
 SF4->(DbSeek(xFilial("SF4")+SD1->D1_TES))       
 
 If SF4->F4_CONTAB == "1"
-   If _nSeq == 1      
-      _nValor := (SD1->D1_TOTAL-SD1->D1_VALDESC)      
+   If _nSeq == 1
+      If SubStr(cNumEmp,1,2) $ "01" /*MASIPACK*/ 
+         If SUBSTR(SD1->D1_CF,2,3) $ "903/908/910/911/912/912/915/916/924/949"
+            If SD1->D1_TES $ "394/500/00Q/450/488/360/478/494/03F/465/352/404/448/395/02M/040/04H/05C/08K/08R/10Y/12B/12C/13A/13B/142/202/305/349/456/475/482"
+               _nValor := 0
+            Else
+               _nValor := (SD1->D1_TOTAL-SD1->D1_VALDESC)
+            EndIf
+         Else
+            _nValor := (SD1->D1_TOTAL-SD1->D1_VALDESC)
+         EndIf
+      ElseIf SubStr(cNumEmp,1,2) $ "10"  //FABRIMA 
+         If SUBSTR(SD1->D1_CF,2,3) $ "901/902/903/910/911/915/916/949"
+            If SD1->D1_TES $ "01V/03A/040/08X/107/121/12B/12C/12I/13A/13B/13R/142/194/202/376/394/428/437/445/448/450/456/478/486"
+               _nValor := 0      
+            Else
+               _nValor := (SD1->D1_TOTAL-SD1->D1_VALDESC)
+            EndIf
+         Else
+            _nValor := (SD1->D1_TOTAL-SD1->D1_VALDESC)
+         EndIf
+      ElseIf SubStr(cNumEmp,1,2) $ "15"  //MASITUBOS 
+         If SUBSTR(SD1->D1_CF,2,3) $ "902/908/911/915/916/920/921/925/949"
+            If SD1->D1_TES $ "003/039/010/021/182/133/006/051/049/054/102/099/096/"
+               _nValor := 0      
+            Else
+               _nValor := (SD1->D1_TOTAL-SD1->D1_VALDESC)
+            EndIf
+         Else
+            _nValor := (SD1->D1_TOTAL-SD1->D1_VALDESC)
+         EndIf
+      Else
+         _nValor := (SD1->D1_TOTAL-SD1->D1_VALDESC)      
+      EndIf
    ElseIf _nSeq == 2
-      _nValor := SD1->D1_TOTAL+SD1->D1_DESPESA+SD1->D1_VALFRE+SD1->D1_SEGURO-SD1->D1_VALDESC-SD1->D1_VALISS-SD1->D1_VALIRR-SD1->D1_VALINS-SD1->D1_VALPIS-SD1->D1_VALCOF-IIF(SUBSTR(cNumEmp,1,2) == '15',0,SD1->D1_VALCLS) 	
+      If SubStr(cNumEmp,1,2) $ "01" /*MASIPACK*/ 
+         If SUBSTR(SD1->D1_CF,2,3) $ "903/908/910/911/912/912/915/916/924/949"
+            If SD1->D1_TES $ "394/500/00Q/450/488/360/478/494/03F/465/352/404/448/395/02M/040/04H/05C/08K/08R/10Y/12B/12C/13A/13B/142/202/305/349/456/475/482"
+               _nValor := 0
+            Else
+               _nValor := SD1->D1_TOTAL+SD1->D1_DESPESA+SD1->D1_VALFRE+SD1->D1_SEGURO-SD1->D1_VALDESC-SD1->D1_VALISS-SD1->D1_VALIRR-SD1->D1_VALINS-SD1->D1_VALPIS-SD1->D1_VALCOF-IIF(SUBSTR(cNumEmp,1,2) == '15',0,SD1->D1_VALCLS) 	
+            EndIf
+         Else
+            _nValor := SD1->D1_TOTAL+SD1->D1_DESPESA+SD1->D1_VALFRE+SD1->D1_SEGURO-SD1->D1_VALDESC-SD1->D1_VALISS-SD1->D1_VALIRR-SD1->D1_VALINS-SD1->D1_VALPIS-SD1->D1_VALCOF-IIF(SUBSTR(cNumEmp,1,2) == '15',0,SD1->D1_VALCLS) 	
+         EndIf
+      ElseIf SubStr(cNumEmp,1,2) $ "10"  //FABRIMA 
+         If SUBSTR(SD1->D1_CF,2,3) $ "901/902/903/910/911/915/916/949"
+            If SD1->D1_TES $ "01V/03A/040/08X/107/121/12B/12C/12I/13A/13B/13R/142/194/202/376/394/428/437/445/448/450/456/478/486"
+               _nValor := 0      
+            Else
+               _nValor := SD1->D1_TOTAL+SD1->D1_DESPESA+SD1->D1_VALFRE+SD1->D1_SEGURO-SD1->D1_VALDESC-SD1->D1_VALISS-SD1->D1_VALIRR-SD1->D1_VALINS-SD1->D1_VALPIS-SD1->D1_VALCOF-IIF(SUBSTR(cNumEmp,1,2) == '15',0,SD1->D1_VALCLS) 	
+            EndIf
+         Else
+            _nValor := SD1->D1_TOTAL+SD1->D1_DESPESA+SD1->D1_VALFRE+SD1->D1_SEGURO-SD1->D1_VALDESC-SD1->D1_VALISS-SD1->D1_VALIRR-SD1->D1_VALINS-SD1->D1_VALPIS-SD1->D1_VALCOF-IIF(SUBSTR(cNumEmp,1,2) == '15',0,SD1->D1_VALCLS) 	
+         EndIf
+      ElseIf SubStr(cNumEmp,1,2) $ "15"  //MASITUBOS 
+         If SUBSTR(SD1->D1_CF,2,3) $ "902/908/911/915/916/920/921/925/949"
+            If SD1->D1_TES $ "003/039/010/021/182/133/006/051/049/054/102/099/096/"
+               _nValor := 0      
+            Else
+               _nValor := SD1->D1_TOTAL+SD1->D1_DESPESA+SD1->D1_VALFRE+SD1->D1_SEGURO-SD1->D1_VALDESC-SD1->D1_VALISS-SD1->D1_VALIRR-SD1->D1_VALINS-SD1->D1_VALPIS-SD1->D1_VALCOF-IIF(SUBSTR(cNumEmp,1,2) == '15',0,SD1->D1_VALCLS) 	
+            EndIf
+         Else
+            _nValor := SD1->D1_TOTAL+SD1->D1_DESPESA+SD1->D1_VALFRE+SD1->D1_SEGURO-SD1->D1_VALDESC-SD1->D1_VALISS-SD1->D1_VALIRR-SD1->D1_VALINS-SD1->D1_VALPIS-SD1->D1_VALCOF-IIF(SUBSTR(cNumEmp,1,2) == '15',0,SD1->D1_VALCLS) 	
+         EndIf
+      Else
+         _nValor := SD1->D1_TOTAL+SD1->D1_DESPESA+SD1->D1_VALFRE+SD1->D1_SEGURO-SD1->D1_VALDESC-SD1->D1_VALISS-SD1->D1_VALIRR-SD1->D1_VALINS-SD1->D1_VALPIS-SD1->D1_VALCOF-IIF(SUBSTR(cNumEmp,1,2) == '15',0,SD1->D1_VALCLS) 	
+      EndIf
    ElseIf _nSeq == 4
       _nValor := SD1->D1_VALCOF+SD1->D1_VALCLS+SD1->D1_VALPIS
    ElseIf _nSeq == 5
