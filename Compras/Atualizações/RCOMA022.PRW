@@ -41,6 +41,7 @@ FT_FUSE(cArq)
 ProcRegua(FT_FLASTREC())
 FT_FGOTOP()
 _cNumSC	:= GetSX8Num("SC1","C1_NUM")
+fCheckNum(@_cNumSC)
 While !FT_FEOF()
 	
 	IncProc("Lendo arquivo texto...")
@@ -138,4 +139,17 @@ Private lMsErroAuto := .F.
 		ConfirmSX8()
 		aAdd(_aNumSC,_cNumSC)
 	Endif
+Return
+Static Function fCheckNum(cNumSC)
+Local aAreaSC1 	:= SC1->(GetArea())
+
+dBSelectArea("SC1")
+SC1->(DBSETORDER(1))
+if SC1->(DBSEEK(XFILIAL("SC1")+cNumSC))
+	ConfirmSX8()
+	cNumSC:= GetSX8Num("SC1","C1_NUM")
+	fCheckNum(@cNumSC)
+endIf
+
+RestArea(aAreaSC1)
 Return
