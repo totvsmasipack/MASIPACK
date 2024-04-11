@@ -22,7 +22,7 @@ User Function RCOMG006()
 	Private _cEmail	 := GetMV("MV_DESENHO")
 	Private _aArea   := GetArea()
 	Private _cSenha := ""
-
+	
 	If Inclui .or. Altera
 		If SUBSTR(M->C1_PRODUTO,1,1) <= "9" .AND. Len(Alltrim(M->C1_PRODUTO)) >= 10 .or.;
 			SUBSTR(M->C1_PRODUTO,1,2) == "AF" .OR. SUBSTR(M->C1_PRODUTO,1,2) == "BF" .OR. SUBSTR(M->C1_PRODUTO,1,2) == "FF" .OR. ;
@@ -44,7 +44,7 @@ User Function RCOMG006()
 				cCorpoEmail += "        Produto: " +Alltrim(M->C1_PRODUTO)+Alltrim(_cRev) + " -  Descricao: " + Posicione("SB1",1,xFilial("SB1")+M->C1_PRODUTO,"B1_DESC") + CHR(13) + CHR(10)
 				oMail:= EnvMail():NEW(.F.)
 				If oMail:ConnMail()
-					oMail:SendMail("Desenho não encontrado",_cEmail,,,_cCorpoEmail)
+					oMail:SendMail("Desenho não encontrado",_cEmail,,,cCorpoEmail)
 				EndIf
 				oMail:DConnMail()
 			EndIf
