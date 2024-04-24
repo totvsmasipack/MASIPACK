@@ -39,13 +39,13 @@ If Substr(_cClaFis,2,3)<>"556" .OR. Substr(_cClaFis,2,3)<>"407" .OR. Substr(_cCl
 				If _cTipoNF == "D" 
 					If SubStr(cNumEmp,1,2) == "01"
 						If _nSeq == 11
-							_cConta := "380010002"
+							_cConta := "380010011"
 						ElseIf _nSeq == 12
-							_cConta := "380010003"
+							_cConta := "380010012"
 						ElseIf _nSeq == 13
-							_cConta := "380010004"
+							_cConta := "380010014"
 						ElseIf _nSeq == 14
-							_cConta := "380010007"
+							_cConta := "380010013"
 						EndIf			
 					ElseIf SubStr(cNumEmp,1,2) == "10"
 						If _nSeq == 11

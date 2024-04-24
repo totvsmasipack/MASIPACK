@@ -390,7 +390,7 @@ Local oTable	:= Nil
 					TRB->VALCONT	+= QR1->VALOR
 				ENDIF
 			ENDIF
-			IF SUBSTR(cNumEmp,1,2) $ '01_10'   // MASIPACK/FABRIMA
+			/*IF SUBSTR(cNumEmp,1,2) $ '01_10'   // MASIPACK/FABRIMA
 				IF ALLTRIM(QR1->DEBITO) = "220400001" .AND. !SUBSTR(QR1->TPHIST,1,11) = "ICMS S.NAC."
 					IF 	!TRB->(dbSeek("ICMS ENTRADA"))
 						RecLock("TRB",.T.)
@@ -402,7 +402,7 @@ Local oTable	:= Nil
 					ENDIF
 				ENDIF
 				///HELSIMPLAST
-			ELSE
+			ELSE*/
 				IF (ALLTRIM(QR1->DEBITO) = "110800001" .Or. ALLTRIM(QR1->DEBITO) = "220400001") .AND. !SUBSTR(QR1->TPHIST,1,11) = "ICMS S.NAC."
 					IF 	!TRB->(dbSeek("ICMS ENTRADA"))
 						RecLock("TRB",.T.)
@@ -413,7 +413,7 @@ Local oTable	:= Nil
 						TRB->VALCONT	+= QR1->VALOR
 					ENDIF
 				ENDIF
-			ENDIF
+			//ENDIF
 			IF ALLTRIM(QR1->DEBITO) = "380010001" .OR. (ALLTRIM(QR1->DEBITO) ="330100026" .AND. SUBSTR(QR1->TPHIST,11,9) = "FRETE DEV")
 				IF 	!TRB->(dbSeek("DEVOLUCAO DE VENDAS"))
 					RecLock("TRB",.T.)
@@ -444,7 +444,7 @@ Local oTable	:= Nil
 					TRB->VALCONT	+= QR1->VALOR
 				ENDIF
 			ENDIF
-			IF SUBSTR(cNumEmp,1,2) $ '01_10'   // FABRIMA
+			/*IF SUBSTR(cNumEmp,1,2) $ '01_10'   // FABRIMA
 				IF ALLTRIM(QR1->DEBITO) = "220400002" .AND. (!SUBSTR(QR1->TPHIST,1,4) = "DARF")
 					IF 	!TRB->(dbSeek("IPI ENTRADA"))
 						RecLock("TRB",.T.)
@@ -455,7 +455,7 @@ Local oTable	:= Nil
 						TRB->VALCONT	+= QR1->VALOR
 					ENDIF
 				ENDIF
-			ELSE
+			ELSE*/
 				IF ALLTRIM(QR1->DEBITO) = "110800002" .OR. ALLTRIM(QR1->DEBITO) = "220400002" .AND. (!SUBSTR(QR1->TPHIST,1,4) = "DARF")
 					IF 	!TRB->(dbSeek("IPI ENTRADA"))
 						RecLock("TRB",.T.)
@@ -466,7 +466,7 @@ Local oTable	:= Nil
 						TRB->VALCONT	+= QR1->VALOR
 					ENDIF
 				ENDIF
-			ENDIF
+			//ENDIF
 			IF ALLTRIM(QR1->CREDITO) = "220400002"
 				IF 	!TRB->(dbSeek("IPI SAIDA"))
 					RecLock("TRB",.T.)
@@ -477,7 +477,8 @@ Local oTable	:= Nil
 					TRB->VALCONT	+= QR1->VALOR
 				ENDIF
 			ENDIF
-			IF (ALLTRIM(QR1->DEBITO) $ "220400004" .AND. !SUBSTR(QR1->TPHIST,1,4) = "DARF") .OR. (ALLTRIM(QR1->DEBITO) $ "110800013" .And. SUBSTR(cNumEmp,1,2) $ "15_40")
+			//IF (ALLTRIM(QR1->DEBITO) $ "220400004" .AND. !SUBSTR(QR1->TPHIST,1,4) = "DARF") .OR. (ALLTRIM(QR1->DEBITO) $ "110800013" .And. SUBSTR(cNumEmp,1,2) $ "15_40")
+			IF (ALLTRIM(QR1->DEBITO) $ "220400004" .AND. !SUBSTR(QR1->TPHIST,1,4) = "DARF") .OR. (ALLTRIM(QR1->DEBITO) $ "110800013" ) //.And. SUBSTR(cNumEmp,1,2) $ "15_40")
 				IF 	!TRB->(dbSeek("PIS ENTRADA"))
 					RecLock("TRB",.T.)
 					TRB->DESPESAS  	:= "PIS ENTRADA"
@@ -487,7 +488,8 @@ Local oTable	:= Nil
 					TRB->VALCONT	+= QR1->VALOR
 				ENDIF
 			ENDIF
-			IF (ALLTRIM(QR1->DEBITO) $ "220400006" .AND. !SUBSTR(QR1->TPHIST,1,4) = "DARF") .OR. (ALLTRIM(QR1->DEBITO) $ "110800014" .And. SUBSTR(cNumEmp,1,2) $ "15_40")
+			//IF (ALLTRIM(QR1->DEBITO) $ "220400006" .AND. !SUBSTR(QR1->TPHIST,1,4) = "DARF") .OR. (ALLTRIM(QR1->DEBITO) $ "110800014" .And. SUBSTR(cNumEmp,1,2) $ "15_40")
+			IF (ALLTRIM(QR1->DEBITO) $ "220400006" .AND. !SUBSTR(QR1->TPHIST,1,4) = "DARF") .OR. (ALLTRIM(QR1->DEBITO) $ "110800014" ) //.And. SUBSTR(cNumEmp,1,2) $ "15_40")
 				IF 	!TRB->(dbSeek("COFINS ENTRADA"))
 					RecLock("TRB",.T.)
 					TRB->DESPESAS  	:= "COFINS ENTRADA"

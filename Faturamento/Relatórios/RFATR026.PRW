@@ -178,8 +178,9 @@ Else
 	cFileLogo += Alltrim(QI2->QI2_FILIAL)+".BMP"
 Endif
 
-If !File( cFileLogo )
-	cFileLogo := "LGRL"+SM0->M0_CODIGO+".BMP" // Empresa
+If !File( cFileLogo ) .OR. cFilAnt <> "01"
+	//cFileLogo := "LGRL"+SM0->M0_CODIGO+".BMP" // Empresa
+	cFileLogo := "LGRL"+AllTrim(cNumEmp)+".BMP" // Empresa
 Endif
 
 //³Inicializacao do objeto grafico             ³
@@ -189,11 +190,13 @@ oQPrint:StartPage()
 
 cOrcam := SCJ->CJ_NUM
 
-dbSelectArea("SM0")
-dbSetOrder(1)   // forca o indice na ordem certa
+FWSM0Util():setSM0PositionBycFilAnt()
+
+//dbSelectArea("SM0")
+//dbSetOrder(1)   // forca o indice na ordem certa
 //nRegistro := Recno()
 //If dbSeek(SUBS(cNumEmp,1,2)+SC7->C7_FILENT)
-If dbSeek(SUBS(cNumEmp,1,2))	
+//If dbSeek(SUBS(cNumEmp,1,2))	
 	cNomFor  := SM0->M0_NOMECOM
 	cEndFor  := SM0->M0_ENDENT
 	cBairFor := SM0->M0_BAIRENT
@@ -204,7 +207,7 @@ If dbSeek(SUBS(cNumEmp,1,2))
 	cFaxFor  := SM0->M0_FAX
 	cInscFor := SM0->M0_INSC
 	cCGCFor  := SM0->M0_CGC
-EndIf
+//EndIf
 
 cQry1 := "SELECT SUM(SCK.CK_PRUNIT*SCK.CK_QTDVEN) AS UNITARIO, SUM(SCK.CK_VALOR) AS VENDA "
 cQry1 += "FROM "+RetSqlName("SCJ")+" SCJ "

@@ -556,9 +556,9 @@ If cEmpAnt == "01"
 ElseIf cEmpAnt == "10"
 	@ 000,000 PSAY PADC(Alltrim(SM0->M0_NOMECOM),132)
 	@ 001,000 PSAY PADC(AllTrim(SM0->M0_ENDENT) + " - " + AllTrim(SM0->M0_CIDENT)+ " - " + SM0->M0_ESTENT,132)
-	@ 002,000 PSAY PADC("TEL.: " + Alltrim(SM0->M0_TEL) + " FAX...: " + Alltrim(SM0->M0_FAX) + " (Ramal 381)",132)
+	@ 002,000 PSAY PADC("TEL.: " + Alltrim(SM0->M0_TEL) + " FAX...: " + Alltrim(SM0->M0_FAX),132) //Chamado 20240409000019
 	@ 003,000 PSAY PADC("CNPJ: " + Transform(SM0->M0_CGC,cCgcPict) + " IE.: " + SM0->M0_INSC,132)
-	@ 004,000 PSAY PADC("E-Mail: cotacao@fabrima.com.br",132)
+	@ 004,000 PSAY PADC("E-Mail: cotacao02@fabrima.com.br",132) //Chamado 20240409000019
 ELSEIF cEmpAnt == "15"
 	@ 000,000 PSAY PADC(Alltrim(SM0->M0_NOMECOM),132)
 	@ 001,000 PSAY PADC(AllTrim(SM0->M0_ENDENT) + " - " + AllTrim(SM0->M0_CIDENT)+ " - " + SM0->M0_ESTENT,132)

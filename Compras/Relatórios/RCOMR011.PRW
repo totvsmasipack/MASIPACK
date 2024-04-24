@@ -442,14 +442,11 @@ IF !EMPTY(MV_PAR04)
 			cCERT1:= ""
 			cCERT2:= ""
 			Li++
-			
-			//Solicitado por Fernando Padial a inclusão da Helsimplat 
-			// Solicitacao de inclusao da Fabrima - Chamado 20240207000021 
-			IF SUBSTR(cNumEmp,1,2) $ '01_15_10'  
+			IF SUBSTR(cNumEmp,1,2) $ '01_15'  //Solicitado por Fernando Padial a inclusão da Helsimplat
 				DbSelectArea("SB1")
 				SB1->(DbSetOrder(1))
-				If SB1->(DbSeek(xFilial("SB1")+QR1->C7_PRODUTO))
-					IF SUBSTR(cNumEmp,1,2) $ '01_10'
+				If DbSeek(xFilial("SB1")+QR1->C7_PRODUTO)
+					IF SUBSTR(cNumEmp,1,2) == '01'
 						cCERT := SB1->B1_MSCERT
 						cCERT1:= SB1->B1_MSCONF
 					Endif
@@ -464,6 +461,24 @@ IF !EMPTY(MV_PAR04)
 			@ Li,040 PSAY "Certificado CE: " 			+ IIF(cCert1 == "S","SIM",IIF(cCert1 == "N","NÃO",""))
 			@ Li,095 PSAY "Certificado Atoxidade: "	+ IIF(cCert2 == "S","SIM",IIF(cCert2 == "N","NÃO",""))
 			
+			/*
+			If cCERT <> "S"
+				@ Li,000 PSAY "Certificado Qualidade: NÃO"
+			Else
+				@ Li,000 PSAY "Certificado Qualidade: SIM"
+			EndIf
+			If cCERT1<> "S"
+				@ Li,040 PSAY "Certificado CE: NÃO"
+			Else
+				@ Li,040 PSAY "Certificado CE: SIM"
+			EndIf
+			If cCERT2<> "S"
+				@ Li,095 PSAY "Certificado Atoxidade: NÃO"
+			Else
+				@ Li,095 PSAY "Certificado Atoxidade: SIM"
+			EndIf
+			*/
+			//FIM - TICKET: 2016092337000093
 			
 			Li++
 			If !Empty(QR1->C7_NUMSC)
