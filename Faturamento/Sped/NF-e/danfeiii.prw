@@ -623,7 +623,7 @@ If lContinua
 					cSerie := Padr(MV_PAR03,TamSx3("F1_SDOC")[1])
 					cWhere := "%SF1.D_E_L_E_T_= ' ' AND SF1.F1_FILIAL ='"+xFilial("SF1")+"' AND SF1.F1_DOC <='"+MV_PAR02+ "' AND SF1.F1_DOC >='" + MV_PAR01 + "' AND SF1.F1_SDOC ='"+ cSerie + "' AND SF1.F1_ESPECIE = 'SPED' AND SF1.F1_FORMUL = 'S'"			
 				Else
-					cCampos += "%SF1.F1_FILIAL FILIAL, SF1.F1_DOC DOC, SF1.F1_SERIE SERIE%"
+					cCampos += "%SF1.F1_FILIAL FILIAL, SF1.F1_DOC DOC, SF1.F1_SERIE SERIE,SF1.F1_FORNECE FORNECE,SF1.F1_LOJA LOJA%"
 					cSerie := Padr(MV_PAR03,TamSx3("F2_SERIE")[1])
 					cWhere := "%SF1.D_E_L_E_T_= ' ' AND SF1.F1_FILIAL ='"+xFilial("SF1")+"' AND SF1.F1_DOC <='"+MV_PAR02+ "' AND SF1.F1_DOC >='" + MV_PAR01 + "' AND SF1.F1_SERIE ='"+ cSerie + "' AND SF1.F1_ESPECIE = 'SPED' AND SF1.F1_FORMUL = 'S'"
 				Endif
@@ -691,8 +691,8 @@ If lContinua
 					aAdd(Atail(aNotas),"")
 					aadd(Atail(aNotas),(cAliasSFX)->SERIE)
 					aAdd(Atail(aNotas),(cAliasSFX)->DOC)
-					aadd(Atail(aNotas),"")
-					aadd(Atail(aNotas),"")
+					aadd(Atail(aNotas),if( MV_PAR04==1, (cAliasSFX)->FORNECE, ""))
+					aadd(Atail(aNotas),if( MV_PAR04==1, (cAliasSFX)->LOJA, ""))
 					If ( (cAliasSFX)->(Eof()) )
 						exit
 					EndIF
