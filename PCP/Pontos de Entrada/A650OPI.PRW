@@ -91,7 +91,9 @@ User Function A650OPI()
 		If SG1->(DbSeek(xFilial("SG1") + _cProdPai + aCols[Paramixb,1]))
 			SB1->(DBSEEK(xFilial("SB1") + aCols[Paramixb,1]))
 
-			If Alltrim(SB1->B1_UM) == "CJ" .and. Alltrim(cUMPai) != "CJ" //Elton pediu para retirar o CJ até que o calculo de MRP seja desenvolvido.
+			If  Alltrim(cUMPai) != "CJ" 
+				_cRet := .F.
+			ElseIf Alltrim(SB1->B1_UM) == "CJ" .and. Alltrim(cUMPai) != "CJ" //Elton pediu para retirar o CJ até que o calculo de MRP seja desenvolvido.
 				_cRet := .F.
 			ElseIf Alltrim(cUMPai) == "CJ" .and. Alltrim(SB1->B1_UM) != "CJ"
 				_cRet := .F.
