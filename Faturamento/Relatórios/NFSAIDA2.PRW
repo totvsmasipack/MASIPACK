@@ -722,7 +722,7 @@ While SF2->F2_FILIAL == xFilial("SF2") .And. SF2->F2_DOC <= mv_par02 .And. !Eof(
 		RecLock("SZO",.T.)
 		SZO->ZO_FILIAL  := xFilial("SF2")
 		SZO->ZO_SERIE   := SF2->F2_SERIE
-		 := SF2->F2_DOC
+		SZO->ZO_NFISCAL	:= SF2->F2_DOC
 		SZO->ZO_MENS    := Alltrim(cMensSZO)
 		SZO->ZO_DATA    := SF2->F2_EMISSAO
 		SZO->ZO_IMPR    := "N"

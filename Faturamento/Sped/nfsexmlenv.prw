@@ -59,6 +59,7 @@ user function nfseXMLEnv( cTipo, dDtEmiss, cSerie, cNota, cClieFor, cLoja, cMotC
 	Local cUFxIss	 := ""
 	Local cMunxISS	 := ""
 	Local lMvNFSEIR	 := SuperGetMV("MV_NFSEIR", .F., .F.) // Pramentro para buscar o IRRF gravado n SD2 e não considerar apenas o acumulado
+Local lMvNFSEINSS:= SuperGetMV("MV_NFSEINS", .F., .F.) // Paramentro para buscar o INSS gravado na SD2 e não considerar apenas o acumulado
 	Local lTssPref	 :=	GetNewPar("MV_TSSPREF",.F. ) // Se definido com .T. faz a busca das Dupl. utilizando Prefixo da SF2 na SE1 SE1.E1_NUM = %Exp:SF2->F2_DUPL% AND -- se nao definido o que vale é a analise feita no parametro MV_LJPREF 
 
 	Local aObra		 := &(SuperGetMV("MV_XMLOBRA", ,"{,,,,,,,,,,,,,,}"))
@@ -168,8 +169,13 @@ user function nfseXMLEnv( cTipo, dDtEmiss, cSerie, cNota, cClieFor, cLoja, cMotC
 	Local nCamQuan  := TamSx3("D2_QUANT")[2]	//casa decimal do campo D2_QUANT 
 	Local nCamTot   := TamSx3("D2_TOTAL")[2]	//casa decimal do campo D2_TOTAL
 	Local lIntegHtl := SuperGetMv("MV_INTHTL",, .F.) //Integracao via Mensagem Unica - Hotelaria
+	Local lOpcUsr	:= .F. 
+	Local cRetUsr	:= ""
+	Local aCMPUSR	:= {}
+	Local nI		:= 0
 		
-	Private aUF     	:= {}         
+	Private aUF     	:= {}  
+	Private cCargaTrb	:= ""       
 	Private cMvMsgTrib	:= SuperGetMV("MV_MSGTRIB",,"1")
 	Private lDuplLiq	:= SuperGetMV("MV_DUPLLIQ",,.F.)
 	Private cMvFntCtrb	:= SuperGetMV("MV_FNTCTRB",," ")
@@ -539,6 +545,8 @@ user function nfseXMLEnv( cTipo, dDtEmiss, cSerie, cNota, cClieFor, cLoja, cMotC
 							SE1.E1_FILIAL = %xFilial:SE1% AND
 							SE1.E1_PREFIXO = %Exp:SF2->F2_PREFIXO% AND 
 							SE1.E1_NUM = %Exp:SF2->F2_DUPL% AND 
+							SE1.E1_CLIENTE = %Exp:SF2->F2_CLIENTE% AND 
+							SE1.E1_LOJA = %Exp:SF2->F2_LOJA% AND  
 							((SE1.E1_TIPO = %Exp:MVNOTAFIS%) OR
 							SE1.E1_TIPO IN (%Exp:cTipoPcc%) OR
 							(SE1.E1_ORIGEM = 'LOJA701' AND SE1.E1_TIPO IN (%Exp:cWhere%))) AND
@@ -553,6 +561,8 @@ user function nfseXMLEnv( cTipo, dDtEmiss, cSerie, cNota, cClieFor, cLoja, cMotC
 							WHERE
 							SE1.E1_FILIAL = %xFilial:SE1% AND
 							SE1.E1_NUM = %Exp:SF2->F2_DUPL% AND 
+							SE1.E1_CLIENTE = %Exp:SF2->F2_CLIENTE% AND 
+							SE1.E1_LOJA = %Exp:SF2->F2_LOJA% AND
 							((SE1.E1_TIPO = %Exp:MVNOTAFIS%) OR
 							SE1.E1_TIPO IN (%Exp:cTipoPcc%) OR
 							(SE1.E1_ORIGEM = 'LOJA701' AND SE1.E1_TIPO IN (%Exp:cWhere%))) AND
@@ -566,6 +576,11 @@ user function nfseXMLEnv( cTipo, dDtEmiss, cSerie, cNota, cClieFor, cLoja, cMotC
 				
 				While !Eof() .And. xFilial("SE1") == (cAliasSE1)->E1_FILIAL .And.SF2->F2_DUPL == (cAliasSE1)->E1_NUM .AND.;
 					(SF2->F2_PREFIXO == (cAliasSE1)->E1_PREFIXO .Or. !lLJPRF) 
+					If AllTrim((cAliasSE1)->E1_ORIGEM) == "FINA040"
+						dbSelectArea(cAliasSE1)
+						dbSkip()
+						Loop
+					EndIF
 					If 	(cAliasSE1)->E1_TIPO = MVNOTAFIS .OR. ((cAliasSE1)->E1_ORIGEM = 'LOJA701' .AND. (cAliasSE1)->E1_TIPO $ cWhere)
 						If lDuplLiq
 							nAbatim := SomaAbat((cAliasSE1)->E1_PREFIXO,(cAliasSE1)->E1_NUM,(cAliasSE1)->E1_PARCELA,"R",(cAliasSE1)->E1_MOEDA,dDataBase,(cAliasSE1)->E1_CLIENTE,(cAliasSE1)->E1_LOJA,(cAliasSE1)->E1_FILIAL,,(cAliasSE1)->E1_TIPO)
@@ -656,7 +671,7 @@ user function nfseXMLEnv( cTipo, dDtEmiss, cSerie, cNota, cClieFor, cLoja, cMotC
 			 	  
 			//Verifica fonte carga tributária
 		            	            
-           If cMvMsgTrib $ "1-3"
+           If cMvMsgTrib $ "1-2-3"
                If lIntegHtl //Integracao Hotelaria
                    cFntCtrb := SF2->F2_LTRAN
                Else
@@ -687,7 +702,7 @@ user function nfseXMLEnv( cTipo, dDtEmiss, cSerie, cNota, cClieFor, cLoja, cMotC
 			If SF2->(FieldPos("F2_VALIRRF"))<>0 .and. (SF2->F2_VALIRRF>0 .Or. lMvNFSEIR)
 				aadd(aRetido,{"IRRF",SF2->F2_BASEIRR,SF2->F2_VALIRRF,SED->ED_PERCIRF,aRetIRR,aBasIRR})
 			EndIf	
-			If SF2->(FieldPos("F2_BASEINS"))<>0 .and. SF2->F2_BASEINS>0
+			If SF2->(FieldPos("F2_VALINSS"))<>0 .and. (SF2->F2_VALINSS>0 .Or. lMvNFSEINSS)
 				aadd(aRetido,{"INSS",SF2->F2_BASEINS,SF2->F2_VALINSS,SED->ED_PERCINS,aRetINS,aBasINS})
 			EndIf      
 			
@@ -946,6 +961,12 @@ user function nfseXMLEnv( cTipo, dDtEmiss, cSerie, cNota, cClieFor, cLoja, cMotC
 				aAdd(aBasINS,Iif(SF2->(FieldPos("F2_BASEINS")) <> 0 .and. SF2->F2_BASEINS > 0, (cAliasSD2)->D2_BASEINS, 0))
 				nScan := aScan(aRetido,{|x| x[1] == "INSS"})
 				If nScan > 0
+					If lMvNFSEINSS
+						If nCont == 1 .And. aRetido[nScan][2] > 0
+							aRetido[nScan][3] := 0
+						EndIf
+						aRetido[nScan][3] += (cAliasSD2)->D2_VALINS
+					EndIf
 					aRetido[nScan][5] := aRetINS
 					aRetido[nScan][6] := aBasINS
 				EndIf
@@ -1090,19 +1111,43 @@ user function nfseXMLEnv( cTipo, dDtEmiss, cSerie, cNota, cClieFor, cLoja, cMotC
 				
 				cF4Agreg:= SF4->F4_AGREG
 				
+				lOpcUsr := .F. // Atualizo para .F. para verificar se o cliente utiliza ou nao o parametro MV_CMPUSR devido ao While.
+				IF GetNewPar("MV_CMPUSR","")  <>  ""
+					aCMPUSR	:= StrTokArr( GetNewPar("MV_CMPUSR",""), "|" )	
+				Endif
+				IF Len(aCMPUSR) > 0
+					for nI := 1 to len( aCMPUSR )
+						cFieldMsg := aCMPUSR[nI]
+						IF !Empty(cFieldMsg) .and. SC5->(FieldPos(cFieldMsg)) > 0 .and. !Empty(&("SC5->"+cFieldMsg))
+							// Tratamento para preenchimento da variavel cNatOper
+							If !lNFeDesc .and. lNatOper .And. lSC5 .And. nCont == 1  .AND. !lOpcUsr
+								cRetUsr += If(FindFunction('CleanSpecChar'),CleanSpecChar(Alltrim(&("SC5->"+cFieldMsg))),&("SC5->"+cFieldMsg))+" "
+							// Tratamento para preenchimento da variavel cDiscrNFSe
+							ElseIF lNFeDesc .and. lSC5 .And. nCont == 1 .AND. !lOpcUsr
+								cRetUsr += If(FindFunction('CleanSpecChar'),CleanSpecChar(Alltrim(&("SC5->"+cFieldMsg))),&("SC5->"+cFieldMsg))+" "
+							// Tratamento para preenchimento da variavel cMensCli
+							ElseIF Empty(cRetUsr)  .OR. lOpcUsr
+								cRetUsr += If(FindFunction('CleanSpecChar'),CleanSpecChar(Alltrim(&("SC5->"+cFieldMsg))),&("SC5->"+cFieldMsg))+" "
+								lOpcUsr := .T.
+							EndIF							
+						EndIF
+					next
+				EndIF
+
+				
 				//Pega descricao do pedido de venda-Parametro MV_NFESERV
            		cFieldMsg := GetNewPar("MV_CMPUSR","")
 				If !lNFeDesc
-					If lNatOper .And. lSC5 .And. nCont == 1 .and. !Empty(cFieldMsg) .and. SC5->(FieldPos(cFieldMsg)) > 0 .and. !Empty(&("SC5->"+cFieldMsg))
-						cNatOper := If(FindFunction('CleanSpecChar'),CleanSpecChar(Alltrim(&("SC5->"+cFieldMsg))),&("SC5->"+cFieldMsg))+" "
+					If !Empty(cRetUsr) .and. !lOpcUsr
+						cNatOper := cRetUsr
 					ElseIf lNatOper .And. lSC5 .And. !Empty(SC5->C5_MENNOTA).And. nCont == 1
 						cNatOper += If(FindFunction('CleanSpecChar'),CleanSpecChar(Alltrim(SC5->C5_MENNOTA)),SC5->C5_MENNOTA)+" "
 					ElseIf SF2->(FieldPos("F2_MENNOTA")) <> 0 .and. !AllTrim(SF2->F2_MENNOTA) $ cMensCli .and. !Empty(AllTrim(SF2->F2_MENNOTA))
              			cDiscrNFSe +=If(FindFunction('CleanSpecChar'),CleanSpecChar(AllTrim(SF2->F2_MENNOTA)),AllTrim(SF2->F2_MENNOTA))
 					EndIf
 				Else 
-					If lSC5 .And. nCont == 1 .and. !Empty(cFieldMsg) .and. SC5->(FieldPos(cFieldMsg)) > 0 .and. !Empty(&("SC5->"+cFieldMsg))
-						cDiscrNFSe := If(FindFunction('CleanSpecChar'),CleanSpecChar(Alltrim(&("SC5->"+cFieldMsg))),&("SC5->"+cFieldMsg))+" "
+					If !Empty(cRetUsr) .and. !lOpcUsr
+						cDiscrNFSe := cRetUsr
 					ElseIf lSC5 .And. !Empty(SC5->C5_MENNOTA).And. nCont == 1
 						cDiscrNFSe := If(FindFunction('CleanSpecChar'),CleanSpecChar(Alltrim(SC5->C5_MENNOTA)),SC5->C5_MENNOTA)+" "
 					ElseIf !Empty(AllTrim(SF2->F2_MENNOTA)) .And. nCont == 1
@@ -1252,9 +1297,8 @@ user function nfseXMLEnv( cTipo, dDtEmiss, cSerie, cNota, cClieFor, cLoja, cMotC
 				DbSeek(xFilial("SC6")+(cAliasSD2)->D2_PEDIDO+(cAliasSD2)->D2_ITEMPV+(cAliasSD2)->D2_COD)
 				
            		cFieldMsg := GetNewPar("MV_CMPUSR","")
-             	If !Empty(cFieldMsg) .and. SC5->(FieldPos(cFieldMsg)) > 0 .and. !Empty(&("SC5->"+cFieldMsg))
-             		//Permite ao cliente customizar o conteudo do campo dados adicionais por meio de um campo MEMO proprio.
-             		cMensCli := If(FindFunction('CleanSpecChar'),CleanSpecChar(Alltrim(&("SC5->"+cFieldMsg))),&("SC5->"+cFieldMsg))+" "
+				If !Empty(cRetUsr)
+					cMensCli := cRetUsr
 				ElseIf !AllTrim(SC5->C5_MENNOTA) $ cMensCli
 					cMensCli +=If(FindFunction('CleanSpecChar'),CleanSpecChar(AllTrim(SC5->C5_MENNOTA)),AllTrim(SC5->C5_MENNOTA))
 				EndIf
@@ -1337,22 +1381,45 @@ user function nfseXMLEnv( cTipo, dDtEmiss, cSerie, cNota, cClieFor, cLoja, cMotC
 							If !Empty(cMunPrest) .and. (Empty(aDest[01]) .and. Empty(aDest[02]) .and. Empty(aDest[07]) .and. Empty(aDest[09]))
 								cMunISS := cMunPrest
 							Else
-								cMunISS := convType(aUF[aScan(aUF,{|x| x[1] == aDest[09]})][02]+aDest[07])
+								IF !Empty(aDest[09]) .and. !Empty(aDest[07])
+									cMunISS := convType(aUF[aScan(aUF,{|x| x[1] == aDest[09]})][02]+aDest[07])
+								ENDIF
 							EndIf
-							If nAliq > 0
-								If nAliq == CD2->CD2_ALIQ .And. lAglutina
-									aISSQN[1][2] := CD2->CD2_ALIQ
-									aISSQN[1][1] += CD2->CD2_BC 
-									aISSQN[1][3] += CD2->CD2_VLTRIB
-									aISSQN[1][6] += iif( lMvDescInc,( cAliasSD2 )->D2_DESCON,0 ) // NFSE - Desconto Incondicionado
+							If cSigamat == "4205407" //florianopolis
+								If nAliq > 0
+									If Len(aISSQN) > 0
+										nX := aScan(aISSQN,{|x| x[5] == AllTrim((cAliasSD2)->D2_CODISS) })
+									EndIf									
+									If nAliq == CD2->CD2_ALIQ .And. lAglutina
+										aISSQN[nX][2] := CD2->CD2_ALIQ
+										aISSQN[nX][1] += CD2->CD2_BC 
+										aISSQN[nX][3] += CD2->CD2_VLTRIB
+										aISSQN[nX][6] += iif( lMvDescInc,( cAliasSD2 )->D2_DESCON,0 ) // NFSE - Desconto Incondicionado
+									Else
+										lAglutina := .F.	                                                                                                       
+										aTail(aISSQN) := {CD2->CD2_BC,CD2->CD2_ALIQ,CD2->CD2_VLTRIB,cMunISS,AllTrim((cAliasSD2)->D2_CODISS),iif( lMvDescInc,(cAliasSD2)->D2_DESCON,0 )}
+										nAliq := CD2->CD2_ALIQ
+									EndIf
 								Else
-									lAglutina := .F.	                                                                                                       
 									aTail(aISSQN) := {CD2->CD2_BC,CD2->CD2_ALIQ,CD2->CD2_VLTRIB,cMunISS,AllTrim((cAliasSD2)->D2_CODISS),iif( lMvDescInc,(cAliasSD2)->D2_DESCON,0 )}
+									nAliq := CD2->CD2_ALIQ
 								EndIf
 							Else
-							    aTail(aISSQN) := {CD2->CD2_BC,CD2->CD2_ALIQ,CD2->CD2_VLTRIB,cMunISS,AllTrim((cAliasSD2)->D2_CODISS),iif( lMvDescInc,(cAliasSD2)->D2_DESCON,0 )}
-								nAliq := CD2->CD2_ALIQ
-							EndIf	
+								If nAliq > 0
+									If nAliq == CD2->CD2_ALIQ .And. lAglutina
+										aISSQN[1][2] := CD2->CD2_ALIQ
+										aISSQN[1][1] += CD2->CD2_BC 
+										aISSQN[1][3] += CD2->CD2_VLTRIB
+										aISSQN[1][6] += iif( lMvDescInc,( cAliasSD2 )->D2_DESCON,0 ) // NFSE - Desconto Incondicionado
+									Else
+										lAglutina := .F.	                                                                                                       
+										aTail(aISSQN) := {CD2->CD2_BC,CD2->CD2_ALIQ,CD2->CD2_VLTRIB,cMunISS,AllTrim((cAliasSD2)->D2_CODISS),iif( lMvDescInc,(cAliasSD2)->D2_DESCON,0 )}
+									EndIf
+								Else
+									aTail(aISSQN) := {CD2->CD2_BC,CD2->CD2_ALIQ,CD2->CD2_VLTRIB,cMunISS,AllTrim((cAliasSD2)->D2_CODISS),iif( lMvDescInc,(cAliasSD2)->D2_DESCON,0 )}
+									nAliq := CD2->CD2_ALIQ
+								EndIf
+							EndIf								
 					EndCase
 					dbSelectArea("CD2")
 					dbSkip()
@@ -1429,6 +1496,9 @@ user function nfseXMLEnv( cTipo, dDtEmiss, cSerie, cNota, cClieFor, cLoja, cMotC
 				EndIf	
 
 				If !lAglutina .Or. Len(aProd) == 0
+					If cSigamat == "4205407" //florianopolis
+						lAglutina := AllTrim(GetNewPar("MV_ITEMAGL","N")) == "S"
+					EndIf
 										
 					aadd(aProd,	{Len(aProd)+1,;
 								(cAliasSD2)->D2_COD,;
@@ -1581,7 +1651,7 @@ user function nfseXMLEnv( cTipo, dDtEmiss, cSerie, cNota, cClieFor, cLoja, cMotC
 				//ÀÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÙ
 				nRetDesc :=	Iif(nRetPis > 0, (cAliasSD2)->D2_VALPIS, 0) + Iif(nRetCof > 0, (cAliasSD2)->D2_VALCOF, 0) + ;
 							Iif(nRetCsl > 0, (cAliasSD2)->D2_VALCSL, 0) + Iif(SF2->(FieldPos("F2_VALIRRF")) <> 0 .and. SF2->F2_VALIRRF > 0, (cAliasSD2)->D2_VALIRRF, 0) + ;
-							Iif(SF2->(FieldPos("F2_BASEINS")) <> 0 .and. SF2->F2_BASEINS > 0, (cAliasSD2)->D2_VALINS, 0) + Iif(Len(aRetISS) >= nCont, aRetISS[nCont], 0)
+							Iif(SF2->(FieldPos("F2_VALINSS")) <> 0 .and. SF2->F2_VALINSS > 0, (cAliasSD2)->D2_VALINS, 0) + Iif(Len(aRetISS) >= nCont, aRetISS[nCont], 0)
 				
 				aTotal[01] += (cAliasSD2)->D2_DESPESA
 				aTotal[02] += getValTotal(nValTotPrd,(cAliasSD2)->D2_TOTAL)
@@ -1668,7 +1738,7 @@ user function nfseXMLEnv( cTipo, dDtEmiss, cSerie, cNota, cClieFor, cLoja, cMotC
 				cString	+= faturas( aDupl )
 				cString	+= pagtos( aDupl,cCondPag )
 				cString	+= deducoes( aProd, aDeduz, aDeducao )
-				cString	+= infCompl( cMensCli, cMensFis, lNFeDesc, cDescrNFSe)
+				cString	+= infCompl( cMensCli, cMensFis, lNFeDesc, cDescrNFSe, cCargaTrb)
 				cString	+= construcao( aConstr )
 				cString += '</rps>' 
 			EndIf
@@ -2269,14 +2339,18 @@ static function prestacao( cMunPrest, cDescMunP, aDest, cMunPSIAFI )
 				nScan	:= aScan( aTabIBGE, { | x | x[1] == cUFPres } )
 				cMunPrest	:= aTabIBGE[nScan][4] + cMunPrest
 			Else	
-			if lIsRpsLOJA
+			if lIsRpsLOJA .And. !Empty(cUFPres)
 				nScan	:= aScan( aTabIBGE, { | x | x[1] == cUFPres } )				
-			else	
-			nScan	:= aScan( aTabIBGE, { | x | x[1] == aDest[9] } )
+			else
+				IF !Empty(aDest[09]) 
+					nScan	:= aScan( aTabIBGE, { | x | x[1] == aDest[9] } )
+				ENDIF
 			EndIf	
-			if nScan <= 0			
-				nScan		:= aScan( aTabIBGE, { | x | x[4] == aDest[9] } )			
-				cMunPrest	:= aTabIBGE[nScan][1] + cMunPrest			
+			if nScan <= 0
+				IF !Empty(aDest[09]) 
+					nScan		:= aScan( aTabIBGE, { | x | x[4] == aDest[9] } )			
+					cMunPrest	:= aTabIBGE[nScan][1] + cMunPrest			
+				ENDIF
 			else			
 				cMunPrest	:= aTabIBGE[nScan][4] + cMunPrest			
 			endif		
@@ -2434,6 +2508,7 @@ Static Function tomador( aDest, cCodMun )
 	Local lSemTomador:= .F.
 	Local aIntermed		:= {}
 	local cMunPSIAFI:= ""
+	Local nCodMunEmail	:= SuperGetMV("MV_MAILMUN", ,"")
 	
 	default cCodMun := ""
 	
@@ -2465,7 +2540,7 @@ Static Function tomador( aDest, cCodMun )
 		Endif
 		cString	+= "<razao>" + allTrim( aDest[2] ) + "</razao>"
 		
-		If if( type( "oSigamatX" ) == "U",SM0->M0_CODMUN,oSigamatX:M0_CODMUN ) $ '3550308-3170701'			
+		If if( type( "oSigamatX" ) == "U",SM0->M0_CODMUN,oSigamatX:M0_CODMUN ) $ '3550308-3170701-3509502'			
 			cString	+= "<tipologr>"+ retTipoLogr( aDest[ 3 ] ) +"</tipologr>"	
 		Else
 			cString	+= "<tipologr>2</tipologr>"
@@ -2496,8 +2571,9 @@ Static Function tomador( aDest, cCodMun )
 		cString	+= "<cidade>" + allTrim( aDest[8] ) + "</cidade>"
 		cString	+= "<uf>" + allTrim( aDest[9] ) + "</uf>"
 		cString	+= "<cep>" + allTrim( aDest[10] ) + "</cep>"
+
 		If !Empty(Alltrim(aDest[16]))
-			cString	+= "<email>" + allTrim( aDest[16] ) + "</email>"
+			cString	+= IIF(cCodMun $ nCodMunEmail .AND. At(";",aDest[16],) > 0,"<email>" + SubStr(aDest[16],1,At(";",aDest[16],)-1) + "</email>","<email>" + allTrim( aDest[16] ) + "</email>")
 		EndIf	
 
 		//Retorna ddd + Telefone, gerando as respectivas Tag's <ddd> e <telefone>.
@@ -2580,6 +2656,8 @@ static function servicos( aProd, aISSQN, aRetido, cNatOper, lNFeDesc, cDiscrNFSe
 	Local	nValBase	:= 0
 	Local 	nIssRet		:= 0
 	Local 	nInss		:= 0
+	Local	aAliqISs 	:= {}
+	Local	aglISSQN		:= {}
 
 	Local	cMVOPTSIMP	:= AllTrim( getMV( "MV_OPTSIMP",, "2" ) ) // Verifica se o prestador eh optante do simples
 	Local	nRatVPis    := 0
@@ -2609,8 +2687,13 @@ static function servicos( aProd, aISSQN, aRetido, cNatOper, lNFeDesc, cDiscrNFSe
 	// Tratando o abatimento para quando houver mais de um item de serviço
 	If len(aISSQN) > 1
 		For nY := 1  to len(aISSQN)
-			If 	aISSQN[nY][2] > 0
-				nAliqISs := aISSQN[nY][2]
+			If 	aISSQN[nY][2] > 0 
+				If cCodMun $ "4205407" //Florianópolis
+					aadd(aAliqISs, aISSQN[nY][2])
+					aadd(aglISSQN, aISSQN[nY][3])
+				Else
+					nAliqISs := aISSQN[nY][2]
+				EndIf
 				nISSQN	  += aISSQN[nY][3]
 			EndIf
 		Next nY
@@ -2700,7 +2783,7 @@ static function servicos( aProd, aISSQN, aRetido, cNatOper, lNFeDesc, cDiscrNFSe
 			// @date: 21/05/2020 
 			//-------------------------------------------------------------------
 			
-			If cMvMsgTrib $ "1-3" .And. cTpCliente == "F" .And. ( ( SF2->F2_TOTFED + SF2->F2_TOTEST + SF2->F2_TOTMUN ) > 0 ) 
+			If cMvMsgTrib $ "1-2-3" .And. cTpCliente == "F" .And. ( ( SF2->F2_TOTFED + SF2->F2_TOTEST + SF2->F2_TOTMUN ) > 0 ) 
 				
 				lProdItem 	:= iif( lIntegHtl .or. lAglutina, .F., .T. )
 				lCalcTotal	:= iif( lAglutina, .T., .F. )    
@@ -2762,7 +2845,7 @@ static function servicos( aProd, aISSQN, aRetido, cNatOper, lNFeDesc, cDiscrNFSe
 			If lIntegHtl //Integracao hotelaria
                 If Nx == 1 //Como os impostos estarao apenas na SF2, nao necessario verificar todos os itens
                     //Carga Tributária
-                    If cMvMsgTrib $ "1-3" .And. ( ( SF2->F2_TOTFED + SF2->F2_TOTEST + SF2->F2_TOTMUN ) > 0 ) .And. cTpCliente == "F"
+                    If cMvMsgTrib $ "1-2-3" .And. ( ( SF2->F2_TOTFED + SF2->F2_TOTEST + SF2->F2_TOTMUN ) > 0 ) .And. cTpCliente == "F"
                         lProdItem := .F.
                         cPercTrib := PercTrib( nil , lProdItem)                     
                         cFntCtrb := SF2->F2_LTRAN
@@ -2778,7 +2861,7 @@ static function servicos( aProd, aISSQN, aRetido, cNatOper, lNFeDesc, cDiscrNFSe
                 EndIf
 			Else
     			//Carga Tributária
-    			If cMvMsgTrib $ "1-3" .And. nTotalCrg > 0 .And. cTpCliente == "F"
+    			If cMvMsgTrib $ "1-2-3" .And. nTotalCrg > 0 .And. cTpCliente == "F"
     				lProdItem := .T.
     				cPercTrib := PercTrib( nil, .F., "1", .T. ) 
     				
@@ -2815,6 +2898,8 @@ static function servicos( aProd, aISSQN, aRetido, cNatOper, lNFeDesc, cDiscrNFSe
 			cString	+= "<aliquota>" + allTrim( convType(aISSQN[1][02], 7, 4) ) + "</aliquota>"
 		ElseIf cCodMun $ "4303905-4305108"	
 			cString	+= "<aliquota>" + allTrim( convType(aISSQN[nX][2], 7, 4) ) + "</aliquota>"
+		ElseIf cCodMun $ "4205407" .And. !Empty(aAliqISs)//Floripa
+			cString	+= "<aliquota>" + allTrim( convType(aAliqISs[nX], 7, 4) ) + "</aliquota>"
 		Else
 			cString	+= "<aliquota>" + allTrim( iif( nAliqISs > 0, convType( nAliqISs, 7, 4 ), convType(aISSRet[3], 7, 4) ) ) + "</aliquota>"
 		EndIF	
@@ -2830,15 +2915,15 @@ static function servicos( aProd, aISSQN, aRetido, cNatOper, lNFeDesc, cDiscrNFSe
 		EndIf	
 
 		If ( SC6->(FieldPos("C6_DESCRI")) > 0 .And. Len(aProd[nX]) > 40 .And. !Empty(aProd[nX][41]) ) .And. (!lNFeDesc .And. !GetNewPar("MV_NFESERV","1") == "1" .And. !Empty(cCpmUsr) )
-			cString	+= "<discr>" + AllTrim(aProd[nX][41])+ cCargaTrb + "</discr>"
+			cString	+= "<discr>" + AllTrim(aProd[nX][41])+ IIf( cMvMsgTrib $ "2-3" ,cCargaTrb,"") + "</discr>"
 		ElseIf !lNFeDesc
-			cString	+= "<discr>" + AllTrim(cNatOper)+ cCargaTrb + "</discr>"
+			cString	+= "<discr>" + AllTrim(cNatOper)+ IIf( cMvMsgTrib $ "2-3" ,cCargaTrb,"") + "</discr>"
 		Else
-			cString	+= "<discr>" + AllTrim(cDiscrNFSe)+ cCargaTrb + "</discr>"
+			cString	+= "<discr>" + AllTrim(cDiscrNFSe)+ IIf( cMvMsgTrib $ "2-3" ,cCargaTrb,"") + "</discr>"
 		EndIf
 		cString	+= "<quant>" + allTrim( convType( aProd[nX][9], 15, 2 ) ) + "</quant>"
-		IIF(cCodMun $ "3303906-4318002" .And. lMvDescInc, cString	+= "<valunit>" + allTrim( convType( aProd[nX][10] + aISSQN[nX][06], 15, 4 ) ) + "</valunit>", cString += "<valunit>" + allTrim( convType( aProd[nX][10], 15, 4 )) + "</valunit>")//PETROPOLIS E SÃO BORJAS O TRATAMENTO PARA DESCONTO INCONDICIONADO NÃO DESCONTAR DUAS VEZES
-		IIF(cCodMun $ "3303906-4318002" .And. lMvDescInc, cString	+= "<valtotal>" + allTrim( convType( aProd[nX][28] + aISSQN[nX][06], 15, 4 ) ) + "</valtotal>", cString += "<valtotal>" + allTrim( convType( aProd[nX][28], 15, 4 )) + "</valtotal>")//PETROPOLIS
+		IIF(cCodMun $ "3303906-4318002-4300406" .And. lMvDescInc, cString	+= "<valunit>" + allTrim( convType( aProd[nX][10] + aISSQN[nX][06], 15, 4 ) ) + "</valunit>", cString += "<valunit>" + allTrim( convType( aProd[nX][10], 15, 4 )) + "</valunit>")//PETROPOLIS E SÃO BORJAS O TRATAMENTO PARA DESCONTO INCONDICIONADO NÃO DESCONTAR DUAS VEZES
+		IIF(cCodMun $ "3303906-4318002-4300406" .And. lMvDescInc, cString	+= "<valtotal>" + allTrim( convType( aProd[nX][28] + aISSQN[nX][06], 15, 4 ) ) + "</valtotal>", cString += "<valtotal>" + allTrim( convType( aProd[nX][28], 15, 4 )) + "</valtotal>")//PETROPOLIS
 
 		If cCodMun $ "4303905" 
 			nValBase := (aProd[nX][25] - aISSQN[nX][6])
@@ -2910,9 +2995,9 @@ static function servicos( aProd, aISSQN, aRetido, cNatOper, lNFeDesc, cDiscrNFSe
 		cString	+= "<valcof>" + allTrim( convType(Iif(Len(aCofinsXml[3]) > 1 .And. Len(aProd) > 1 .And. cCodMun == "2610707",(aCofinsXml[3][Nx]+nRatVcofins),IIF( Len(aCofinsXml[3]) > 1 .And. Len(aProd) > 1,aCofinsXml[3][Nx], aCofinsXml[1])),15,2))+"</valcof>"
 		
 		IF lAglutina
-			cString	+= "<valinss>" + allTrim( convType( IIF(  Len(aInssXml[3]) >= 1 .And. Len(aProd) >= 1,nInss,aInssXml[1] ), 15, 2 ) ) + "</valinss>"
+			cString	+= "<valinss>" + allTrim( convType( IIF(  Len(aInssXml[3]) > 1 .And. Len(aProd) > 1,nInss,aInssXml[1] ), 15, 2 ) ) + "</valinss>"
 		Else
-			cString	+= "<valinss>" + allTrim( convType( IIF(  Len(aInssXml[3]) >= 1 .And. Len(aProd) >= 1,aInssXml[3][Nx],aInssXml[1] ), 15, 2 ) ) + "</valinss>"
+			cString	+= "<valinss>" + allTrim( convType( IIF(  Len(aInssXml[3]) > 1 .And. Len(aProd) > 1,aInssXml[3][Nx],aInssXml[1] ), 15, 2 ) ) + "</valinss>"
 		EndIf
 
 		If lRecIrrf
@@ -2933,6 +3018,8 @@ static function servicos( aProd, aISSQN, aRetido, cNatOper, lNFeDesc, cDiscrNFSe
 			EndIf		
 		ElseIf cCodMun $ "4303905"
 			cString	+= "<valiss>" + allTrim( ConvType((nValBase * (nAliqISs / 100)),15,2) ) + "</valiss>"
+		ElseIf cCodMun $ "4205407" .And. !Empty(aglISSQN)//Floripa
+			cString	+= "<valiss>" + allTrim( ConvType(aglISSQN[nX],15,2) ) + "</valiss>"
 		Else
 			cString	+= "<valiss>" + allTrim( ConvType(aISSQN[nX][3],15,2) ) + "</valiss>"
 		EndIf	
@@ -3498,16 +3585,17 @@ de NFS-e ao TSS.
 @return	cString		Tag montada em forma de string.
 /*/
 //-----------------------------------------------------------------------
-static function infCompl( cMensCli, cMensFis, lNFeDesc, cDescrNFSe )
+static function infCompl( cMensCli, cMensFis, lNFeDesc, cDescrNFSe , cCargaTrb)
 	
 	local cString	:= ""
+	default cCargaTrb := ""
 	
 	cString	+= "<infcompl>"
 	
 	If !lNFeDesc
-		cString	+= "<descricao>" + cMensCli + space( 1 ) + cMensFis + "</descricao>"
+		cString	+= "<descricao>" + cMensCli + space( 1 ) + cMensFis + IIf( cMvMsgTrib $ "1-3" ,cCargaTrb,"") +"</descricao>"
 	Else
-		cString	+= "<descricao>" + Alltrim(cDescrNFSe) + "</descricao>"
+		cString	+= "<descricao>" + Alltrim(cDescrNFSe) + IIf( cMvMsgTrib $ "1-3" ,cCargaTrb,"") +"</descricao>"
 	EndIf
 	
 	cString += "<observacao>" + cMensCli + space( 1 ) + cMensFis + "</observacao>"
@@ -3906,15 +3994,15 @@ If lProdItem
 	
 	If dbSeek( xFilial("SB1") + alltrim(cCodP) )
 	
-		nAliq	:= LeiTransp(nPos,aProd) * 100
-		cPercTrib := ConvType( (nAliq  / aProd[25]) * 100, 15, 2 )
+		nAliq	:= LeiTransp(nPos,aProd)
+		cPercTrib := ConvType( ( ( nAliq * aProd[25] )  / aProd[25]) * 100, 15, 2 )
 		
 	Endif
 	
 elseif lProdTotal
 
-	nAliq	:= IIF(empty(aProd),LeiTransp(nPos,,lProdTotal), LeiTransp(nPos,,lProdTotal) * 100)
-	cPercTrib := IIF(empty(aProd),  ConvType( nAliq * 100 , 15, 2 ), ConvType( (nAliq  / aProd[25]) * 100, 15, 2 ))
+	nAliq	:= IIF(empty(aProd),LeiTransp(nPos,,lProdTotal), LeiTransp(nPos,,lProdTotal))
+	cPercTrib := IIF(empty(aProd),  ConvType( nAliq * 100 , 15, 2 ), ConvType( ( ( nAliq  * aProd[25]) / aProd[25]) * 100, 15, 2 ))
 
 Else
 

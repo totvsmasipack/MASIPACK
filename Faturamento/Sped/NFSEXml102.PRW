@@ -1814,7 +1814,7 @@ DEFAULT cLojFor := ""
                                        
 If Alltrim(SM0->M0_CODMUN) $ "2607208-3305505" //IPOJUCA-PE # SAQUAREMA-RJ
 	cString += '<TipoRPS>1</TipoRPS>'
-ElseIf Alltrim(SM0->M0_CODMUN) $ "3550308-3304557-3303906-2927408-3525300-3555802-5300108-1302603" .And. aNota[04] == "0" .or. aNota[04] == "3" // NFTS: São Paulo, Rio de Janeiro, Petrópolis e Salvador
+ElseIf Alltrim(SM0->M0_CODMUN) $ "3550308-3304557-3303906-2927408-3525300-3555802-5300108-1302603-3548500" .And. aNota[04] == "0" .or. aNota[04] == "3" // NFTS: São Paulo, Rio de Janeiro, Petrópolis e Salvador
 	cString += '<TipoRPS>4</TipoRPS>'
 	lNTFS := .T.
 Else
@@ -1884,7 +1884,7 @@ ElseIf Alltrim(SM0->M0_CODMUN) == "4205407"	 //Florianopolis
 	cString += '<CidadeTomador>'+Iif( Empty(cMunPrest) .Or. Len(AllTrim(cMunPrest)) < 6, UFCodIBGE2(aDest[09]) +aDest[07] ,cMunPrest )+'</CidadeTomador>'
 ElseIf Alltrim(SM0->M0_CODMUN) == "4299599" // Teixeira de Freitas -BA
 	cString += '<CidadeTomador>'+aDest[07]+'</CidadeTomador>'
-ElseIf Alltrim(SM0->M0_CODMUN) $ "3555802-1302603" // Urania - SP e Manaus - AM
+ElseIf Alltrim(SM0->M0_CODMUN) $ "3555802-1302603-3548500" // Urania - SP e Manaus - AM
 	cString += '<CidadeTomador>'+aDest[07]+'</CidadeTomador>'
 Else
 	cString += '<CidadeTomador>'+StrZero(Val(aDest[18]),10)+'</CidadeTomador>'
@@ -1900,11 +1900,13 @@ If cCodMun <> "3168705"
 	Endif
 EndIf
 cString += '<UfTomador>'+AllTrim(aDest[09])+'</UfTomador>'
-If cCodMun <> "4205407"
-	cString += '<PaisTomador>'+AllTrim(aDest[20])+'</PaisTomador>'
+
+
+If cCodMun $ "4205407-3548500"
+	cString += '<PaisTomador>'+AllTrim(aDest[11])+'</PaisTomador>'	
 Else
-	cString += '<PaisTomador>'+AllTrim(aDest[11])+'</PaisTomador>'
-EndIf                                            
+	cString += '<PaisTomador>'+AllTrim(aDest[20])+'</PaisTomador>'
+EndIf
 
 Return(cString) 
 
@@ -1998,7 +2000,7 @@ ElseIf Alltrim(SM0->M0_CODMUN) $ "4299599-3507605" //Teixeira de freitas # Braga
   	cString += '<MunicipioPrestacao>'+ Iif( Empty(cMunPrest),aDest[18],cMunPrest) +'</MunicipioPrestacao>'
 ElseIf Alltrim(SM0->M0_CODMUN) $ "3305505-3152501".Or. GetMunSiaf(SM0->M0_CODMUN)[1][2] == "009" //Saquarema-RJ # Pouso Alegre
 	cString += '<MunicipioPrestacao>'+Iif( Empty(cMunPrest), UFCodIBGE2(aDest[09]) +aDest[07] ,cMunPrest )+'</MunicipioPrestacao>'
-ElseIf AllTrim(SM0->M0_CODMUN) $ Fisa022Cod("201")+"-"+Fisa022Cod("202") + "3555802-1302603" .And. AllTrim(SM0->M0_CODMUN) $ GetMunNFT()
+ElseIf AllTrim(SM0->M0_CODMUN) $ Fisa022Cod("201")+"-"+Fisa022Cod("202") + "3555802-1302603-3548500" .And. AllTrim(SM0->M0_CODMUN) $ GetMunNFT()
 	cString += '<MunicipioPrestacao>'+IIF( Empty(cMunPrest), AllTrim(SM0->M0_CODMUN), cMunPrest )+'</MunicipioPrestacao>'
 Else	
 	cString += '<MunicipioPrestacao>'+StrZero(Val( Iif( Empty(cMunPrest), aDest[18] ,cMunPrest ) ),10)+'</MunicipioPrestacao>'
@@ -2230,7 +2232,7 @@ For Nx := 1 to Len(aProd)
 	EndIf
 	If Alltrim(SM0->M0_CODMUN) $ "2607208-3550308-3304557-3303906-3525300-3555802" //IPOJUCA - PE # Sao Paulo - SP  # Rio de Janeiro - RJ
 		cXml += '<ISSRetido>'+AllTrim(aProd[Nx][20])+'</ISSRetido>'
-	ElseIf Alltrim(SM0->M0_CODMUN) $ "3168705-3305505-3152501-1302603"  // Timoteo-MG # Saquarema-RJ # Pouso Alegre
+	ElseIf Alltrim(SM0->M0_CODMUN) $ "3168705-3305505-3152501-1302603-3548500"  // Timoteo-MG # Saquarema-RJ # Pouso Alegre
 		cXml += '<ISSRetido>'+Iif(!Empty(aIssRet[2]),"1","2")+'</ISSRetido>' 
 	Else
 		cXml += '<ISSRetido>0</ISSRetido>'  //Alterar
@@ -2332,7 +2334,7 @@ cString += '<NumeroEnderecoPrestador>'+aPrest[04]+'</NumeroEnderecoPrestador>'
 cString += '<ComplementoEnderecoPrestador>'+aPrest[05]+'</ComplementoEnderecoPrestador>'
 cString += '<BairroPrestador>'+aPrest[06]+'</BairroPrestador>'
 cString += '<CidadePrestadorDescricao>'+aPrest[08]+'</CidadePrestadorDescricao>'
-If Alltrim(SM0->M0_CODMUN) $ Fisa022Cod("202") + "3555802-1302603" .And. Alltrim(SM0->M0_CODMUN) $ GetMunNFT()
+If Alltrim(SM0->M0_CODMUN) $ Fisa022Cod("202") + "3555802-1302603-3548500" .And. Alltrim(SM0->M0_CODMUN) $ GetMunNFT()
 	cString += '<CidadePrestador>'+UFCodIBGE2(aPrest[09])+aPrest[07]+'</CidadePrestador>'
 Else
 	cString += '<CidadePrestador>'+aPrest[07]+'</CidadePrestador>'

@@ -390,8 +390,10 @@ While !QR1->(Eof() )
 				@ Li,30 PSAY "É NORMA DA FABRIMA RECEBER RETORNO DE ACEITE OU DIVERGÊNCIAS DE TODOS OS PEDIDOS COLOCADOS, INCLUSIVE A POSIÇÃO DOS MESMOS EM ATRASO."
 			ElseIf SubStr(cNumEmp,1,2) $ "40"				
 				@ Li,30 PSAY "É NORMA DA LABORTUBE RECEBER RETORNO DE ACEITE OU DIVERGÊNCIAS DE TODOS OS PEDIDOS COLOCADOS, INCLUSIVE A POSIÇÃO DOS MESMOS EM ATRASO."
-			ElseIf SubStr(cNumEmp,1,2) $ "15"				
-				@ Li,30 PSAY "É NORMA DA HELSIMPLAST RECEBER RETORNO DE ACEITE OU DIVERGÊNCIAS DE TODOS OS PEDIDOS COLOCADOS, INCLUSIVE A POSIÇÃO DOS MESMOS EM ATRASO."
+			ElseIf SubStr(cNumEmp,1,2) $ "15" .AND. cFilant $ '01'		//Chamado 20240409000016		
+				@ Li,30 PSAY "É NORMA DA MASITUBOS RECEBER RETORNO DE ACEITE OU DIVERGÊNCIAS DE TODOS OS PEDIDOS COLOCADOS, INCLUSIVE A POSIÇÃO DOS MESMOS EM ATRASO."
+			ElseIf SubStr(cNumEmp,1,2) $ "15" .AND. cFilant $ '02_03'	//Chamado 20240409000016				
+				@ Li,30 PSAY "É NORMA DA HELSIM RECEBER RETORNO DE ACEITE OU DIVERGÊNCIAS DE TODOS OS PEDIDOS COLOCADOS, INCLUSIVE A POSIÇÃO DOS MESMOS EM ATRASO."
 			Endif
          
 			//VICTOR DESSUNTE - 10/10/2016
@@ -403,7 +405,11 @@ While !QR1->(Eof() )
 
 			If SubStr(cNumEmp,1,2) == "01"     
 				@ Li,30 PSAY "As posições dos mesmos deverão ser retransmitidas na própria listagem, através do e-mail: pedidos.compras@masipack.com.br"
-			ElseIf SubStr(cNumEmp,1,2) $ "10_11_15_40_45"  
+		    ElseIf SubStr(cNumEmp,1,2) $ "15" //Chamado 20240409000016
+				@ Li,30 PSAY "As posições dos mesmos deverão ser retransmitidas na própria listagem, através do e-mail: compras@helsimplast.com.br
+			ElseIf SubStr(cNumEmp,1,2) $ "10" //Chamado 20240409000018
+				@ Li,30 PSAY "As posições dos mesmos deverão ser retransmitidas na própria listagem, através do e-mail: pedidos02@fabrima.com.br"
+			ElseIf SubStr(cNumEmp,1,2) $ "11_40_45"  
 				@ Li,30 PSAY "As posições dos mesmos deverão ser retransmitidas na própria listagem, através do e-mail: followup@fabrima.com.br"
 			Endif
 			
